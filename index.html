@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICC Timestamp Logger</title>
+    <meta name="theme-color" content="#1a73e8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .session-header {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .session-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .timezone-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .timezone-label {
+            font-weight: 600;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .timezone-part {
+            flex: 1;
+        }
+        
+        .current-session {
+            background-color: #e8f0fe;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+        
+        .session-stats {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .event-btn {
+            background-color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+        }
+        
+        .event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .event-btn:active {
+            transform: translateY(0);
+        }
+        
+        .event-btn i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .record-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .large-record-btn {
+            background: linear-gradient(135deg, #34a853, #2e7d32);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(52, 168, 83, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .large-record-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(52, 168, 83, 0.5);
+        }
+        
+        .large-record-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .memo-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .memo-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .voice-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 8px;
+            width: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .voice-btn.listening {
+            background-color: #fce8e6;
+            color: #d93025;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .add-memo-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .add-memo-btn:hover {
+            background-color: #0d47a1;
+        }
+        
+        .log-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .log-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .export-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .export-btn:hover {
+            background-color: #e8eaed;
+        }
+        
+        .log-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            font-weight: 600;
+            color: #1a73e8;
+            white-space: nowrap;
+            margin-right: 10px;
+            min-width: 70px;
+        }
+        
+        .log-event {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .log-memo {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .log-timezone {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 2px;
+        }
+        
+        .empty-log {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            color: #f4b400;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .modal-message {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .modal-btn.primary {
+            background-color: #1a73e8;
+            color: white;
+        }
+        
+        .modal-btn.primary:hover {
+            background-color: #0d47a1;
+        }
+        
+        .modal-btn.secondary {
+            background-color: #f1f3f4;
+            color: #333;
+        }
+        
+        .modal-btn.secondary:hover {
+            background-color: #e8eaed;
+        }
+        
+        .modal-btn.warning {
+            background-color: #f4b400;
+            color: white;
+        }
+        
+        .modal-btn.warning:hover {
+            background-color: #e0a800;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .session-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .event-btn {
+                min-height: 80px;
+                font-size: 0.8rem;
+            }
+            
+            .timezone-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .timezone-label {
+                margin-right: 0;
+                text-align: center;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ICC Timestamp Logger</h1>
+        <p class="subtitle">by *2100551*</p>
+    </header>
+    
+    <div class="container">
+        <div class="session-header">
+            <div class="session-form">
+                <div class="form-group">
+                    <label for="flightNumber">Flight Number</label>
+                    <input type="text" id="flightNumber" placeholder="e.g., BA123">
+                </div>
+                <div class="form-group">
+                    <label for="sessionDate">Date</label>
+                    <input type="date" id="sessionDate">
+                </div>
+            </div>
+            
+            <div class="timezone-selector">
+                <div class="timezone-label">GMT Offset:</div>
+                <select class="timezone-part" id="gmtSign">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                </select>
+                <select class="timezone-part" id="gmtHours">
+                    <!-- Hours 0-14 will be populated by JavaScript -->
+                </select>
+                <select class="timezone-part" id="gmtMinutes">
+                    <option value="00">:00</option>
+                    <option value="15">:15</option>
+                    <option value="30">:30</option>
+                    <option value="45">:45</option>
+                </select>
+            </div>
+            
+            <button class="add-memo-btn" id="startSessionBtn" style="width: 100%;">Start New Session</button>
+            <div class="current-session" id="currentSession">No active session</div>
+            <div class="session-stats" id="sessionStats">No events recorded</div>
+        </div>
+        
+        <div class="buttons-grid">
+            <button class="event-btn" data-event="Pre-Departure Safety">
+                <span>🛡️</span>
+                Pre-Departure Safety
+            </button>
+            <button class="event-btn" data-event="Boarding Clearance">
+                <span>🟢</span>
+                Boarding Clearance
+            </button>
+            <button class="event-btn" data-event="Boarding Commence">
+                <span>🚶‍♂️</span>
+                Boarding Commence
+            </button>
+            <button class="event-btn" data-event="First Pax">
+                <span>👤1️⃣</span>
+                First Pax
+            </button>
+            <button class="event-btn" data-event="Last Pax">
+                <span>👤</span>
+                Last Pax
+            </button>
+            <button class="event-btn" data-event="Boarding Completed">
+                <span>✅</span>
+                Boarding Completed
+            </button>
+            <button class="event-btn" data-event="Door Close">
+                <span>🚪</span>
+                Door Close
+            </button>
+            <button class="event-btn" data-event="Door Open">
+                <span>🚪➡️</span>
+                Door Open
+            </button>
+            <button class="event-btn" data-event="Crew Boarding">
+                <span>👨‍✈️</span>
+                Crew Boarding
+            </button>
+            <button class="event-btn" data-event="Ground Staff">
+                <span>👷‍♂️</span>
+                Ground Staff
+            </button>
+            <button class="event-btn" data-event="Engineer">
+                <span>🔧</span>
+                Engineer
+            </button>
+            <button class="event-btn" data-event="AIC">
+                <span>🛩️</span>
+                AIC
+            </button>
+            <button class="event-btn" data-event="Catering">
+                <span>🍱</span>
+                Catering
+            </button>
+            <button class="event-btn" data-event="PIC Announcement">
+                <span>📢👨‍✈️</span>
+                PIC Announcement
+            </button>
+            <button class="event-btn" data-event="Seatbelt On">
+                <span>🔴💺</span>
+                Seatbelt On
+            </button>
+            <button class="event-btn" data-event="Seatbelt Off">
+                <span>🟢💺</span>
+                Seatbelt Off
+            </button>
+        </div>
+        
+        <div class="record-section">
+            <button class="large-record-btn" id="recordBtn">
+                <span>⏱️</span>
+                RECORD
+            </button>
+            
+            <div class="memo-section">
+                <input type="text" class="memo-input" id="memoInput" placeholder="Add a memo...">
+                <button class="voice-btn" id="voiceBtn">🎤</button>
+            </div>
+            <button class="add-memo-btn" id="addMemoBtn">Add Custom Event</button>
+        </div>
+        
+        <div class="log-section">
+            <div class="log-header">
+                <div class="log-title">Event Log</div>
+                <div class="export-buttons">
+                    <button class="export-btn" id="exportCsvBtn">
+                        <span>📊</span> CSV
+                    </button>
+                    <button class="export-btn" id="exportTxtBtn">
+                        <span>📝</span> TXT
+                    </button>
+                    <button class="export-btn" id="exportPdfBtn">
+                        <span>📄</span> PDF
+                    </button>
+                </div>
+            </div>
+            <div class="log-list" id="logList">
+                <div class="empty-log">No events recorded yet</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Export Warning Modal -->
+    <div class="modal" id="exportWarningModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <div class="modal-title">Export Recommended</div>
+            </div>
+            <div class="modal-message" id="warningMessage">
+                You have events recorded in your current session. Starting a new session will clear this data. It's recommended to export your data first.
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="exportFirstBtn">Export & Continue</button>
+                <button class="modal-btn warning" id="continueWithoutExportBtn">Continue Without Export</button>
+                <button class="modal-btn secondary" id="cancelNewSessionBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Debug Panel -->
+    <div style="background: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px; font-size: 0.85rem;" id="debugPanel">
+        <strong>Debug Info:</strong>
+        <div id="debugInfo">Initializing...</div>
+    </div>
+    
+    <footer>
+        <p>ICC Timestamp Logger, 7/11/25 | Works Offline | save the trees | *2100551*</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const flightNumberInput = document.getElementById('flightNumber');
+        const sessionDateInput = document.getElementById('sessionDate');
+        const gmtSignSelect = document.getElementById('gmtSign');
+        const gmtHoursSelect = document.getElementById('gmtHours');
+        const gmtMinutesSelect = document.getElementById('gmtMinutes');
+        const startSessionBtn = document.getElementById('startSessionBtn');
+        const currentSessionDiv = document.getElementById('currentSession');
+        const sessionStatsDiv = document.getElementById('sessionStats');
+        const eventButtons = document.querySelectorAll('.event-btn');
+        const recordBtn = document.getElementById('recordBtn');
+        const memoInput = document.getElementById('memoInput');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const addMemoBtn = document.getElementById('addMemoBtn');
+        const logList = document.getElementById('logList');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const exportTxtBtn = document.getElementById('exportTxtBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        
+        // Modal elements
+        const exportWarningModal = document.getElementById('exportWarningModal');
+        const warningMessage = document.getElementById('warningMessage');
+        const exportFirstBtn = document.getElementById('exportFirstBtn');
+        const continueWithoutExportBtn = document.getElementById('continueWithoutExportBtn');
+        const cancelNewSessionBtn = document.getElementById('cancelNewSessionBtn');
+        
+        // Debug panel
+        const debugInfo = document.getElementById('debugInfo');
+        
+        function updateDebug(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML = `[${timestamp}] ${message}<br>` + debugInfo.innerHTML;
+            // Keep only last 5 messages
+            const lines = debugInfo.innerHTML.split('<br>');
+            if (lines.length > 5) {
+                debugInfo.innerHTML = lines.slice(0, 5).join('<br>');
+            }
+        }
+
+        // Set today's date as default
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        sessionDateInput.value = `${year}-${month}-${day}`;
+
+        // App State - Start with clean empty state
+        let currentSession = null;
+        let events = [];
+        let recognition = null;
+        let pendingNewSession = null;
+
+        // Initialize the app
+        function initApp() {
+            updateDebug('Starting initialization...');
+            populateGmtHours();
+            setDefaultTimezone();
+            loadSession();
+            updateUI();
+            setupVoiceRecognition();
+            setupEventListeners();
+            updateDebug(`Init complete. Session: ${currentSession ? currentSession.flightNumber : 'None'}, Events: ${events.length}`);
+        }
+
+        // Populate GMT hours dropdown (0-14)
+        function populateGmtHours() {
+            gmtHoursSelect.innerHTML = '';
+            for (let i = 0; i <= 14; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                gmtHoursSelect.appendChild(option);
+            }
+        }
+
+        // Set default timezone based on device
+        function setDefaultTimezone() {
+            const now = new Date();
+            const timezoneOffset = -now.getTimezoneOffset(); // Convert to GMT+
+            const hours = Math.floor(Math.abs(timezoneOffset) / 60);
+            const minutes = Math.abs(timezoneOffset) % 60;
+            
+            // Round to nearest quarter hour
+            const roundedMinutes = Math.round(minutes / 15) * 15;
+            
+            gmtSignSelect.value = timezoneOffset >= 0 ? '+' : '-';
+            gmtHoursSelect.value = hours;
+            gmtMinutesSelect.value = roundedMinutes.toString().padStart(2, '0');
+        }
+
+        // Get current timezone object
+        function getCurrentTimezone() {
+            return {
+                sign: gmtSignSelect.value,
+                hours: parseInt(gmtHoursSelect.value),
+                minutes: parseInt(gmtMinutesSelect.value),
+                totalOffsetMinutes: calculateTotalOffsetMinutes()
+            };
+        }
+
+        // Calculate total offset in minutes
+        function calculateTotalOffsetMinutes() {
+            const sign = gmtSignSelect.value === '+' ? 1 : -1;
+            const hours = parseInt(gmtHoursSelect.value);
+            const minutes = parseInt(gmtMinutesSelect.value);
+            return sign * (hours * 60 + minutes);
+        }
+
+        // Load session from localStorage
+        function loadSession() {
+            const savedSession = localStorage.getItem('aviationSession');
+            const savedEvents = localStorage.getItem('aviationEvents');
+            
+            if (savedSession) {
+                currentSession = JSON.parse(savedSession);
+                // Restore timezone selection from session
+                if (currentSession.timezone) {
+                    gmtSignSelect.value = currentSession.timezone.sign;
+                    gmtHoursSelect.value = currentSession.timezone.hours;
+                    gmtMinutesSelect.value = currentSession.timezone.minutes.toString().padStart(2, '0');
+                }
+            }
+            
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+            }
+        }
+
+        // Save session to localStorage
+        function saveSession() {
+            localStorage.setItem('aviationSession', JSON.stringify(currentSession));
+            localStorage.setItem('aviationEvents', JSON.stringify(events));
+        }
+
+        // Update UI based on current state
+        function updateUI() {
+            if (currentSession) {
+                flightNumberInput.value = currentSession.flightNumber;
+                sessionDateInput.value = currentSession.date;
+                const timezone = getCurrentTimezone();
+                currentSessionDiv.textContent = `${currentSession.flightNumber} - ${formatDate(currentSession.date)} (Current GMT: ${formatTimezone(timezone)})`;
+                sessionStatsDiv.textContent = `${events.length} events recorded`;
+            } else {
+                currentSessionDiv.textContent = 'No active session';
+                sessionStatsDiv.textContent = 'No events recorded';
+            }
+            
+            renderEvents();
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString + 'T00:00:00').toLocaleDateString(undefined, options);
+        }
+
+        // Format time for display using event's stored timezone
+        function formatTime(date, timezone) {
+            // Get UTC time components
+            const utcHours = date.getUTCHours();
+            const utcMinutes = date.getUTCMinutes();
+            const utcSeconds = date.getUTCSeconds();
+            
+            // Calculate total minutes from UTC midnight
+            let totalMinutes = utcHours * 60 + utcMinutes;
+            
+            // Apply timezone offset
+            totalMinutes += timezone.totalOffsetMinutes;
+            
+            // Handle day wrap-around
+            if (totalMinutes < 0) totalMinutes += 1440; // Add 24 hours
+            if (totalMinutes >= 1440) totalMinutes -= 1440; // Subtract 24 hours
+            
+            // Convert back to hours and minutes
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            // Format with seconds
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${utcSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Format timezone for display
+        function formatTimezone(timezone) {
+            return `GMT${timezone.sign}${timezone.hours}:${timezone.minutes.toString().padStart(2, '0')}`;
+        }
+
+        // Start a new session with safety checks
+        function startNewSession() {
+            const flightNumber = flightNumberInput.value.trim();
+            const date = sessionDateInput.value;
+            
+            updateDebug(`Start session clicked. Flight: ${flightNumber}, Date: ${date}`);
+            
+            if (!flightNumber) {
+                alert('Please enter a flight number');
+                updateDebug('ERROR: No flight number entered');
+                return;
+            }
+            
+            // Check if we have existing data that might be lost
+            if (events.length > 0 && currentSession) {
+                // Show warning modal
+                pendingNewSession = { flightNumber, date };
+                warningMessage.textContent = `You have ${events.length} events recorded for ${currentSession.flightNumber}. Starting a new session will clear this data. It's recommended to export your data first.`;
+                exportWarningModal.style.display = 'flex';
+                updateDebug('Showing warning modal');
+                return;
+            }
+            
+            // No existing data or user confirmed, proceed with new session
+            proceedWithNewSession(flightNumber, date);
+        }
+
+        // Actually create the new session
+        function proceedWithNewSession(flightNumber, date) {
+            currentSession = {
+                flightNumber,
+                date,
+                timezone: getCurrentTimezone(),
+                createdAt: new Date().toISOString()
+            };
+            
+            events = [];
+            saveSession();
+            updateUI();
+            pendingNewSession = null;
+            updateDebug(`Session created: ${flightNumber}`);
+        }
+
+        // Record an event - STORE TIMEZONE WITH EVENT
+        function recordEvent(eventType, isCustom = false) {
+            updateDebug(`Recording: ${eventType}`);
+            
+            if (!currentSession) {
+                alert('Please start a session first');
+                updateDebug('ERROR: No active session');
+                return;
+            }
+            
+            const now = new Date();
+            const timezone = getCurrentTimezone();
+            
+            const event = {
+                id: Date.now(),
+                timestamp: now.toISOString(), // Always store in UTC
+                eventType: isCustom ? 'custom' : eventType.toLowerCase().replace(/ /g, '_'),
+                eventLabel: eventType,
+                memo: memoInput.value.trim(),
+                sessionId: currentSession.flightNumber + '_' + currentSession.date,
+                timezone: timezone // Store the timezone active when recorded
+            };
+            
+            events.unshift(event);
+            memoInput.value = '';
+            saveSession();
+            updateUI();
+            
+            updateDebug(`Event recorded! Total: ${events.length}`);
+        }
+
+        // Render events to the log - USE EACH EVENT'S STORED TIMEZONE
+        function renderEvents() {
+            updateDebug(`Rendering ${events.length} events`);
+            
+            if (events.length === 0) {
+                logList.innerHTML = '<div class="empty-log">No events recorded yet</div>';
+                return;
+            }
+            
+            logList.innerHTML = '';
+            
+            try {
+                events.forEach((event, index) => {
+                    try {
+                        const eventTime = new Date(event.timestamp);
+                        
+                        // Check if timezone exists
+                        if (!event.timezone) {
+                            updateDebug(`ERROR: Event ${index} missing timezone`);
+                            event.timezone = getCurrentTimezone(); // Fix missing timezone
+                        }
+                        
+                        const logItem = document.createElement('div');
+                        logItem.className = 'log-item';
+                        
+                        const logTimeDiv = document.createElement('div');
+                        logTimeDiv.className = 'log-time';
+                        logTimeDiv.textContent = formatTime(eventTime, event.timezone);
+                        
+                        const logContentDiv = document.createElement('div');
+                        logContentDiv.style.flex = '1';
+                        
+                        const logEventDiv = document.createElement('div');
+                        logEventDiv.className = 'log-event';
+                        logEventDiv.textContent = event.eventLabel;
+                        
+                        logContentDiv.appendChild(logEventDiv);
+                        
+                        if (event.memo) {
+                            const logMemoDiv = document.createElement('div');
+                            logMemoDiv.className = 'log-memo';
+                            logMemoDiv.textContent = event.memo;
+                            logContentDiv.appendChild(logMemoDiv);
+                        }
+                        
+                        const logTimezoneDiv = document.createElement('div');
+                        logTimezoneDiv.className = 'log-timezone';
+                        logTimezoneDiv.textContent = formatTimezone(event.timezone);
+                        logContentDiv.appendChild(logTimezoneDiv);
+                        
+                        logItem.appendChild(logTimeDiv);
+                        logItem.appendChild(logContentDiv);
+                        logList.appendChild(logItem);
+                    } catch (err) {
+                        updateDebug(`ERROR rendering event ${index}: ${err.message}`);
+                    }
+                });
+                updateDebug(`Successfully rendered ${events.length} events`);
+            } catch (err) {
+                updateDebug(`CRITICAL ERROR in renderEvents: ${err.message}`);
+            }
+        }
+
+        // Setup voice recognition
+        function setupVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onstart = function() {
+                    voiceBtn.classList.add('listening');
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    memoInput.value = transcript;
+                    voiceBtn.classList.remove('listening');
+                };
+                
+                recognition.onerror = function() {
+                    voiceBtn.classList.remove('listening');
+                };
+                
+                recognition.onend = function() {
+                    voiceBtn.classList.remove('listening');
+                };
+            } else {
+                voiceBtn.style.display = 'none';
+            }
+        }
+
+        // Start voice recognition
+        function startVoiceRecognition() {
+            if (recognition) {
+                recognition.start();
+            } else {
+                alert('Voice recognition is not supported in your browser');
+            }
+        }
+
+        // Export events to CSV - USE EACH EVENT'S STORED TIMEZONE
+        function exportToCSV() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            
+            let csvContent = 'Flight Number,Date,Timestamp,Event Type,Event Label,Memo,Timezone\n';
+            
+            events.forEach(event => {
+                const eventTime = new Date(event.timestamp);
+                const row = [
+                    currentSession.flightNumber,
+                    currentSession.date,
+                    formatTime(eventTime, event.timezone),
+                    event.eventType,
+                    event.eventLabel,
+                    `"${event.memo || ''}"`,
+                    formatTimezone(event.timezone)
+                ].join(',');
+                
+                csvContent += row + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentSession.flightNumber}_${currentSession.date}_timestamps.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Export events to TXT - USE EACH EVENT'S STORED TIMEZONE
+        function exportToTXT() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            
+            let txtContent = `ICC TIMESTAMP LOG\n`;
+            txtContent += `================\n\n`;
+            txtContent += `FLIGHT: ${currentSession.flightNumber}\n`;
+            txtContent += `DATE: ${formatDate(currentSession.date)}\n`;
+            txtContent += `SESSION STARTED: ${formatTime(new Date(currentSession.createdAt), currentSession.timezone)} ${formatTimezone(currentSession.timezone)}\n\n`;
+            txtContent += `TIMESTAMP LOG:\n`;
+            txtContent += `-------------\n\n`;
+            
+            events.forEach(event => {
+                const eventTime = new Date(event.timestamp);
+                txtContent += `${formatTime(eventTime, event.timezone)} ${formatTimezone(event.timezone)} - ${event.eventLabel}`;
+                if (event.memo) {
+                    txtContent += ` - ${event.memo}`;
+                }
+                txtContent += `\n`;
+            });
+            
+            txtContent += `\n----------------\n`;
+            txtContent += `TOTAL EVENTS: ${events.length}\n`;
+            txtContent += `EXPORTED: ${new Date().toLocaleString()}\n`;
+            
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentSession.flightNumber}_${currentSession.date}_timestamps.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Export events to PDF - USE EACH EVENT'S STORED TIMEZONE
+        function exportToPDF() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            
+            // Simple PDF generation using browser print
+            const printWindow = window.open('', '_blank');
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>ICC Timestamp Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                        .flight-info { margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { padding: 8px 12px; border: 1px solid #ddd; text-align: left; }
+                        th { background-color: #f5f5f5; }
+                        .footer { margin-top: 20px; text-align: center; font-size: 0.9em; color: #666; }
+                        .timezone { font-size: 0.8em; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>ICC Timestamp Report</h1>
+                        <p>by *2100551*</p>
+                    </div>
+                    <div class="flight-info">
+                        <p><strong>Flight:</strong> ${currentSession.flightNumber}</p>
+                        <p><strong>Date:</strong> ${formatDate(currentSession.date)}</p>
+                        <p><strong>Session Started:</strong> ${formatTime(new Date(currentSession.createdAt), currentSession.timezone)} ${formatTimezone(currentSession.timezone)}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Timezone</th>
+                                <th>Event</th>
+                                <th>Memo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${events.map(event => {
+                                const eventTime = new Date(event.timestamp);
+                                return `
+                                    <tr>
+                                        <td>${formatTime(eventTime, event.timezone)}</td>
+                                        <td>${formatTimezone(event.timezone)}</td>
+                                        <td>${event.eventLabel}</td>
+                                        <td>${event.memo || ''}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>Total Events: ${events.length} | Exported: ${new Date().toLocaleString()}</p>
+                        <p>ICC Timestamp Logger | save the trees | *2100551*</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            startSessionBtn.addEventListener('click', startNewSession);
+            
+            // Timezone changes don't affect existing events, only update UI for current GMT display
+            gmtSignSelect.addEventListener('change', updateUI);
+            gmtHoursSelect.addEventListener('change', updateUI);
+            gmtMinutesSelect.addEventListener('change', updateUI);
+            
+            eventButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    recordEvent(button.dataset.event);
+                });
+            });
+            
+            recordBtn.addEventListener('click', () => {
+                recordEvent('Custom Event', true);
+            });
+            
+            addMemoBtn.addEventListener('click', () => {
+                recordEvent('Custom Event', true);
+            });
+            
+            voiceBtn.addEventListener('click', startVoiceRecognition);
+            
+            exportCsvBtn.addEventListener('click', exportToCSV);
+            exportTxtBtn.addEventListener('click', exportToTXT);
+            exportPdfBtn.addEventListener('click', exportToPDF);
+            
+            // Allow Enter key to add memo
+            memoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    recordEvent('Custom Event', true);
+                }
+            });
+            
+            // Modal event listeners
+            exportFirstBtn.addEventListener('click', () => {
+                exportWarningModal.style.display = 'none';
+                // Actually export the data first
+                exportToCSV();
+                // Then proceed with new session
+                if (pendingNewSession) {
+                    proceedWithNewSession(pendingNewSession.flightNumber, pendingNewSession.date);
+                }
+            });
+            
+            continueWithoutExportBtn.addEventListener('click', () => {
+                exportWarningModal.style.display = 'none';
+                if (pendingNewSession) {
+                    proceedWithNewSession(pendingNewSession.flightNumber, pendingNewSession.date);
+                }
+            });
+            
+            cancelNewSessionBtn.addEventListener('click', () => {
+                exportWarningModal.style.display = 'none';
+                pendingNewSession = null;
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === exportWarningModal) {
+                    exportWarningModal.style.display = 'none';
+                    pendingNewSession = null;
+                }
+            });
+        }
+
+        // Initialize the app
+        initApp();
+        
+        // Debug: Log initialization
+        updateDebug('App initialized successfully');
+    </script>
+</body>
+</html>
