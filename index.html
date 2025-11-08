@@ -154,6 +154,159 @@
             transform: translateY(0);
         }
         
+        .event-btn.edit-mode {
+            border: 2px dashed #1a73e8;
+            position: relative;
+        }
+        
+        .event-btn.selected {
+            background-color: #e8f0fe;
+            border: 2px solid #1a73e8;
+        }
+        
+        .edit-layout-btn {
+            background-color: #5f6368;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .edit-layout-btn:hover {
+            background-color: #3c4043;
+        }
+        
+        .edit-layout-btn.active {
+            background-color: #34a853;
+        }
+        
+        .manage-buttons-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .manage-buttons-btn:hover {
+            background-color: #0d47a1;
+        }
+        
+        .button-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .button-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            background-color: #fff;
+        }
+        
+        .button-list-item.hidden {
+            opacity: 0.4;
+        }
+        
+        .button-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .button-label-text {
+            flex: 1;
+            font-weight: 600;
+        }
+        
+        .toggle-visibility-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .toggle-visibility-btn.visible {
+            background-color: #34a853;
+            color: white;
+        }
+        
+        .add-custom-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .custom-button-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .custom-icon-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .custom-label-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .add-custom-btn {
+            background-color: #34a853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .add-custom-btn:hover {
+            background-color: #2e7d32;
+        }
+        
+        .delete-custom-btn {
+            background-color: #f28b82;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .delete-custom-btn:hover {
+            background-color: #d93025;
+        }
+        
         .event-btn i {
             font-size: 1.2rem;
             margin-bottom: 5px;
@@ -293,7 +446,7 @@
         }
         
         .log-list {
-            max-height: 300px;
+            max-height: 600px;
             overflow-y: auto;
         }
         
@@ -303,6 +456,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            gap: 10px;
         }
         
         .log-item:last-child {
@@ -315,6 +469,25 @@
             white-space: nowrap;
             margin-right: 10px;
             min-width: 70px;
+        }
+        
+        .log-content {
+            flex: 1;
+        }
+        
+        .delete-event-btn {
+            background-color: #f28b82;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .delete-event-btn:hover {
+            background-color: #d93025;
         }
         
         .log-event {
@@ -511,72 +684,10 @@
             <div class="session-stats" id="sessionStats">No events recorded</div>
         </div>
         
-        <div class="buttons-grid">
-            <button class="event-btn" data-event="Pre-Departure Safety">
-                <span>🛡️</span>
-                Pre-Departure Safety
-            </button>
-            <button class="event-btn" data-event="Boarding Clearance">
-                <span>🟢</span>
-                Boarding Clearance
-            </button>
-            <button class="event-btn" data-event="Boarding Commence">
-                <span>🚶‍♂️</span>
-                Boarding Commence
-            </button>
-            <button class="event-btn" data-event="First Pax">
-                <span>👤1️⃣</span>
-                First Pax
-            </button>
-            <button class="event-btn" data-event="Last Pax">
-                <span>👤</span>
-                Last Pax
-            </button>
-            <button class="event-btn" data-event="Boarding Completed">
-                <span>✅</span>
-                Boarding Completed
-            </button>
-            <button class="event-btn" data-event="Door Close">
-                <span>🚪</span>
-                Door Close
-            </button>
-            <button class="event-btn" data-event="Door Open">
-                <span>🚪➡️</span>
-                Door Open
-            </button>
-            <button class="event-btn" data-event="Crew Boarding">
-                <span>👨‍✈️</span>
-                Crew Boarding
-            </button>
-            <button class="event-btn" data-event="Ground Staff">
-                <span>👷‍♂️</span>
-                Ground Staff
-            </button>
-            <button class="event-btn" data-event="Engineer">
-                <span>🔧</span>
-                Engineer
-            </button>
-            <button class="event-btn" data-event="AIC">
-                <span>🛩️</span>
-                AIC
-            </button>
-            <button class="event-btn" data-event="Catering">
-                <span>🍱</span>
-                Catering
-            </button>
-            <button class="event-btn" data-event="PIC Announcement">
-                <span>📢👨‍✈️</span>
-                PIC Announcement
-            </button>
-            <button class="event-btn" data-event="Seatbelt On">
-                <span>🔴💺</span>
-                Seatbelt On
-            </button>
-            <button class="event-btn" data-event="Seatbelt Off">
-                <span>🟢💺</span>
-                Seatbelt Off
-            </button>
-        </div>
+        <button class="edit-layout-btn" id="editLayoutBtn">⚙️ Edit Layout</button>
+        <button class="manage-buttons-btn" id="manageButtonsBtn">➕ Manage Buttons</button>
+        
+        <div class="buttons-grid" id="buttonsGrid"></div>
         
         <div class="record-section">
             <button class="large-record-btn" id="recordBtn">
@@ -630,10 +741,26 @@
         </div>
     </div>
     
-    <!-- Debug Panel -->
-    <div style="background: #fff3cd; padding: 10px; margin: 10px; border-radius: 5px; font-size: 0.85rem;" id="debugPanel">
-        <strong>Debug Info:</strong>
-        <div id="debugInfo">Initializing...</div>
+    <!-- Manage Buttons Modal -->
+    <div class="modal" id="manageButtonsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-icon">🎛️</div>
+                <div class="modal-title">Manage Buttons</div>
+            </div>
+            <div class="button-list" id="buttonList"></div>
+            <div class="add-custom-section">
+                <h3 style="margin-bottom: 10px; font-size: 1rem;">Add Custom Button</h3>
+                <div class="custom-button-inputs">
+                    <input type="text" class="custom-icon-input" id="customIcon" placeholder="📌" maxlength="2">
+                    <input type="text" class="custom-label-input" id="customLabel" placeholder="Event Name">
+                </div>
+                <button class="add-custom-btn" id="addCustomButton">Add Button</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="closeManageBtn">Done</button>
+            </div>
+        </div>
     </div>
     
     <footer>
@@ -641,6 +768,26 @@
     </footer>
 
     <script>
+        // Default event buttons configuration
+        const defaultButtons = [
+            { icon: '🛡️', label: 'Pre-Departure Safety', isDefault: true, visible: true },
+            { icon: '🟢', label: 'Boarding Clearance', isDefault: true, visible: true },
+            { icon: '🚶‍♂️', label: 'Boarding Commence', isDefault: true, visible: true },
+            { icon: '👤1️⃣', label: 'First Pax', isDefault: true, visible: true },
+            { icon: '👤', label: 'Last Pax', isDefault: true, visible: true },
+            { icon: '✅', label: 'Boarding Completed', isDefault: true, visible: true },
+            { icon: '🚪', label: 'Door Close', isDefault: true, visible: true },
+            { icon: '🚪➡️', label: 'Door Open', isDefault: true, visible: true },
+            { icon: '👨‍✈️', label: 'Crew Boarding', isDefault: true, visible: true },
+            { icon: '👷‍♂️', label: 'Ground Staff', isDefault: true, visible: true },
+            { icon: '🔧', label: 'Engineer', isDefault: true, visible: true },
+            { icon: '🛩️', label: 'AIC', isDefault: true, visible: true },
+            { icon: '🍱', label: 'Catering', isDefault: true, visible: true },
+            { icon: '📢👨‍✈️', label: 'PIC Announcement', isDefault: true, visible: true },
+            { icon: '🔴💺', label: 'Seatbelt On', isDefault: true, visible: true },
+            { icon: '🟢💺', label: 'Seatbelt Off', isDefault: true, visible: true }
+        ];
+        
         // DOM Elements
         const flightNumberInput = document.getElementById('flightNumber');
         const sessionDateInput = document.getElementById('sessionDate');
@@ -650,7 +797,9 @@
         const startSessionBtn = document.getElementById('startSessionBtn');
         const currentSessionDiv = document.getElementById('currentSession');
         const sessionStatsDiv = document.getElementById('sessionStats');
-        const eventButtons = document.querySelectorAll('.event-btn');
+        const buttonsGrid = document.getElementById('buttonsGrid');
+        const editLayoutBtn = document.getElementById('editLayoutBtn');
+        const manageButtonsBtn = document.getElementById('manageButtonsBtn');
         const recordBtn = document.getElementById('recordBtn');
         const memoInput = document.getElementById('memoInput');
         const voiceBtn = document.getElementById('voiceBtn');
@@ -667,18 +816,12 @@
         const continueWithoutExportBtn = document.getElementById('continueWithoutExportBtn');
         const cancelNewSessionBtn = document.getElementById('cancelNewSessionBtn');
         
-        // Debug panel
-        const debugInfo = document.getElementById('debugInfo');
-        
-        function updateDebug(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            debugInfo.innerHTML = `[${timestamp}] ${message}<br>` + debugInfo.innerHTML;
-            // Keep only last 5 messages
-            const lines = debugInfo.innerHTML.split('<br>');
-            if (lines.length > 5) {
-                debugInfo.innerHTML = lines.slice(0, 5).join('<br>');
-            }
-        }
+        const manageButtonsModal = document.getElementById('manageButtonsModal');
+        const buttonList = document.getElementById('buttonList');
+        const customIcon = document.getElementById('customIcon');
+        const customLabel = document.getElementById('customLabel');
+        const addCustomButton = document.getElementById('addCustomButton');
+        const closeManageBtn = document.getElementById('closeManageBtn');
 
         // Set today's date as default
         const today = new Date();
@@ -692,17 +835,18 @@
         let events = [];
         let recognition = null;
         let pendingNewSession = null;
+        let buttonLayout = null;
+        let editMode = false;
+        let selectedButton = null;
 
         // Initialize the app
         function initApp() {
-            updateDebug('Starting initialization...');
             populateGmtHours();
             setDefaultTimezone();
             loadSession();
             updateUI();
             setupVoiceRecognition();
             setupEventListeners();
-            updateDebug(`Init complete. Session: ${currentSession ? currentSession.flightNumber : 'None'}, Events: ${events.length}`);
         }
 
         // Populate GMT hours dropdown (0-14)
@@ -716,19 +860,11 @@
             }
         }
 
-        // Set default timezone based on device
+        // Set default timezone based on device (GMT+8)
         function setDefaultTimezone() {
-            const now = new Date();
-            const timezoneOffset = -now.getTimezoneOffset(); // Convert to GMT+
-            const hours = Math.floor(Math.abs(timezoneOffset) / 60);
-            const minutes = Math.abs(timezoneOffset) % 60;
-            
-            // Round to nearest quarter hour
-            const roundedMinutes = Math.round(minutes / 15) * 15;
-            
-            gmtSignSelect.value = timezoneOffset >= 0 ? '+' : '-';
-            gmtHoursSelect.value = hours;
-            gmtMinutesSelect.value = roundedMinutes.toString().padStart(2, '0');
+            gmtSignSelect.value = '+';
+            gmtHoursSelect.value = 8;
+            gmtMinutesSelect.value = '00';
         }
 
         // Get current timezone object
@@ -753,6 +889,7 @@
         function loadSession() {
             const savedSession = localStorage.getItem('aviationSession');
             const savedEvents = localStorage.getItem('aviationEvents');
+            const savedLayout = localStorage.getItem('aviationButtonLayout');
             
             if (savedSession) {
                 currentSession = JSON.parse(savedSession);
@@ -767,12 +904,177 @@
             if (savedEvents) {
                 events = JSON.parse(savedEvents);
             }
+            
+            if (savedLayout) {
+                buttonLayout = JSON.parse(savedLayout);
+                // Ensure all buttons have visibility property
+                buttonLayout = buttonLayout.map(btn => ({
+                    ...btn,
+                    visible: btn.visible !== undefined ? btn.visible : true,
+                    isDefault: btn.isDefault !== undefined ? btn.isDefault : false
+                }));
+            } else {
+                buttonLayout = [...defaultButtons];
+            }
         }
 
         // Save session to localStorage
         function saveSession() {
             localStorage.setItem('aviationSession', JSON.stringify(currentSession));
             localStorage.setItem('aviationEvents', JSON.stringify(events));
+        }
+        
+        // Save button layout
+        function saveButtonLayout() {
+            localStorage.setItem('aviationButtonLayout', JSON.stringify(buttonLayout));
+        }
+        
+        // Render event buttons
+        function renderButtons() {
+            buttonsGrid.innerHTML = '';
+            buttonLayout.forEach((btn, index) => {
+                // Only render visible buttons
+                if (!btn.visible) return;
+                
+                const button = document.createElement('button');
+                button.className = 'event-btn';
+                button.dataset.event = btn.label;
+                button.dataset.index = index;
+                button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
+                
+                if (editMode) {
+                    button.classList.add('edit-mode');
+                    button.addEventListener('click', () => handleButtonSwap(index));
+                } else {
+                    button.addEventListener('click', () => recordEvent(btn.label));
+                }
+                
+                buttonsGrid.appendChild(button);
+            });
+        }
+        
+        // Handle button swapping in edit mode
+        function handleButtonSwap(index) {
+            if (selectedButton === null) {
+                // First button selected
+                selectedButton = index;
+                buttonsGrid.children[index].classList.add('selected');
+            } else {
+                // Second button selected - swap them
+                const temp = buttonLayout[selectedButton];
+                buttonLayout[selectedButton] = buttonLayout[index];
+                buttonLayout[index] = temp;
+                
+                saveButtonLayout();
+                renderButtons();
+                selectedButton = null;
+            }
+        }
+        
+        // Toggle edit mode
+        function toggleEditMode() {
+            editMode = !editMode;
+            selectedButton = null;
+            
+            if (editMode) {
+                editLayoutBtn.textContent = '✅ Done Editing';
+                editLayoutBtn.classList.add('active');
+            } else {
+                editLayoutBtn.textContent = '⚙️ Edit Layout';
+                editLayoutBtn.classList.remove('active');
+            }
+            
+            renderButtons();
+        }
+        
+        // Render button management list
+        function renderButtonList() {
+            buttonList.innerHTML = '';
+            buttonLayout.forEach((btn, index) => {
+                const item = document.createElement('div');
+                item.className = 'button-list-item' + (btn.visible ? '' : ' hidden');
+                
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'button-icon';
+                iconSpan.textContent = btn.icon;
+                
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'button-label-text';
+                labelSpan.textContent = btn.label;
+                
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-visibility-btn' + (btn.visible ? ' visible' : '');
+                toggleBtn.textContent = btn.visible ? '👁️ Visible' : '👁️ Hidden';
+                toggleBtn.addEventListener('click', () => toggleButtonVisibility(index));
+                
+                item.appendChild(iconSpan);
+                item.appendChild(labelSpan);
+                item.appendChild(toggleBtn);
+                
+                // Add delete button for custom buttons
+                if (!btn.isDefault) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-custom-btn';
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.addEventListener('click', () => deleteCustomButton(index));
+                    item.appendChild(deleteBtn);
+                }
+                
+                buttonList.appendChild(item);
+            });
+        }
+        
+        // Toggle button visibility
+        function toggleButtonVisibility(index) {
+            buttonLayout[index].visible = !buttonLayout[index].visible;
+            saveButtonLayout();
+            renderButtonList();
+            renderButtons();
+        }
+        
+        // Add custom button
+        function addCustomButtonHandler() {
+            const icon = customIcon.value.trim();
+            const label = customLabel.value.trim();
+            
+            if (!icon || !label) {
+                alert('Please enter both icon and label');
+                return;
+            }
+            
+            buttonLayout.push({
+                icon: icon,
+                label: label,
+                isDefault: false,
+                visible: true
+            });
+            
+            saveButtonLayout();
+            customIcon.value = '';
+            customLabel.value = '';
+            renderButtonList();
+            renderButtons();
+        }
+        
+        // Delete custom button
+        function deleteCustomButton(index) {
+            if (confirm(`Delete "${buttonLayout[index].label}"?`)) {
+                buttonLayout.splice(index, 1);
+                saveButtonLayout();
+                renderButtonList();
+                renderButtons();
+            }
+        }
+        
+        // Open manage buttons modal
+        function openManageButtons() {
+            renderButtonList();
+            manageButtonsModal.style.display = 'flex';
+        }
+        
+        // Close manage buttons modal
+        function closeManageButtons() {
+            manageButtonsModal.style.display = 'none';
         }
 
         // Update UI based on current state
@@ -784,10 +1086,12 @@
                 currentSessionDiv.textContent = `${currentSession.flightNumber} - ${formatDate(currentSession.date)} (Current GMT: ${formatTimezone(timezone)})`;
                 sessionStatsDiv.textContent = `${events.length} events recorded`;
             } else {
+                flightNumberInput.value = '';
                 currentSessionDiv.textContent = 'No active session';
                 sessionStatsDiv.textContent = 'No events recorded';
             }
             
+            renderButtons();
             renderEvents();
         }
 
@@ -832,11 +1136,8 @@
             const flightNumber = flightNumberInput.value.trim();
             const date = sessionDateInput.value;
             
-            updateDebug(`Start session clicked. Flight: ${flightNumber}, Date: ${date}`);
-            
             if (!flightNumber) {
                 alert('Please enter a flight number');
-                updateDebug('ERROR: No flight number entered');
                 return;
             }
             
@@ -846,7 +1147,6 @@
                 pendingNewSession = { flightNumber, date };
                 warningMessage.textContent = `You have ${events.length} events recorded for ${currentSession.flightNumber}. Starting a new session will clear this data. It's recommended to export your data first.`;
                 exportWarningModal.style.display = 'flex';
-                updateDebug('Showing warning modal');
                 return;
             }
             
@@ -864,19 +1164,21 @@
             };
             
             events = [];
+            
+            // Reset timezone to GMT+8
+            gmtSignSelect.value = '+';
+            gmtHoursSelect.value = 8;
+            gmtMinutesSelect.value = '00';
+            
             saveSession();
             updateUI();
             pendingNewSession = null;
-            updateDebug(`Session created: ${flightNumber}`);
         }
 
         // Record an event - STORE TIMEZONE WITH EVENT
         function recordEvent(eventType, isCustom = false) {
-            updateDebug(`Recording: ${eventType}`);
-            
             if (!currentSession) {
                 alert('Please start a session first');
-                updateDebug('ERROR: No active session');
                 return;
             }
             
@@ -897,14 +1199,10 @@
             memoInput.value = '';
             saveSession();
             updateUI();
-            
-            updateDebug(`Event recorded! Total: ${events.length}`);
         }
 
         // Render events to the log - USE EACH EVENT'S STORED TIMEZONE
         function renderEvents() {
-            updateDebug(`Rendering ${events.length} events`);
-            
             if (events.length === 0) {
                 logList.innerHTML = '<div class="empty-log">No events recorded yet</div>';
                 return;
@@ -919,7 +1217,6 @@
                         
                         // Check if timezone exists
                         if (!event.timezone) {
-                            updateDebug(`ERROR: Event ${index} missing timezone`);
                             event.timezone = getCurrentTimezone(); // Fix missing timezone
                         }
                         
@@ -931,7 +1228,7 @@
                         logTimeDiv.textContent = formatTime(eventTime, event.timezone);
                         
                         const logContentDiv = document.createElement('div');
-                        logContentDiv.style.flex = '1';
+                        logContentDiv.className = 'log-content';
                         
                         const logEventDiv = document.createElement('div');
                         logEventDiv.className = 'log-event';
@@ -953,14 +1250,30 @@
                         
                         logItem.appendChild(logTimeDiv);
                         logItem.appendChild(logContentDiv);
+                        
+                        // Add delete button
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-event-btn';
+                        deleteBtn.textContent = '🗑️';
+                        deleteBtn.addEventListener('click', () => deleteEvent(event.id));
+                        logItem.appendChild(deleteBtn);
+                        
                         logList.appendChild(logItem);
                     } catch (err) {
-                        updateDebug(`ERROR rendering event ${index}: ${err.message}`);
+                        console.error(`Error rendering event ${index}:`, err);
                     }
                 });
-                updateDebug(`Successfully rendered ${events.length} events`);
             } catch (err) {
-                updateDebug(`CRITICAL ERROR in renderEvents: ${err.message}`);
+                console.error('Critical error in renderEvents:', err);
+            }
+        }
+        
+        // Delete an event
+        function deleteEvent(eventId) {
+            if (confirm('Delete this event?')) {
+                events = events.filter(e => e.id !== eventId);
+                saveSession();
+                updateUI();
             }
         }
 
@@ -1011,7 +1324,10 @@
             
             let csvContent = 'Flight Number,Date,Timestamp,Event Type,Event Label,Memo,Timezone\n';
             
-            events.forEach(event => {
+            // Reverse array to show earliest to latest
+            const sortedEvents = [...events].reverse();
+            
+            sortedEvents.forEach(event => {
                 const eventTime = new Date(event.timestamp);
                 const row = [
                     currentSession.flightNumber,
@@ -1052,7 +1368,10 @@
             txtContent += `TIMESTAMP LOG:\n`;
             txtContent += `-------------\n\n`;
             
-            events.forEach(event => {
+            // Reverse array to show earliest to latest
+            const sortedEvents = [...events].reverse();
+            
+            sortedEvents.forEach(event => {
                 const eventTime = new Date(event.timestamp);
                 txtContent += `${formatTime(eventTime, event.timezone)} ${formatTimezone(event.timezone)} - ${event.eventLabel}`;
                 if (event.memo) {
@@ -1082,6 +1401,9 @@
                 alert('No events to export');
                 return;
             }
+            
+            // Reverse array to show earliest to latest
+            const sortedEvents = [...events].reverse();
             
             // Simple PDF generation using browser print
             const printWindow = window.open('', '_blank');
@@ -1121,7 +1443,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${events.map(event => {
+                            ${sortedEvents.map(event => {
                                 const eventTime = new Date(event.timestamp);
                                 return `
                                     <tr>
@@ -1150,17 +1472,13 @@
         // Setup event listeners
         function setupEventListeners() {
             startSessionBtn.addEventListener('click', startNewSession);
+            editLayoutBtn.addEventListener('click', toggleEditMode);
+            manageButtonsBtn.addEventListener('click', openManageButtons);
             
             // Timezone changes don't affect existing events, only update UI for current GMT display
             gmtSignSelect.addEventListener('change', updateUI);
             gmtHoursSelect.addEventListener('change', updateUI);
             gmtMinutesSelect.addEventListener('change', updateUI);
-            
-            eventButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    recordEvent(button.dataset.event);
-                });
-            });
             
             recordBtn.addEventListener('click', () => {
                 recordEvent('Custom Event', true);
@@ -1212,14 +1530,25 @@
                     exportWarningModal.style.display = 'none';
                     pendingNewSession = null;
                 }
+                if (e.target === manageButtonsModal) {
+                    closeManageButtons();
+                }
+            });
+            
+            // Manage buttons modal
+            addCustomButton.addEventListener('click', addCustomButtonHandler);
+            closeManageBtn.addEventListener('click', closeManageButtons);
+            
+            // Allow Enter key in custom label input
+            customLabel.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addCustomButtonHandler();
+                }
             });
         }
 
         // Initialize the app
         initApp();
-        
-        // Debug: Log initialization
-        updateDebug('App initialized successfully');
     </script>
 </body>
 </html>
