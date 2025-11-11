@@ -807,6 +807,9 @@
                     <button class="export-btn" id="exportPdfBtn">
                         <span>📄</span> PDF
                     </button>
+                    <button class="export-btn" id="copyVoyageBtn" style="background-color: #34a853; color: white;">
+                        <span>📋</span> Voyage
+                    </button>
                 </div>
             </div>
             <div class="log-list" id="logList">
@@ -914,6 +917,7 @@
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const exportTxtBtn = document.getElementById('exportTxtBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const copyVoyageBtn = document.getElementById('copyVoyageBtn');
         
         // Modal elements
         const exportWarningModal = document.getElementById('exportWarningModal');
@@ -1626,6 +1630,88 @@
             printWindow.print();
         }
 
+        // Copy for Voyage Report - formatted for auto-fill bookmarklet
+        function copyForVoyageReport() {
+            if (events.length === 0) {
+                alert('No events to copy');
+                return;
+            }
+            
+            // Find the required events
+            const crewBoarding = events.find(e => e.eventLabel === 'Crew Boarding');
+            const lastPax = events.find(e => e.eventLabel === 'Last Pax');
+            const catering = events.find(e => e.eventLabel === 'Catering');
+            const aic = events.find(e => e.eventLabel === 'AIC');
+            const boardingClearance = events.find(e => e.eventLabel === 'Boarding Clearance');
+            const boardingCommence = events.find(e => e.eventLabel === 'Boarding Commence');
+            const boardingCompleted = events.find(e => e.eventLabel === 'Boarding Completed');
+            const doorClose = events.find(e => e.eventLabel === 'Door Close');
+            
+            // Format times to HHMM (remove colons and seconds)
+            const formatToHHMM = (event) => {
+                if (!event) return '0000';
+                const eventTime = new Date(event.timestamp);
+                const timeStr = formatTime(eventTime, event.timezone);
+                return timeStr.replace(/:/g, '').substring(0, 4);
+            };
+            
+            // Create pipe-separated string
+            const voyageData = [
+                formatToHHMM(crewBoarding),
+                formatToHHMM(lastPax),
+                formatToHHMM(catering),
+                formatToHHMM(aic),
+                formatToHHMM(boardingClearance),
+                formatToHHMM(boardingCommence),
+                formatToHHMM(boardingCompleted),
+                formatToHHMM(doorClose)
+            ].join('|');
+            
+            // Copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(voyageData).then(() => {
+                    alert('✅ Copied for Voyage Report!\n\nNow:\n1. Go to voyage report form\n2. Tap "Fill Voyage Report" bookmark\n3. Paste when prompted');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    showVoyageDataModal(voyageData);
+                });
+            } else {
+                // Fallback for older browsers
+                showVoyageDataModal(voyageData);
+            }
+        }
+        
+        // Fallback: Show data in a modal for manual copy
+        function showVoyageDataModal(data) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;';
+            
+            const content = document.createElement('div');
+            content.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:90%;';
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = data;
+            textarea.style.cssText = 'width:100%;height:100px;margin:10px 0;font-family:monospace;';
+            textarea.readOnly = true;
+            
+            const instructions = document.createElement('p');
+            instructions.textContent = 'Copy this data (long-press and select all):';
+            instructions.style.fontWeight = 'bold';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Close';
+            closeBtn.style.cssText = 'background:#1a73e8;color:white;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;';
+            closeBtn.onclick = () => document.body.removeChild(modal);
+            
+            content.appendChild(instructions);
+            content.appendChild(textarea);
+            content.appendChild(closeBtn);
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            textarea.select();
+        }
+
         // Setup event listeners
         function setupEventListeners() {
             startSessionBtn.addEventListener('click', startNewSession);
@@ -1650,6 +1736,7 @@
             exportCsvBtn.addEventListener('click', exportToCSV);
             exportTxtBtn.addEventListener('click', exportToTXT);
             exportPdfBtn.addEventListener('click', exportToPDF);
+            copyVoyageBtn.addEventListener('click', copyForVoyageReport);
             
             memoInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
