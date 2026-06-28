@@ -1,0 +1,2899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICC Timestamp Logger</title>
+    <meta name="theme-color" content="#1a73e8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICC Logger">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 0;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .session-header {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .session-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .timezone-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .timezone-label {
+            font-weight: 600;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .timezone-part {
+            flex: 1;
+        }
+
+        .current-session {
+            background-color: #e8f0fe;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .current-session.active {
+            background: linear-gradient(135deg, #34a853, #2e7d32);
+            color: white;
+            animation: sessionPulse 2s infinite;
+            box-shadow: 0 0 20px rgba(52, 168, 83, 0.5);
+        }
+
+        @keyframes sessionPulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.85;
+            }
+        }
+
+        .session-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #34a853;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .session-stats {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .event-btn {
+            background-color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+        }
+
+        .event-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-btn:active {
+            transform: translateY(0);
+        }
+
+        .event-btn.edit-mode {
+            border: 2px dashed #1a73e8;
+            position: relative;
+        }
+
+        .event-btn.selected {
+            background-color: #e8f0fe;
+            border: 2px solid #1a73e8;
+        }
+
+        .event-btn i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .record-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .large-record-btn {
+            background: linear-gradient(135deg, #34a853, #2e7d32);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(52, 168, 83, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .large-record-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(52, 168, 83, 0.5);
+        }
+
+        .large-record-btn:active {
+            transform: scale(0.98);
+        }
+
+        .memo-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .memo-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .voice-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 8px;
+            width: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .voice-btn.listening {
+            background-color: #fce8e6;
+            color: #d93025;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .add-memo-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .add-memo-btn:hover {
+            background-color: #0d47a1;
+        }
+
+        .start-session-highlight {
+            animation: highlightPulse 2s infinite;
+            box-shadow: 0 0 15px rgba(26, 115, 232, 0.6);
+        }
+
+        @keyframes highlightPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(26, 115, 232, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(26, 115, 232, 0.9);
+            }
+        }
+
+        .edit-layout-btn {
+            background-color: #5f6368;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .edit-layout-btn:hover {
+            background-color: #3c4043;
+        }
+
+        .edit-layout-btn.active {
+            background-color: #34a853;
+        }
+
+        .manage-buttons-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .manage-buttons-btn:hover {
+            background-color: #0d47a1;
+        }
+
+        .clear-session-btn {
+            background-color: #d93025;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .clear-session-btn:hover {
+            background-color: #a52714;
+        }
+
+        .log-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .log-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .export-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .export-btn:hover {
+            background-color: #e8eaed;
+        }
+
+        .log-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            font-weight: 600;
+            color: #1a73e8;
+            white-space: nowrap;
+            margin-right: 10px;
+            min-width: 70px;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-event {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .log-memo {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .log-timezone {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .delete-event-btn {
+            background-color: #f28b82;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .delete-event-btn:hover {
+            background-color: #d93025;
+        }
+
+        .empty-log {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            color: #f4b400;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-message {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .modal-btn.primary {
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background-color: #0d47a1;
+        }
+
+        .modal-btn.secondary {
+            background-color: #f1f3f4;
+            color: #333;
+        }
+
+        .modal-btn.secondary:hover {
+            background-color: #e8eaed;
+        }
+
+        .modal-btn.warning {
+            background-color: #f4b400;
+            color: white;
+        }
+
+        .modal-btn.warning:hover {
+            background-color: #e0a800;
+        }
+
+        .button-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .button-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            background-color: #fff;
+        }
+
+        .button-list-item.hidden {
+            opacity: 0.4;
+        }
+
+        .button-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .button-label-text {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .toggle-visibility-btn {
+            background-color: #f1f3f4;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .toggle-visibility-btn.visible {
+            background-color: #34a853;
+            color: white;
+        }
+
+        .add-custom-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .custom-button-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .custom-icon-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .custom-label-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .add-custom-btn {
+            background-color: #34a853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .add-custom-btn:hover {
+            background-color: #2e7d32;
+        }
+
+        .delete-custom-btn {
+            background-color: #f28b82;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .delete-custom-btn:hover {
+            background-color: #d93025;
+        }
+
+        .export-format-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .export-format-btn {
+            background-color: #f1f3f4;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .export-format-btn:hover {
+            background-color: #e8f0fe;
+            border-color: #1a73e8;
+        }
+
+        .export-format-icon {
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .session-form {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .event-btn {
+                min-height: 80px;
+                font-size: 0.8rem;
+            }
+
+            .timezone-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .timezone-label {
+                margin-right: 0;
+                text-align: center;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* ── TAB BAR ── */
+        .tab-bar-wrapper {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            padding: 0 10px 0 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .tab-bar {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 4px;
+            padding: 8px 0 0 0;
+            align-items: flex-end;
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-item {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.75);
+            border: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 12px 10px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 90px;
+            max-width: 140px;
+            transition: all 0.2s;
+            position: relative;
+            white-space: nowrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tab-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .tab-item.active {
+            background: #f5f7fa;
+            color: #1a73e8;
+            font-weight: 700;
+        }
+
+        .tab-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .tab-badge {
+            background: #34a853;
+            color: white;
+            border-radius: 10px;
+            padding: 1px 5px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .tab-item.active .tab-badge {
+            background: #1a73e8;
+        }
+
+        .tab-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 0;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .tab-item.active .tab-close {
+            background: rgba(26, 115, 232, 0.2);
+            color: #1a73e8;
+        }
+
+        .tab-close:hover {
+            background: rgba(217, 48, 37, 0.7) !important;
+            color: white !important;
+        }
+
+        .tab-add-btn {
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px 8px 0 0;
+            padding: 8px 14px 10px 14px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            align-self: flex-end;
+            margin-bottom: 0;
+        }
+
+        .tab-add-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .tab-sector-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* sector colour palette — cycles through these */
+        .sc-0 {
+            background: #34a853;
+        }
+        .sc-1 {
+            background: #fbbc04;
+        }
+        .sc-2 {
+            background: #ea4335;
+        }
+        .sc-3 {
+            background: #9c27b0;
+        }
+        .sc-4 {
+            background: #ff6d00;
+        }
+        .sc-5 {
+            background: #00bcd4;
+        }
+
+        /* ══════════════════════════════════════════ THEME VARIABLES ══════════════════════════════════════════ */
+        :root,
+        [data-theme="ops"] {
+            --h-grad-a: #1a73e8;
+            --h-grad-b: #0d47a1;
+            --tab-bg: linear-gradient(135deg, #0d47a1, #1565c0);
+            --accent: #1a73e8;
+            --accent2: #0d47a1;
+            --accent3: #34a853;
+            --btn-active: #e8f0fe;
+            --rec-grad-a: #34a853;
+            --rec-grad-b: #2e7d32;
+            --body-bg: #f5f7fa;
+            --surface: #ffffff;
+            --surface2: #f8f9fa;
+            --border: #ddd;
+            --text: #333333;
+            --text2: #666666;
+            --text3: #999999;
+            --session-active-a: #34a853;
+            --session-active-b: #2e7d32;
+            --log-time-col: #1a73e8;
+            --sett-hdr-a: #1a73e8;
+            --sett-hdr-b: #0d47a1;
+            --sett-gold: #f4b400;
+            --meta-color: #1a73e8;
+        }
+
+        [data-theme="modern"] {
+            --h-grad-a: #2563eb;
+            --h-grad-b: #1e3a8a;
+            --tab-bg: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            --accent: #2563eb;
+            --accent2: #1e3a8a;
+            --accent3: #059669;
+            --btn-active: #eff6ff;
+            --rec-grad-a: #059669;
+            --rec-grad-b: #047857;
+            --body-bg: #f0f4ff;
+            --surface: #ffffff;
+            --surface2: #f8faff;
+            --border: #c7d7f7;
+            --text: #1e293b;
+            --text2: #475569;
+            --text3: #94a3b8;
+            --session-active-a: #2563eb;
+            --session-active-b: #1d4ed8;
+            --log-time-col: #2563eb;
+            --sett-hdr-a: #2563eb;
+            --sett-hdr-b: #1e3a8a;
+            --sett-gold: #f59e0b;
+            --meta-color: #1e3a8a;
+        }
+
+        [data-theme="dark"] {
+            --h-grad-a: #1a2744;
+            --h-grad-b: #0d1a33;
+            --tab-bg: linear-gradient(135deg, #0d1a33, #162040);
+            --accent: #4d8ef0;
+            --accent2: #1a2744;
+            --accent3: #34c56a;
+            --btn-active: #1e2d4a;
+            --rec-grad-a: #34c56a;
+            --rec-grad-b: #1e8a42;
+            --body-bg: #0d1525;
+            --surface: #162035;
+            --surface2: #1c2a42;
+            --border: #243350;
+            --text: #e8eef7;
+            --text2: #8fa3bc;
+            --text3: #4a6280;
+            --session-active-a: #1e6e3e;
+            --session-active-b: #145030;
+            --log-time-col: #4d8ef0;
+            --sett-hdr-a: #1a2744;
+            --sett-hdr-b: #0d1a33;
+            --sett-gold: #c9a84c;
+            --meta-color: #0d1a33;
+        }
+
+        [data-theme="midnight"] {
+            --h-grad-a: #000000;
+            --h-grad-b: #0a0a0a;
+            --tab-bg: linear-gradient(135deg, #000000, #111111);
+            --accent: #5b8dee;
+            --accent2: #1a1a2e;
+            --accent3: #00c853;
+            --btn-active: #111827;
+            --rec-grad-a: #00c853;
+            --rec-grad-b: #007a32;
+            --body-bg: #000000;
+            --surface: #0a0a0a;
+            --surface2: #111111;
+            --border: #1a1a1a;
+            --text: #f0f0f0;
+            --text2: #888888;
+            --text3: #444444;
+            --session-active-a: #004d20;
+            --session-active-b: #003314;
+            --log-time-col: #5b8dee;
+            --sett-hdr-a: #0a0a0a;
+            --sett-hdr-b: #000000;
+            --sett-gold: #c9a84c;
+            --meta-color: #000000;
+        }
+
+        /* ── THE COCKPIT THEME ─────────────────── */
+        [data-theme="cockpit"] {
+            --h-grad-a: #12182B;
+            --h-grad-b: #0A0E1A;
+            --tab-bg: linear-gradient(180deg, #0A0E1A 0%, #12182B 100%);
+            --accent: #E8A020;
+            --accent2: #0A0E1A;
+            --accent3: #00E676;
+            --btn-active: #1C2540;
+            --rec-grad-a: #E8A020;
+            --rec-grad-b: #B87010;
+            --body-bg: #0A0E1A;
+            --surface: #12182B;
+            --surface2: #1C2540;
+            --border: #2A3560;
+            --text: #F0EDE6;
+            --text2: #7A8BA0;
+            --text3: #3A4A60;
+            --session-active-a: #1A3A20;
+            --session-active-b: #0D2010;
+            --log-time-col: #E8A020;
+            --sett-hdr-a: #12182B;
+            --sett-hdr-b: #0A0E1A;
+            --sett-gold: #E8A020;
+            --meta-color: #0A0E1A;
+        }
+
+        /* ══════════════════════════════════════════ APPLY THEME VARS TO EXISTING ELEMENTS ══════════════════════════════════════════ */
+        body {
+            background-color: var(--body-bg) !important;
+            color: var(--text) !important;
+            transition: background-color 0.25s, color 0.25s;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--h-grad-a), var(--h-grad-b)) !important;
+        }
+
+        .tab-bar-wrapper {
+            background: var(--tab-bg) !important;
+        }
+
+        .session-header,
+        .record-section,
+        .log-section {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
+        }
+
+        .session-stats {
+            background-color: var(--surface2) !important;
+            color: var(--text2) !important;
+        }
+
+        input,
+        select,
+        textarea {
+            background-color: var(--surface2) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+
+        input::placeholder {
+            color: var(--text3) !important;
+        }
+
+        label {
+            color: var(--text) !important;
+        }
+
+        .event-btn {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .event-btn.selected {
+            background-color: var(--btn-active) !important;
+            border-color: var(--accent) !important;
+        }
+
+        .event-btn.edit-mode {
+            border-color: var(--accent) !important;
+        }
+
+        .large-record-btn {
+            background: linear-gradient(135deg, var(--rec-grad-a), var(--rec-grad-b)) !important;
+        }
+
+        .add-memo-btn {
+            background-color: var(--accent) !important;
+        }
+
+        .add-memo-btn:hover {
+            background-color: var(--accent2) !important;
+        }
+
+        .manage-buttons-btn {
+            background-color: var(--accent) !important;
+        }
+
+        .manage-buttons-btn:hover {
+            background-color: var(--accent2) !important;
+        }
+
+        .log-time {
+            color: var(--log-time-col) !important;
+        }
+
+        .log-event {
+            color: var(--text) !important;
+        }
+
+        .log-memo {
+            color: var(--text2) !important;
+        }
+
+        .log-timezone {
+            color: var(--text3) !important;
+        }
+
+        .log-item {
+            border-bottom-color: var(--border) !important;
+        }
+
+        .empty-log {
+            color: var(--text3) !important;
+        }
+
+        .log-title {
+            color: var(--text) !important;
+        }
+
+        .current-session.active {
+            background: linear-gradient(135deg, var(--session-active-a), var(--session-active-b)) !important;
+        }
+
+        .session-indicator {
+            background-color: var(--accent3) !important;
+        }
+
+        .voice-btn {
+            background-color: var(--surface2) !important;
+        }
+
+        .export-btn {
+            background-color: var(--surface2) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border);
+        }
+
+        .export-btn:hover {
+            background-color: var(--btn-active) !important;
+        }
+
+        /* Cockpit special: amber pulse on record button */
+        [data-theme="cockpit"] .large-record-btn {
+            box-shadow: 0 0 20px rgba(232, 160, 32, 0.4) !important;
+        }
+
+        [data-theme="cockpit"] .large-record-btn:hover {
+            box-shadow: 0 0 32px rgba(232, 160, 32, 0.7) !important;
+        }
+
+        [data-theme="cockpit"] .current-session.active {
+            background: linear-gradient(135deg, #1A3A20, #0D2010) !important;
+            border: 1px solid #00E676 !important;
+            box-shadow: 0 0 16px rgba(0, 230, 118, 0.2) !important;
+        }
+
+        [data-theme="cockpit"] .session-indicator {
+            background-color: #00E676 !important;
+        }
+
+        [data-theme="cockpit"] .tab-item.active {
+            background: #1C2540 !important;
+            color: #E8A020 !important;
+            border-top: 2px solid #E8A020;
+        }
+
+        [data-theme="cockpit"] .tab-badge {
+            background: #E8A020 !important;
+            color: #0A0E1A !important;
+        }
+
+        [data-theme="cockpit"] .event-btn:hover {
+            border: 1px solid #E8A020;
+            box-shadow: 0 0 8px rgba(232, 160, 32, 0.3) !important;
+        }
+
+        [data-theme="cockpit"] .manage-buttons-btn,
+        [data-theme="cockpit"] .add-memo-btn {
+            background-color: #E8A020 !important;
+            color: #0A0E1A !important;
+        }
+
+        [data-theme="cockpit"] .copy-voyage-btn-override {
+            background-color: #00E676 !important;
+            color: #0A0E1A !important;
+        }
+
+        /* ══════════════════════════════════════════ SETTINGS GEAR BUTTON IN HEADER ══════════════════════════════════════════ */
+        .hdr-gear-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.65);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background 0.15s, color 0.15s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .hdr-gear-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        /* ══════════════════════════════════════════ SETTINGS BOTTOM SHEET ══════════════════════════════════════════ */
+        .sett-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .sett-overlay.open {
+            display: flex;
+        }
+
+        .sett-sheet {
+            background: var(--surface);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 18px 18px 0 0;
+            max-height: 92vh;
+            overflow-y: auto;
+            box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.35);
+            animation: sheetUp 0.28s cubic-bezier(0.34, 1.06, 0.64, 1);
+        }
+
+        @keyframes sheetUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0.6;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .sett-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 12px auto 0;
+        }
+
+        .sett-hdr {
+            background: linear-gradient(135deg, var(--sett-hdr-a), var(--sett-hdr-b));
+            padding: 16px 18px 14px;
+            margin: 10px 12px 0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sett-hdr-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.04em;
+        }
+
+        .sett-hdr-sub {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin-top: 2px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .sett-close-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .sett-close-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: white;
+        }
+
+        .sett-body {
+            padding: 16px 14px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* Section blocks */
+        .sett-section {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .sett-section-hdr {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text2);
+        }
+
+        .sett-section-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sett-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .sett-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .sett-sub {
+            font-size: 0.72rem;
+            color: var(--text3);
+            margin-top: 1px;
+        }
+
+        /* Theme grid */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .theme-btn {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 9px;
+            padding: 10px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.18s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-btn.active {
+            border-color: var(--accent);
+            background: var(--btn-active);
+        }
+
+        .theme-swatch {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+
+        .theme-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .theme-sub {
+            font-size: 0.68rem;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        /* Segmented control */
+        .seg-ctrl {
+            display: flex;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        .seg-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 7px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .seg-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .seg-btn:not(:last-child) {
+            border-right: 1px solid var(--border);
+        }
+
+        /* Storage chip */
+        .storage-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+
+        .storage-chip strong {
+            color: var(--text);
+        }
+
+        /* Danger zone */
+        .sett-danger-btn {
+            background: transparent;
+            border: 1.5px solid #d93025;
+            color: #d93025;
+            border-radius: 7px;
+            padding: 9px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100%;
+            letter-spacing: 0.04em;
+        }
+
+        .sett-danger-btn:hover {
+            background: #d93025;
+            color: white;
+        }
+
+        /* About section */
+        .about-block {
+            font-size: 0.8rem;
+            color: var(--text2);
+            line-height: 1.8;
+        }
+
+        .about-block strong {
+            color: var(--text);
+        }
+
+        .about-block .byline {
+            display: inline-block;
+            margin-top: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+        }
+
+        /* Meta theme color update handled by JS */
+
+        /* ══════════════════════════════════════════ 2-COLUMN BUTTON GRID OVERRIDE ══════════════════════════════════════════ */
+        body.grid-2col .buttons-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        body.grid-2col .event-btn {
+            min-height: 64px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div>
+                <h1 style="font-size:1.8rem;margin-bottom:2px;">ICC Timestamp Logger</h1>
+                <p class="subtitle">by *2100551*</p>
+            </div>
+            <button class="hdr-gear-btn" id="settingsOpenBtn" title="Settings">⚙️</button>
+        </div>
+    </header>
+    <!-- TAB BAR -->
+    <div class="tab-bar-wrapper">
+        <div class="tab-bar" id="tabBar">
+            <!-- tabs injected by JS -->
+            <button class="tab-add-btn" id="tabAddBtn" title="New sector">＋</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="session-header">
+            <div class="session-form">
+                <div class="form-group">
+                    <label for="flightNumber">Flight Number</label>
+                    <input type="text" id="flightNumber" placeholder="e.g., BA123">
+                </div>
+                <div class="form-group">
+                    <label for="sessionDate">Date</label>
+                    <input type="date" id="sessionDate">
+                </div>
+            </div>
+
+            <div class="timezone-selector">
+                <div class="timezone-label">GMT Offset:</div>
+                <select class="timezone-part" id="gmtSign">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                </select>
+                <select class="timezone-part" id="gmtHours">
+                    <!-- Hours 0-14 will be populated by JavaScript -->
+                </select>
+                <select class="timezone-part" id="gmtMinutes">
+                    <option value="00">:00</option>
+                    <option value="15">:15</option>
+                    <option value="30">:30</option>
+                    <option value="45">:45</option>
+                </select>
+            </div>
+
+            <button class="add-memo-btn" id="startSessionBtn" style="width: 100%;">Start New Session</button>
+            <div class="current-session" id="currentSession">
+                <span style="color: #d93025; font-weight: bold;">⚠️ NO SESSION ACTIVE</span><br>
+                <span style="font-size: 0.9rem;">Click "Start New Session" above</span>
+            </div>
+            <div class="session-stats" id="sessionStats">No events recorded</div>
+        </div>
+
+        <button class="edit-layout-btn" id="editLayoutBtn">⚙️ Edit Layout</button>
+        <button class="manage-buttons-btn" id="manageButtonsBtn">➕ Manage Buttons</button>
+        <button class="clear-session-btn" id="clearSessionBtn">🗑️ Clear Session</button>
+
+        <div class="buttons-grid" id="buttonsGrid"></div>
+
+        <div class="record-section">
+            <button class="large-record-btn" id="recordBtn">
+                <span>⏱️</span>
+                RECORD
+            </button>
+
+            <div class="memo-section">
+                <input type="text" class="memo-input" id="memoInput" placeholder="Add a memo...">
+                <button class="voice-btn" id="voiceBtn">🎤</button>
+            </div>
+            <button class="add-memo-btn" id="addMemoBtn">Add Custom Event</button>
+        </div>
+
+        <div class="log-section">
+            <div class="log-header">
+                <div class="log-title">Event Log</div>
+                <div class="export-buttons">
+                    <button class="export-btn" id="exportCsvBtn">
+                        <span>📊</span> CSV
+                    </button>
+                    <button class="export-btn" id="exportTxtBtn">
+                        <span>📝</span> TXT
+                    </button>
+                    <button class="export-btn" id="exportPdfBtn">
+                        <span>📄</span> PDF
+                    </button>
+                    <button class="export-btn" id="copyVoyageBtn" style="background-color: #34a853; color: white;">
+                        <span>📋</span> Voyage
+                    </button>
+                </div>
+            </div>
+            <div class="log-list" id="logList">
+                <div class="empty-log">No events recorded yet</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Warning Modal -->
+    <div class="modal" id="exportWarningModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">⚠️</div>
+                <div class="modal-title">Export Recommended</div>
+            </div>
+            <div class="modal-message" id="warningMessage">
+                You have events recorded in your current session. Starting a new session will clear this data. Choose a format to export:
+            </div>
+            <div class="export-format-options" id="exportFormatOptions">
+                <button class="export-format-btn" data-format="csv">
+                    <span class="export-format-icon">📊</span>
+                    <span>Export as CSV</span>
+                </button>
+                <button class="export-format-btn" data-format="txt">
+                    <span class="export-format-icon">📝</span>
+                    <span>Export as TXT</span>
+                </button>
+                <button class="export-format-btn" data-format="pdf">
+                    <span class="export-format-icon">📄</span>
+                    <span>Export as PDF</span>
+                </button>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn warning" id="continueWithoutExportBtn">Continue Without Export</button>
+                <button class="modal-btn secondary" id="cancelNewSessionBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Buttons Modal -->
+    <div class="modal" id="manageButtonsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-icon">🎛️</div>
+                <div class="modal-title">Manage Buttons</div>
+            </div>
+            <div class="button-list" id="buttonList"></div>
+            <div class="add-custom-section">
+                <h3 style="margin-bottom: 10px; font-size: 1rem;">Add Custom Button</h3>
+                <div class="custom-button-inputs">
+                    <input type="text" class="custom-icon-input" id="customIcon" placeholder="📌" maxlength="2">
+                    <input type="text" class="custom-label-input" id="customLabel" placeholder="Event Name">
+                </div>
+                <button class="add-custom-btn" id="addCustomButton">Add Button</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" id="closeManageBtn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════ SETTINGS BOTTOM SHEET ════════ -->
+    <div class="sett-overlay" id="settOverlay">
+        <div class="sett-sheet" id="settSheet">
+            <div class="sett-handle"></div>
+            <div class="sett-hdr">
+                <div>
+                    <div class="sett-hdr-title">⚙️ Settings</div>
+                    <div class="sett-hdr-sub">ICC Timestamp Logger</div>
+                </div>
+                <button class="sett-close-btn" id="settCloseBtn">✕</button>
+            </div>
+            <div class="sett-body">
+                <!-- THEME -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">🎨 Theme</div>
+                    <div class="sett-section-body">
+                        <div class="theme-grid" id="themeGrid">
+                            <button class="theme-btn" data-theme="ops" onclick="applyTheme('ops')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#1a73e8,#34a853)"></div>
+                                <div class="theme-name">Operations</div>
+                                <div class="theme-sub">Blue · Green</div>
+                            </button>
+                            <button class="theme-btn" data-theme="cockpit" onclick="applyTheme('cockpit')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#0A0E1A,#E8A020)"></div>
+                                <div class="theme-name">✦ Cockpit</div>
+                                <div class="theme-sub">Instrument · Amber</div>
+                            </button>
+                            <button class="theme-btn" data-theme="modern" onclick="applyTheme('modern')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#2563eb,#f59e0b)"></div>
+                                <div class="theme-name">Modern</div>
+                                <div class="theme-sub">Blue · Amber</div>
+                            </button>
+                            <button class="theme-btn" data-theme="dark" onclick="applyTheme('dark')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#1a2744,#34c56a)"></div>
+                                <div class="theme-name">Dark</div>
+                                <div class="theme-sub">Navy · Teal</div>
+                            </button>
+                            <button class="theme-btn" data-theme="midnight" onclick="applyTheme('midnight')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#000000,#5b8dee)"></div>
+                                <div class="theme-name">Midnight</div>
+                                <div class="theme-sub">OLED Black</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- LAYOUT -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">🔲 Layout</div>
+                    <div class="sett-section-body">
+                        <div class="sett-row">
+                            <div>
+                                <div class="sett-label">Button grid columns</div>
+                                <div class="sett-sub">2-col easier on one hand · 4-col fits more</div>
+                            </div>
+                            <div class="seg-ctrl">
+                                <button class="seg-btn" id="grid2Btn" onclick="setGridCols(2)">2</button>
+                                <button class="seg-btn active" id="grid4Btn" onclick="setGridCols(4)">4</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- DEFAULT TIMEZONE -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">🕐 Default Timezone</div>
+                    <div class="sett-section-body">
+                        <div class="sett-row">
+                            <div>
+                                <div class="sett-label">Home timezone</div>
+                                <div class="sett-sub">Pre-filled when you start a new session</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-size:0.85rem;font-weight:600;color:var(--text2);">GMT</span>
+                            <select id="settTzSign" style="padding:6px 8px;border-radius:5px;font-size:0.85rem;width:60px;">
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                            </select>
+                            <select id="settTzHours" style="padding:6px 8px;border-radius:5px;font-size:0.85rem;width:70px;">
+                            </select>
+                            <select id="settTzMinutes" style="padding:6px 8px;border-radius:5px;font-size:0.85rem;width:70px;">
+                                <option value="00">:00</option>
+                                <option value="15">:15</option>
+                                <option value="30">:30</option>
+                                <option value="45">:45</option>
+                            </select>
+                            <button onclick="saveDefaultTimezone()" style="background:var(--accent);color:white;border:none;border-radius:6px;padding:7px 14px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;">Save</button>
+                        </div>
+                        <div id="tzSavedMsg" style="display:none;font-size:0.75rem;color:var(--accent3);font-weight:600;">✓ Default timezone saved</div>
+                    </div>
+                </div>
+                <!-- STORAGE -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">🗄️ Storage</div>
+                    <div class="sett-section-body">
+                        <div class="storage-chip" id="storageInfo">Calculating…</div>
+                        <button class="sett-danger-btn" onclick="clearAllData()">🗑️ Clear All Data &amp; Sessions</button>
+                    </div>
+                </div>
+                <!-- ABOUT -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">ℹ️ About</div>
+                    <div class="sett-section-body">
+                        <div class="about-block">
+                            <strong>ICC Timestamp Logger v2</strong><br>
+                            Real-time event timestamping tool for supervisory cabin crew.<br>
+                            Records boarding milestones, crew events, and ground ops with per-event timezone capture across multiple flight sectors.<br><br>
+                            Built for Malaysia Airlines operations.<br>
+                            Works fully offline · No data leaves your device.<br>
+                            Export to CSV · TXT · PDF · Voyage Report format.<br><br>
+                            <span class="byline">✦ by *2100551*</span>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /sett-body -->
+        </div><!-- /sett-sheet -->
+    </div><!-- /sett-overlay -->
+
+    <footer>
+        <p>ICC Timestamp Logger, 7/11/25 | Works Offline | save the trees | *2100551*</p>
+    </footer>
+
+    <script>
+        // ═══════════════════════════════════════════════════
+        // MULTI-SESSION CONFIG
+        // ═══════════════════════════════════════════════════
+        const SECTOR_COLORS = ['sc-0', 'sc-1', 'sc-2', 'sc-3', 'sc-4', 'sc-5'];
+        const defaultButtons = [
+            { icon: '🛡️', label: 'Pre-Departure Safety', isDefault: true, visible: true },
+            { icon: '🟢', label: 'Boarding Clearance', isDefault: true, visible: true },
+            { icon: '🚶‍♂️', label: 'Boarding Commence', isDefault: true, visible: true },
+            { icon: '👤1️⃣', label: 'First Pax', isDefault: true, visible: true },
+            { icon: '👤', label: 'Last Pax', isDefault: true, visible: true },
+            { icon: '✅', label: 'Boarding Completed', isDefault: true, visible: true },
+            { icon: '🚪', label: 'Door Close', isDefault: true, visible: true },
+            { icon: '🚪➡️', label: 'Door Open', isDefault: true, visible: true },
+            { icon: '👨‍✈️', label: 'Crew Boarding', isDefault: true, visible: true },
+            { icon: '👷‍♂️', label: 'Ground Staff', isDefault: true, visible: true },
+            { icon: '🔧', label: 'Engineer', isDefault: true, visible: true },
+            { icon: '🛩️', label: 'AIC', isDefault: true, visible: true },
+            { icon: '🍱', label: 'Catering', isDefault: true, visible: true },
+            { icon: '📢👨‍✈️', label: 'PIC Announcement', isDefault: true, visible: true },
+            { icon: '🔴💺', label: 'Seatbelt On', isDefault: true, visible: true },
+            { icon: '🟢💺', label: 'Seatbelt Off', isDefault: true, visible: true }
+        ];
+
+        // ═══════════════════════════════════════════════════
+        // DOM REFS
+        // ═══════════════════════════════════════════════════
+        const flightNumberInput = document.getElementById('flightNumber');
+        const sessionDateInput = document.getElementById('sessionDate');
+        const gmtSignSelect = document.getElementById('gmtSign');
+        const gmtHoursSelect = document.getElementById('gmtHours');
+        const gmtMinutesSelect = document.getElementById('gmtMinutes');
+        const startSessionBtn = document.getElementById('startSessionBtn');
+        const currentSessionDiv = document.getElementById('currentSession');
+        const sessionStatsDiv = document.getElementById('sessionStats');
+        const buttonsGrid = document.getElementById('buttonsGrid');
+        const editLayoutBtn = document.getElementById('editLayoutBtn');
+        const manageButtonsBtn = document.getElementById('manageButtonsBtn');
+        const clearSessionBtn = document.getElementById('clearSessionBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const memoInput = document.getElementById('memoInput');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const addMemoBtn = document.getElementById('addMemoBtn');
+        const logList = document.getElementById('logList');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const exportTxtBtn = document.getElementById('exportTxtBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const copyVoyageBtn = document.getElementById('copyVoyageBtn');
+        const tabBar = document.getElementById('tabBar');
+        const tabAddBtn = document.getElementById('tabAddBtn');
+        const exportWarningModal = document.getElementById('exportWarningModal');
+        const warningMessage = document.getElementById('warningMessage');
+        const exportFormatOptions = document.getElementById('exportFormatOptions');
+        const continueWithoutExportBtn = document.getElementById('continueWithoutExportBtn');
+        const cancelNewSessionBtn = document.getElementById('cancelNewSessionBtn');
+        const manageButtonsModal = document.getElementById('manageButtonsModal');
+        const buttonList = document.getElementById('buttonList');
+        const customIcon = document.getElementById('customIcon');
+        const customLabel = document.getElementById('customLabel');
+        const addCustomButton = document.getElementById('addCustomButton');
+        const closeManageBtn = document.getElementById('closeManageBtn');
+
+        // ═══════════════════════════════════════════════════
+        // APP STATE — multi-session
+        // ═══════════════════════════════════════════════════
+        /* storage shape: icc_sessions → [ { id, flightNumber, date, timezone, createdAt, colorIdx }, … ]
+           icc_events_<id> → [ …event objects… ]
+           icc_active_id → "<id>"
+           aviationButtonLayout → (unchanged) */
+        let sessions = []; // all session meta objects
+        let activeId = null; // currently visible session id
+        let events = []; // events for active session (mirror of storage)
+        let recognition = null;
+        let buttonLayout = null;
+        let editMode = false;
+        let selectedButton = null;
+        let pendingAction = null; // for export-warning modal
+
+        // ── helpers ──────────────────────────────────────────
+        function genId() {
+            return 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        }
+
+        function activeSession() {
+            return sessions.find(s => s.id === activeId) || null;
+        }
+
+        // ── storage ──────────────────────────────────────────
+        function saveSessions() {
+            localStorage.setItem('icc_sessions', JSON.stringify(sessions));
+            localStorage.setItem('icc_active_id', activeId || '');
+        }
+
+        function saveEvents() {
+            if (!activeId) return;
+            localStorage.setItem('icc_events_' + activeId, JSON.stringify(events));
+        }
+
+        function loadEventsFor(id) {
+            const raw = localStorage.getItem('icc_events_' + id);
+            return raw ? JSON.parse(raw) : [];
+        }
+
+        function deleteEventsFor(id) {
+            localStorage.removeItem('icc_events_' + id);
+        }
+
+        function saveButtonLayout() {
+            localStorage.setItem('aviationButtonLayout', JSON.stringify(buttonLayout));
+        }
+
+        // ── init ─────────────────────────────────────────────
+        function initApp() {
+            populateGmtHours();
+            setDefaultDate();
+            loadAll();
+            setupVoiceRecognition();
+            setupEventListeners();
+            renderTabBar();
+            updateUI();
+        }
+
+        function loadAll() {
+            // load sessions
+            const rawSessions = localStorage.getItem('icc_sessions');
+            if (rawSessions) {
+                sessions = JSON.parse(rawSessions);
+            } else {
+                // migrate old single-session data if it exists
+                const oldSession = localStorage.getItem('aviationSession');
+                const oldEvents = localStorage.getItem('aviationEvents');
+                if (oldSession) {
+                    const os = JSON.parse(oldSession);
+                    const id = genId();
+                    sessions = [{
+                        id,
+                        flightNumber: os.flightNumber,
+                        date: os.date,
+                        timezone: os.timezone || defaultTimezoneObj(),
+                        createdAt: os.createdAt || new Date().toISOString(),
+                        colorIdx: 0
+                    }];
+                    if (oldEvents) {
+                        localStorage.setItem('icc_events_' + id, oldEvents);
+                    }
+                    localStorage.removeItem('aviationSession');
+                    localStorage.removeItem('aviationEvents');
+                    activeId = id;
+                    saveSessions();
+                } else {
+                    sessions = [];
+                    activeId = null;
+                }
+            }
+
+            // restore active tab
+            const savedActive = localStorage.getItem('icc_active_id');
+            if (savedActive && sessions.find(s => s.id === savedActive)) {
+                activeId = savedActive;
+            } else if (sessions.length > 0) {
+                activeId = sessions[sessions.length - 1].id;
+            }
+
+            // load events for active session
+            events = activeId ? loadEventsFor(activeId) : [];
+
+            // restore timezone selectors from active session
+            const sess = activeSession();
+            if (sess && sess.timezone) {
+                gmtSignSelect.value = sess.timezone.sign;
+                gmtHoursSelect.value = sess.timezone.hours;
+                gmtMinutesSelect.value = sess.timezone.minutes.toString().padStart(2, '0');
+            } else {
+                setDefaultTimezone();
+            }
+
+            // button layout
+            const rawLayout = localStorage.getItem('aviationButtonLayout');
+            if (rawLayout) {
+                buttonLayout = JSON.parse(rawLayout).map(btn => ({
+                    ...btn,
+                    visible: btn.visible !== undefined ? btn.visible : true,
+                    isDefault: btn.isDefault !== undefined ? btn.isDefault : false
+                }));
+            } else {
+                buttonLayout = [...defaultButtons];
+            }
+        }
+
+        // ── tab switching ─────────────────────────────────────
+        function switchToSession(id) {
+            if (id === activeId) return;
+            // save current events first
+            saveEvents();
+            activeId = id;
+            events = loadEventsFor(id);
+            const sess = activeSession();
+            if (sess && sess.timezone) {
+                gmtSignSelect.value = sess.timezone.sign;
+                gmtHoursSelect.value = sess.timezone.hours;
+                gmtMinutesSelect.value = sess.timezone.minutes.toString().padStart(2, '0');
+            }
+            saveSessions();
+            renderTabBar();
+            updateUI();
+        }
+
+        // ── create new blank tab (no session started yet) ─────
+        function addBlankTab() {
+            // just clear the form and show the "start session" prompt
+            // we do NOT create a session object yet — that happens on "Start New Session"
+            saveEvents();
+            activeId = null;
+            events = [];
+            flightNumberInput.value = '';
+            setDefaultDate();
+            setDefaultTimezone();
+            saveSessions();
+            renderTabBar();
+            updateUI();
+        }
+
+        // ── close / delete a tab ──────────────────────────────
+        function closeTab(id, e) {
+            e.stopPropagation();
+            const sess = sessions.find(s => s.id === id);
+            const evts = loadEventsFor(id);
+            const label = sess ? sess.flightNumber : 'this session';
+            const msg = evts.length > 0 ?
+                `Delete ${label} with ${evts.length} events? This cannot be undone.` :
+                `Delete ${label}?`;
+            if (!confirm(msg)) return;
+
+            deleteEventsFor(id);
+            sessions = sessions.filter(s => s.id !== id);
+            if (activeId === id) {
+                activeId = sessions.length > 0 ? sessions[sessions.length - 1].id : null;
+                events = activeId ? loadEventsFor(activeId) : [];
+            }
+            saveSessions();
+            renderTabBar();
+            updateUI();
+        }
+
+        // ── render tab bar ────────────────────────────────────
+        function renderTabBar() {
+            // remove all tab-items but keep the + button
+            tabBar.querySelectorAll('.tab-item').forEach(t => t.remove());
+
+            sessions.forEach((sess, idx) => {
+                const evtCount = loadEventsFor(sess.id).length;
+                const colorClass = SECTOR_COLORS[sess.colorIdx % SECTOR_COLORS.length];
+                const shortDate = formatShortDate(sess.date);
+                const isActive = sess.id === activeId;
+
+                const tab = document.createElement('button');
+                tab.className = 'tab-item' + (isActive ? ' active' : '');
+                tab.title = sess.flightNumber + ' · ' + shortDate;
+                tab.innerHTML = `
+                <span class="tab-sector-dot ${colorClass}"></span>
+                <span class="tab-label">${sess.flightNumber}<br><span style="font-size:0.68rem;font-weight:400;opacity:0.8">${shortDate}</span></span>
+                ${evtCount > 0 ? `<span class="tab-badge">${evtCount}</span>` : ''}
+                <button class="tab-close" title="Delete sector">✕</button>
+              `;
+                tab.querySelector('.tab-close').addEventListener('click', (e) => closeTab(sess.id, e));
+                tab.addEventListener('click', () => switchToSession(sess.id));
+                tabBar.insertBefore(tab, tabAddBtn);
+            });
+
+            // if activeId is null (blank new-tab state), show a ghost tab
+            if (activeId === null) {
+                const ghost = document.createElement('button');
+                ghost.className = 'tab-item active';
+                ghost.innerHTML = `<span class="tab-label">New sector</span>`;
+                tabBar.insertBefore(ghost, tabAddBtn);
+            }
+
+            // scroll active tab into view
+            const activeTab = tabBar.querySelector('.tab-item.active');
+            if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+        }
+
+        // ── update live tab label while typing flight number ──
+        function liveUpdateTabLabel() {
+            if (activeId === null) return;
+            const sess = activeSession();
+            if (!sess) return;
+            const typed = flightNumberInput.value.trim().toUpperCase();
+            if (typed && typed !== sess.flightNumber) {
+                sess.flightNumber = typed;
+                saveSessions();
+                renderTabBar();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════
+        // SESSION MANAGEMENT
+        // ═══════════════════════════════════════════════════
+        function startNewSession() {
+            const flightNumber = flightNumberInput.value.trim().toUpperCase();
+            const date = sessionDateInput.value;
+            if (!flightNumber) {
+                alert('Please enter a flight number');
+                return;
+            }
+
+            // if current tab already has an active session with events, warn
+            if (activeId && events.length > 0) {
+                pendingAction = { type: 'newSession', flightNumber, date };
+                warningMessage.textContent =
+                    `You have ${events.length} events recorded. Starting a new session on this tab will clear them. Export first?`;
+                exportWarningModal.style.display = 'flex';
+                return;
+            }
+
+            proceedWithNewSession(flightNumber, date);
+        }
+
+        function proceedWithNewSession(flightNumber, date) {
+            const tz = getCurrentTimezone();
+            if (activeId) {
+                // update the existing session meta
+                const sess = activeSession();
+                sess.flightNumber = flightNumber;
+                sess.date = date;
+                sess.timezone = tz;
+                sess.createdAt = new Date().toISOString();
+            } else {
+                // create new session from blank tab
+                const colorIdx = sessions.length % SECTOR_COLORS.length;
+                const newSess = {
+                    id: genId(),
+                    flightNumber,
+                    date,
+                    timezone: tz,
+                    createdAt: new Date().toISOString(),
+                    colorIdx
+                };
+                sessions.push(newSess);
+                activeId = newSess.id;
+            }
+            events = [];
+            saveEvents();
+            saveSessions();
+            renderTabBar();
+            updateUI();
+            pendingAction = null;
+        }
+
+        function clearSession() {
+            if (!activeId) {
+                alert('No active session to clear.');
+                return;
+            }
+            const sess = activeSession();
+            if (events.length > 0) {
+                if (!confirm(`Clear all ${events.length} events for ${sess.flightNumber}? Consider exporting first.`)) return;
+            } else {
+                if (!confirm(`Clear session ${sess.flightNumber}?`)) return;
+            }
+
+            events = [];
+            saveEvents();
+            // remove session, switch to another
+            deleteEventsFor(activeId);
+            sessions = sessions.filter(s => s.id !== activeId);
+            activeId = sessions.length > 0 ? sessions[sessions.length - 1].id : null;
+            events = activeId ? loadEventsFor(activeId) : [];
+            flightNumberInput.value = '';
+            setDefaultDate();
+            setDefaultTimezone();
+            saveSessions();
+            renderTabBar();
+            updateUI();
+        }
+
+        // ═══════════════════════════════════════════════════
+        // TIMEZONE HELPERS
+        // ═══════════════════════════════════════════════════
+        function defaultTimezoneObj() {
+            return { sign: '+', hours: 8, minutes: 0, totalOffsetMinutes: 480 };
+        }
+
+        function setDefaultTimezone() {
+            gmtSignSelect.value = '+';
+            gmtHoursSelect.value = 8;
+            gmtMinutesSelect.value = '00';
+        }
+
+        function getCurrentTimezone() {
+            return {
+                sign: gmtSignSelect.value,
+                hours: parseInt(gmtHoursSelect.value),
+                minutes: parseInt(gmtMinutesSelect.value),
+                totalOffsetMinutes: calculateTotalOffsetMinutes()
+            };
+        }
+
+        function calculateTotalOffsetMinutes() {
+            const sign = gmtSignSelect.value === '+' ? 1 : -1;
+            const hours = parseInt(gmtHoursSelect.value);
+            const minutes = parseInt(gmtMinutesSelect.value);
+            return sign * (hours * 60 + minutes);
+        }
+
+        function formatTimezone(tz) {
+            return `GMT${tz.sign}${tz.hours}:${tz.minutes.toString().padStart(2, '0')}`;
+        }
+
+        // ═══════════════════════════════════════════════════
+        // DATE / TIME HELPERS
+        // ═══════════════════════════════════════════════════
+        function populateGmtHours() {
+            gmtHoursSelect.innerHTML = '';
+            for (let i = 0; i <= 14; i++) {
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = i.toString().padStart(2, '0');
+                gmtHoursSelect.appendChild(o);
+            }
+        }
+
+        function setDefaultDate() {
+            const t = new Date();
+            const y = t.getFullYear();
+            const m = String(t.getMonth() + 1).padStart(2, '0');
+            const d = String(t.getDate()).padStart(2, '0');
+            sessionDateInput.value = `${y}-${m}-${d}`;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'short',
+                day: 'numeric' });
+        }
+
+        function formatShortDate(dateString) {
+            if (!dateString) return '';
+            const d = new Date(dateString + 'T00:00:00');
+            return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
+        }
+
+        function formatTime(date, timezone) {
+            let totalMinutes = date.getUTCHours() * 60 + date.getUTCMinutes();
+            totalMinutes += timezone.totalOffsetMinutes;
+            if (totalMinutes < 0) totalMinutes += 1440;
+            if (totalMinutes >= 1440) totalMinutes -= 1440;
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            const s = date.getUTCSeconds();
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        // ═══════════════════════════════════════════════════
+        // UI UPDATE
+        // ═══════════════════════════════════════════════════
+        function updateUI() {
+            const sess = activeSession();
+            if (sess) {
+                flightNumberInput.value = sess.flightNumber;
+                sessionDateInput.value = sess.date;
+                currentSessionDiv.className = 'current-session active';
+                currentSessionDiv.innerHTML = `
+                <span class="session-indicator"></span>
+                <span style="font-size:1.1rem;">SESSION LIVE</span><br>
+                <span style="font-size:0.95rem;">${sess.flightNumber} — ${formatDate(sess.date)} (${formatTimezone(getCurrentTimezone())})</span>
+              `;
+                sessionStatsDiv.textContent = `${events.length} event${events.length !== 1 ? 's' : ''} recorded`;
+                startSessionBtn.classList.remove('start-session-highlight');
+            } else {
+                currentSessionDiv.className = 'current-session';
+                currentSessionDiv.innerHTML = `
+                <span style="color:#d93025;font-weight:bold;">⚠️ NO SESSION ACTIVE</span><br>
+                <span style="font-size:0.9rem;">Enter flight number and tap "Start New Session"</span>
+              `;
+                sessionStatsDiv.textContent = 'No events recorded';
+                startSessionBtn.classList.add('start-session-highlight');
+            }
+            renderButtons();
+            renderEvents();
+        }
+
+        // ═══════════════════════════════════════════════════
+        // BUTTONS GRID
+        // ═══════════════════════════════════════════════════
+        function renderButtons() {
+            buttonsGrid.innerHTML = '';
+            buttonLayout.forEach((btn, index) => {
+                if (!btn.visible) return;
+                const button = document.createElement('button');
+                button.className = 'event-btn';
+                button.dataset.event = btn.label;
+                button.dataset.index = index;
+                button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
+                if (editMode) {
+                    button.classList.add('edit-mode');
+                    button.addEventListener('click', () => handleButtonSwap(index));
+                } else {
+                    button.addEventListener('click', () => recordEvent(btn.label));
+                }
+                buttonsGrid.appendChild(button);
+            });
+        }
+
+        function handleButtonSwap(index) {
+            if (selectedButton === null) {
+                selectedButton = index;
+                buttonsGrid.children[index].classList.add('selected');
+            } else {
+                const temp = buttonLayout[selectedButton];
+                buttonLayout[selectedButton] = buttonLayout[index];
+                buttonLayout[index] = temp;
+                saveButtonLayout();
+                renderButtons();
+                selectedButton = null;
+            }
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            selectedButton = null;
+            editLayoutBtn.textContent = editMode ? '✅ Done Editing' : '⚙️ Edit Layout';
+            editLayoutBtn.classList.toggle('active', editMode);
+            renderButtons();
+        }
+
+        function renderButtonList() {
+            buttonList.innerHTML = '';
+            buttonLayout.forEach((btn, index) => {
+                const item = document.createElement('div');
+                item.className = 'button-list-item' + (btn.visible ? '' : ' hidden');
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'button-icon';
+                iconSpan.textContent = btn.icon;
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'button-label-text';
+                labelSpan.textContent = btn.label;
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-visibility-btn' + (btn.visible ? ' visible' : '');
+                toggleBtn.textContent = btn.visible ? '👁️ Visible' : '👁️ Hidden';
+                toggleBtn.addEventListener('click', () => toggleButtonVisibility(index));
+                item.appendChild(iconSpan);
+                item.appendChild(labelSpan);
+                item.appendChild(toggleBtn);
+                if (!btn.isDefault) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-custom-btn';
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.addEventListener('click', () => deleteCustomButton(index));
+                    item.appendChild(deleteBtn);
+                }
+                buttonList.appendChild(item);
+            });
+        }
+
+        function toggleButtonVisibility(index) {
+            buttonLayout[index].visible = !buttonLayout[index].visible;
+            saveButtonLayout();
+            renderButtonList();
+            renderButtons();
+        }
+
+        function addCustomButtonHandler() {
+            const icon = customIcon.value.trim();
+            const label = customLabel.value.trim();
+            if (!icon || !label) {
+                alert('Please enter both icon and label');
+                return;
+            }
+            buttonLayout.push({ icon, label, isDefault: false, visible: true });
+            saveButtonLayout();
+            customIcon.value = '';
+            customLabel.value = '';
+            renderButtonList();
+            renderButtons();
+        }
+
+        function deleteCustomButton(index) {
+            if (confirm(`Delete "${buttonLayout[index].label}"?`)) {
+                buttonLayout.splice(index, 1);
+                saveButtonLayout();
+                renderButtonList();
+                renderButtons();
+            }
+        }
+
+        function openManageButtons() {
+            renderButtonList();
+            manageButtonsModal.style.display = 'flex';
+        }
+
+        function closeManageButtons() {
+            manageButtonsModal.style.display = 'none';
+        }
+
+        // ═══════════════════════════════════════════════════
+        // RECORD EVENTS
+        // ═══════════════════════════════════════════════════
+        function recordEvent(eventType, isCustom = false) {
+            if (!activeId) {
+                alert('Please start a session first');
+                return;
+            }
+            const now = new Date();
+            const timezone = getCurrentTimezone();
+            const event = {
+                id: Date.now(),
+                timestamp: now.toISOString(),
+                eventType: isCustom ? 'custom' : eventType.toLowerCase().replace(/ /g, '_'),
+                eventLabel: eventType,
+                memo: memoInput.value.trim(),
+                sessionId: activeId,
+                timezone
+            };
+            events.unshift(event);
+            memoInput.value = '';
+            saveEvents();
+            // update badge on active tab without full re-render
+            const activeTab = tabBar.querySelector('.tab-item.active');
+            if (activeTab) {
+                let badge = activeTab.querySelector('.tab-badge');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'tab-badge';
+                    activeTab.querySelector('.tab-close').before(badge);
+                }
+                badge.textContent = events.length;
+            }
+            renderEvents();
+            sessionStatsDiv.textContent = `${events.length} event${events.length !== 1 ? 's' : ''} recorded`;
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Delete this event?')) {
+                events = events.filter(e => e.id !== eventId);
+                saveEvents();
+                renderTabBar();
+                updateUI();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════
+        // RENDER EVENT LOG
+        // ═══════════════════════════════════════════════════
+        function renderEvents() {
+            if (events.length === 0) {
+                logList.innerHTML = '<div class="empty-log">No events recorded yet</div>';
+                return;
+            }
+            logList.innerHTML = '';
+            events.forEach((event, index) => {
+                try {
+                    const eventTime = new Date(event.timestamp);
+                    if (!event.timezone) event.timezone = getCurrentTimezone();
+                    const logItem = document.createElement('div');
+                    logItem.className = 'log-item';
+                    const logTimeDiv = document.createElement('div');
+                    logTimeDiv.className = 'log-time';
+                    logTimeDiv.textContent = formatTime(eventTime, event.timezone);
+                    const logContentDiv = document.createElement('div');
+                    logContentDiv.className = 'log-content';
+                    const logEventDiv = document.createElement('div');
+                    logEventDiv.className = 'log-event';
+                    logEventDiv.textContent = event.eventLabel;
+                    logContentDiv.appendChild(logEventDiv);
+                    if (event.memo) {
+                        const logMemoDiv = document.createElement('div');
+                        logMemoDiv.className = 'log-memo';
+                        logMemoDiv.textContent = event.memo;
+                        logContentDiv.appendChild(logMemoDiv);
+                    }
+                    const logTzDiv = document.createElement('div');
+                    logTzDiv.className = 'log-timezone';
+                    logTzDiv.textContent = formatTimezone(event.timezone);
+                    logContentDiv.appendChild(logTzDiv);
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-event-btn';
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.addEventListener('click', () => deleteEvent(event.id));
+                    logItem.appendChild(logTimeDiv);
+                    logItem.appendChild(logContentDiv);
+                    logItem.appendChild(deleteBtn);
+                    logList.appendChild(logItem);
+                } catch (err) {
+                    console.error('Error rendering event', index, err);
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════
+        // VOICE
+        // ═══════════════════════════════════════════════════
+        function setupVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.onstart = () => voiceBtn.classList.add('listening');
+                recognition.onresult = (e) => {
+                    memoInput.value = e.results[0][0].transcript;
+                    voiceBtn.classList.remove('listening');
+                };
+                recognition.onerror = () => voiceBtn.classList.remove('listening');
+                recognition.onend = () => voiceBtn.classList.remove('listening');
+            } else {
+                voiceBtn.style.display = 'none';
+            }
+        }
+
+        function startVoiceRecognition() {
+            if (recognition) {
+                recognition.start();
+            } else {
+                alert('Voice recognition not supported in this browser');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════
+        // EXPORT
+        // ═══════════════════════════════════════════════════
+        function exportToCSV() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            const sess = activeSession();
+            let csv = 'Flight Number,Date,Timestamp,Event Type,Event Label,Memo,Timezone\n';
+            [...events].reverse().forEach(event => {
+                const t = new Date(event.timestamp);
+                csv += [sess.flightNumber, sess.date, formatTime(t, event.timezone), event.eventType, event
+                        .eventLabel, `"${event.memo || ''}"`, formatTimezone(event.timezone)
+                    ].join(',') + '\n';
+            });
+            downloadBlob(csv, 'text/csv', `${sess.date}_${sess.flightNumber}.csv`);
+        }
+
+        function exportToTXT() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            const sess = activeSession();
+            const tz = getCurrentTimezone();
+            let txt = `ICC TIMESTAMP LOG\n================\n\n`;
+            txt += `FLIGHT: ${sess.flightNumber}\nDATE: ${formatDate(sess.date)}\n`;
+            txt += `SESSION STARTED: ${formatTime(new Date(sess.createdAt), tz)} ${formatTimezone(tz)}\n\nTIMESTAMP LOG:\n-------------\n\n`;
+            [...events].reverse().forEach(ev => {
+                const t = new Date(ev.timestamp);
+                txt += `${formatTime(t, ev.timezone)} ${formatTimezone(ev.timezone)} - ${ev.eventLabel}`;
+                if (ev.memo) txt += ` - ${ev.memo}`;
+                txt += '\n';
+            });
+            txt += `\n----------------\nTOTAL EVENTS: ${events.length}\nEXPORTED: ${new Date().toLocaleString()}\n`;
+            downloadBlob(txt, 'text/plain', `${sess.date}_${sess.flightNumber}.txt`);
+        }
+
+        function exportToPDF() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            const sess = activeSession();
+            const tz = getCurrentTimezone();
+            const sorted = [...events].reverse();
+            const pw = window.open('', '_blank');
+            pw.document.write(`<!DOCTYPE html><html><head><title>${sess.date}_${sess.flightNumber}</title> <style>body{font-family:Arial,sans-serif;margin:20px}.header{text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{padding:8px 12px;border:1px solid #ddd;text-align:left}th{background:#f5f5f5}.footer{margin-top:20px;text-align:center;font-size:.9em;color:#666}</style> </head><body> <div class="header"><h1>ICC Timestamp Report</h1><p>by *2100551*</p></div> <p><strong>Flight:</strong> ${sess.flightNumber}</p> <p><strong>Date:</strong> ${formatDate(sess.date)}</p> <p><strong>Session Started:</strong> ${formatTime(new Date(sess.createdAt), tz)} ${formatTimezone(tz)}</p> <table><thead><tr><th>Time</th><th>Timezone</th><th>Event</th><th>Memo</th></tr></thead><tbody> ${sorted.map(ev => { const t = new Date(ev.timestamp); return `<tr><td>${formatTime(t, ev.timezone)}</td><td>${formatTimezone(ev.timezone)}</td><td>${ev.eventLabel}</td><td>${ev.memo||''}</td></tr>`; }).join('')} </tbody></table> <div class="footer"><p>Total: ${events.length} | Exported: ${new Date().toLocaleString()}</p><p>ICC Timestamp Logger | *2100551*</p></div> </body></html>`);
+            pw.document.close();
+            pw.print();
+        }
+
+        function downloadBlob(content, type, filename) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = Object.assign(document.createElement('a'), { href: url, download: filename });
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ── Voyage Report ─────────────────────────────────────
+        function copyForVoyageReport() {
+            if (events.length === 0) {
+                alert('No events to copy');
+                return;
+            }
+            const find = label => events.find(e => e.eventLabel === label);
+            const toHHMM = ev => {
+                if (!ev) return '0000';
+                const t = new Date(ev.timestamp);
+                return formatTime(t, ev.timezone).replace(/:/g, '').substring(0, 4);
+            };
+            const data = [
+                toHHMM(find('Crew Boarding')),
+                toHHMM(find('Last Pax')),
+                toHHMM(find('Catering')),
+                toHHMM(find('AIC')),
+                toHHMM(find('Boarding Clearance')),
+                toHHMM(find('Boarding Commence')),
+                toHHMM(find('Boarding Completed')),
+                toHHMM(find('Door Close'))
+            ].join('|');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(data).then(() => {
+                    alert('✅ Copied for Voyage Report!\n\n1. Go to voyage report form\n2. Tap "Fill Voyage Report" bookmark\n3. Paste when prompted');
+                }).catch(() => showVoyageDataModal(data));
+            } else {
+                showVoyageDataModal(data);
+            }
+        }
+
+        function showVoyageDataModal(data) {
+            const modal = document.createElement('div');
+            modal.style.cssText =
+                'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;';
+            const content = document.createElement('div');
+            content.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:90%;';
+            const ta = Object.assign(document.createElement('textarea'), { value: data, readOnly: true });
+            ta.style.cssText = 'width:100%;height:100px;margin:10px 0;font-family:monospace;';
+            const p = Object.assign(document.createElement('p'), { textContent: 'Copy this data (long-press and select all):' });
+            p.style.fontWeight = 'bold';
+            const btn = Object.assign(document.createElement('button'), { textContent: 'Close' });
+            btn.style.cssText =
+                'background:#1a73e8;color:white;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;';
+            btn.onclick = () => document.body.removeChild(modal);
+            content.append(p, ta, btn);
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            ta.select();
+        }
+
+        // ═══════════════════════════════════════════════════
+        // EVENT LISTENERS
+        // ═══════════════════════════════════════════════════
+        function setupEventListeners() {
+            startSessionBtn.addEventListener('click', startNewSession);
+            editLayoutBtn.addEventListener('click', toggleEditMode);
+            manageButtonsBtn.addEventListener('click', openManageButtons);
+            clearSessionBtn.addEventListener('click', clearSession);
+            tabAddBtn.addEventListener('click', addBlankTab);
+
+            // live tab label update as user types
+            flightNumberInput.addEventListener('input', liveUpdateTabLabel);
+
+            gmtSignSelect.addEventListener('change', updateUI);
+            gmtHoursSelect.addEventListener('change', updateUI);
+            gmtMinutesSelect.addEventListener('change', updateUI);
+
+            recordBtn.addEventListener('click', () => recordEvent('Custom Event', true));
+            addMemoBtn.addEventListener('click', () => recordEvent('Custom Event', true));
+            voiceBtn.addEventListener('click', startVoiceRecognition);
+
+            exportCsvBtn.addEventListener('click', exportToCSV);
+            exportTxtBtn.addEventListener('click', exportToTXT);
+            exportPdfBtn.addEventListener('click', exportToPDF);
+            copyVoyageBtn.addEventListener('click', copyForVoyageReport);
+
+            memoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') recordEvent('Custom Event', true);
+            });
+
+            // export-warning modal
+            continueWithoutExportBtn.addEventListener('click', () => {
+                exportWarningModal.style.display = 'none';
+                if (pendingAction && pendingAction.type === 'newSession') {
+                    proceedWithNewSession(pendingAction.flightNumber, pendingAction.date);
+                }
+                pendingAction = null;
+            });
+
+            cancelNewSessionBtn.addEventListener('click', () => {
+                exportWarningModal.style.display = 'none';
+                pendingAction = null;
+            });
+
+            exportFormatOptions.addEventListener('click', (e) => {
+                const btn = e.target.closest('.export-format-btn');
+                if (!btn) return;
+                const fmt = btn.dataset.format;
+                exportWarningModal.style.display = 'none';
+                if (fmt === 'csv') exportToCSV();
+                else if (fmt === 'txt') exportToTXT();
+                else if (fmt === 'pdf') exportToPDF();
+                if (pendingAction && pendingAction.type === 'newSession') {
+                    proceedWithNewSession(pendingAction.flightNumber, pendingAction.date);
+                }
+                pendingAction = null;
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === exportWarningModal) {
+                    exportWarningModal.style.display = 'none';
+                    pendingAction = null;
+                }
+                if (e.target === manageButtonsModal) closeManageButtons();
+            });
+
+            addCustomButton.addEventListener('click', addCustomButtonHandler);
+            closeManageBtn.addEventListener('click', closeManageButtons);
+            customLabel.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addCustomButtonHandler();
+            });
+        }
+
+        // ═══════════════════════════════════════════════════
+        // THEME SYSTEM
+        // ═══════════════════════════════════════════════════
+        const THEME_META_COLORS = {
+            ops: '#1a73e8',
+            modern: '#1e3a8a',
+            dark: '#0d1a33',
+            midnight: '#000000',
+            cockpit: '#0A0E1A'
+        };
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('icc_theme', theme);
+            // update meta theme-color
+            const mc = document.querySelector('meta[name="theme-color"]');
+            if (mc) mc.content = THEME_META_COLORS[theme] || '#1a73e8';
+            // mark active in grid
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('icc_theme') || 'ops';
+            applyTheme(saved);
+        }
+
+        // ═══════════════════════════════════════════════════
+        // SETTINGS SHEET
+        // ═══════════════════════════════════════════════════
+        function openSettings() {
+            populateSettTzDropdowns();
+            loadSettTzValues();
+            loadGridColsSetting();
+            updateStorageInfo();
+            document.getElementById('settOverlay').classList.add('open');
+        }
+
+        function closeSettings() {
+            document.getElementById('settOverlay').classList.remove('open');
+        }
+
+        function populateSettTzDropdowns() {
+            const h = document.getElementById('settTzHours');
+            if (h && !h.options.length) {
+                for (let i = 0; i <= 14; i++) {
+                    const o = document.createElement('option');
+                    o.value = i;
+                    o.textContent = i.toString().padStart(2, '0');
+                    h.appendChild(o);
+                }
+            }
+        }
+
+        function loadSettTzValues() {
+            const saved = JSON.parse(localStorage.getItem('icc_default_tz') || 'null');
+            const sign = saved ? saved.sign : '+';
+            const hours = saved ? saved.hours : 8;
+            const mins = saved ? saved.minutes : 0;
+            document.getElementById('settTzSign').value = sign;
+            document.getElementById('settTzHours').value = hours;
+            document.getElementById('settTzMinutes').value = String(mins).padStart(2, '0');
+        }
+
+        function saveDefaultTimezone() {
+            const sign = document.getElementById('settTzSign').value;
+            const hours = parseInt(document.getElementById('settTzHours').value);
+            const minutes = parseInt(document.getElementById('settTzMinutes').value);
+            const total = (sign === '+' ? 1 : -1) * (hours * 60 + minutes);
+            localStorage.setItem('icc_default_tz', JSON.stringify({ sign, hours, minutes, totalOffsetMinutes: total }));
+            const msg = document.getElementById('tzSavedMsg');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2500);
+        }
+
+        // ── override setDefaultTimezone to respect saved pref ──
+        const _origSetDefaultTimezone = setDefaultTimezone;
+        setDefaultTimezone = function() {
+            const saved = JSON.parse(localStorage.getItem('icc_default_tz') || 'null');
+            if (saved) {
+                document.getElementById('gmtSign').value = saved.sign;
+                document.getElementById('gmtHours').value = saved.hours;
+                document.getElementById('gmtMinutes').value = String(saved.minutes).padStart(2, '0');
+            } else {
+                _origSetDefaultTimezone();
+            }
+        };
+
+        // ── Grid columns ────────────────────────────────────
+        function setGridCols(n) {
+            if (n === 2) {
+                document.body.classList.add('grid-2col');
+                document.getElementById('grid2Btn').classList.add('active');
+                document.getElementById('grid4Btn').classList.remove('active');
+            } else {
+                document.body.classList.remove('grid-2col');
+                document.getElementById('grid4Btn').classList.add('active');
+                document.getElementById('grid2Btn').classList.remove('active');
+            }
+            localStorage.setItem('icc_grid_cols', n);
+        }
+
+        function loadGridColsSetting() {
+            const saved = localStorage.getItem('icc_grid_cols');
+            if (saved === '2') {
+                setGridCols(2);
+            } else {
+                setGridCols(4);
+            }
+        }
+
+        // ── Storage info ─────────────────────────────────────
+        function updateStorageInfo() {
+            const el = document.getElementById('storageInfo');
+            if (!el) return;
+            const totalSessions = sessions.length;
+            let totalEvents = 0;
+            sessions.forEach(s => {
+                const evts = loadEventsFor(s.id);
+                totalEvents += evts.length;
+            });
+            // estimate localStorage usage
+            let bytes = 0;
+            try {
+                for (const key in localStorage) {
+                    if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
+                        bytes += (localStorage[key].length + key.length) * 2;
+                    }
+                }
+            } catch (e) {}
+            const kb = (bytes / 1024).toFixed(1);
+            el.innerHTML = `
+                <strong>${totalSessions}</strong> sector session${totalSessions !== 1 ? 's' : ''} stored &nbsp;·&nbsp; <strong>${totalEvents}</strong> total events<br>
+                Storage used: <strong>~${kb} KB</strong> of localStorage
+              `;
+        }
+
+        // ── Clear all data ───────────────────────────────────
+        function clearAllData() {
+            const totalEvents = sessions.reduce((acc, s) => acc + loadEventsFor(s.id).length, 0);
+            const msg = `DELETE EVERYTHING?\n\n` +
+                `${sessions.length} session(s) · ${totalEvents} events\n\n` +
+                `This cannot be undone. Export your data first if needed.`;
+            if (!confirm(msg)) return;
+            // clear all icc_ keys
+            const keysToRemove = [];
+            for (const key in localStorage) {
+                if (key.startsWith('icc_') || key.startsWith('aviation')) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            sessions = [];
+            activeId = null;
+            events = [];
+            flightNumberInput.value = '';
+            setDefaultDate();
+            setDefaultTimezone();
+            closeSettings();
+            renderTabBar();
+            updateUI();
+        }
+
+        // ── Settings event listeners ─────────────────────────
+        document.getElementById('settingsOpenBtn').addEventListener('click', openSettings);
+        document.getElementById('settCloseBtn').addEventListener('click', closeSettings);
+        document.getElementById('settOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeSettings();
+        });
+
+        // ── Load on boot ─────────────────────────────────────
+        loadTheme();
+        loadGridColsSetting();
+
+        // ═══════════════════════════════════════════════════
+        // BOOT
+        // ═══════════════════════════════════════════════════
+        initApp();
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(r => console.log('SW registered:', r.scope))
+                    .catch(e => console.log('SW failed:', e));
+            });
+        }
+    </script>
+</body>
+</html>
