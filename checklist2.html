@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PIC Pre-Flight Safety Briefing</title>
+    <style>
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+            color: #1a2a3a;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(145deg, #0b1e2e, #1a344a);
+            color: #fff;
+            padding: 2rem 2rem 1.8rem;
+            border-radius: 20px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 40px rgba(10, 30, 50, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 0.25rem 1rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9bc9ff;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 span {
+            color: #7bbaff;
+        }
+
+        .header .sub {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            margin-top: 0.4rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-size: 0.82rem;
+            opacity: 0.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ── Controls Bar ── */
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: #fff;
+            padding: 0.9rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9edf2;
+        }
+
+        .controls-bar .left {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls-bar .right {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.4rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #eef2f7;
+            color: #1a2a3a;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: #1a344a;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #0f2638;
+            box-shadow: 0 4px 16px rgba(26, 52, 74, 0.3);
+        }
+
+        .btn-success {
+            background: #0f7b4a;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #0b663b;
+            box-shadow: 0 4px 16px rgba(15, 123, 74, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #d0d7e0;
+        }
+        .btn-outline:hover {
+            border-color: #1a344a;
+            background: #f7f9fc;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1.5px solid #e8d0d0;
+            color: #b13e3e;
+        }
+        .btn-danger-outline:hover {
+            border-color: #b13e3e;
+            background: #fdf5f5;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .badge-count {
+            background: #e9edf2;
+            padding: 0.2rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #3d5569;
+        }
+
+        /* ── Category Cards ── */
+        .category {
+            background: #fff;
+            border-radius: 18px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9edf2;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.5rem;
+            background: #fafcfe;
+            border-bottom: 1px solid #eef2f7;
+            cursor: default;
+        }
+
+        .category-header .icon {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        .category-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #1a2a3a;
+        }
+
+        .category-header .count {
+            margin-left: auto;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #7a8fa0;
+            background: #eef2f7;
+            padding: 0.15rem 0.7rem;
+            border-radius: 100px;
+        }
+
+        .category-body {
+            padding: 0.25rem 0.5rem 0.5rem;
+        }
+
+        /* ── Briefing Item ── */
+        .briefing-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            transition: background 0.15s;
+            border-bottom: 1px solid #f2f5f9;
+        }
+
+        .briefing-item:last-child {
+            border-bottom: none;
+        }
+
+        .briefing-item:hover {
+            background: #f8faff;
+        }
+
+        .briefing-item .item-toggle {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ── Toggle Switch ── */
+        .toggle-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #8a9aa8;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .toggle-wrapper input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .toggle-track {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #dce2ea;
+            border-radius: 100px;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .toggle-track .thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-wrapper input:checked+.toggle-track {
+            background: #0f7b4a;
+        }
+
+        .toggle-wrapper input:checked+.toggle-track .thumb {
+            transform: translateX(20px);
+        }
+
+        .toggle-wrapper input:checked~.toggle-label-yes {
+            color: #0f7b4a;
+        }
+
+        .toggle-wrapper input:not(:checked)~.toggle-label-no {
+            color: #4a5a6a;
+        }
+
+        .toggle-label-yes,
+        .toggle-label-no {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: color 0.2s;
+            width: 18px;
+            text-align: center;
+        }
+
+        .toggle-label-yes {
+            color: #b0c4d4;
+        }
+        .toggle-label-no {
+            color: #b0c4d4;
+        }
+
+        .toggle-wrapper input:checked~.toggle-label-yes {
+            color: #0f7b4a;
+        }
+        .toggle-wrapper input:not(:checked)~.toggle-label-no {
+            color: #4a5a6a;
+        }
+
+        /* ── Item Label ── */
+        .briefing-item .item-label {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1a2a3a;
+            line-height: 1.3;
+            min-width: 0;
+            word-break: break-word;
+        }
+
+        .briefing-item .item-label .hint {
+            font-weight: 400;
+            color: #7a8fa0;
+            font-size: 0.78rem;
+        }
+
+        /* ── Item Input ── */
+        .briefing-item .item-input {
+            flex: 0 0 200px;
+            min-width: 120px;
+        }
+
+        .briefing-item .item-input input {
+            width: 100%;
+            padding: 0.4rem 0.75rem;
+            border: 1.5px solid #e2e8ef;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-family: inherit;
+            background: #fafcfe;
+            color: #1a2a3a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .briefing-item .item-input input:focus {
+            border-color: #4a8fc7;
+            box-shadow: 0 0 0 3px rgba(74, 143, 199, 0.12);
+            background: #fff;
+        }
+
+        .briefing-item .item-input input::placeholder {
+            color: #b0c4d4;
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+
+        /* ── Summary Modal / Panel ── */
+        .summary-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 20, 30, 0.5);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .summary-overlay.active {
+            display: flex;
+        }
+
+        .summary-panel {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 780px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .summary-panel .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #eef2f7;
+            flex-shrink: 0;
+        }
+
+        .summary-panel .summary-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .summary-panel .summary-header h2 .count {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #eef2f7;
+            padding: 0.15rem 0.7rem;
+            border-radius: 100px;
+            color: #3d5569;
+        }
+
+        .summary-panel .summary-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .summary-panel .summary-body {
+            padding: 1.5rem 2rem 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .summary-panel .summary-body .empty-state {
+            text-align: center;
+            color: #8a9aa8;
+            padding: 2.5rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .summary-panel .summary-body .empty-state .big-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #f2f5f9;
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-item .bullet {
+            color: #0f7b4a;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .summary-item .s-label {
+            font-weight: 500;
+            color: #1a2a3a;
+        }
+
+        .summary-item .s-value {
+            color: #3d5569;
+            background: #f2f6fa;
+            padding: 0.1rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            word-break: break-word;
+            max-width: 280px;
+        }
+
+        .summary-item .s-value.empty-value {
+            color: #b0c4d4;
+            font-style: italic;
+        }
+
+        .summary-item .s-category {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #7a8fa0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: #eef2f7;
+            padding: 0.05rem 0.5rem;
+            border-radius: 100px;
+            flex-shrink: 0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a2a3a;
+            color: #fff;
+            padding: 0.7rem 1.8rem;
+            border-radius: 14px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Animations ── */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.75rem;
+            }
+
+            .header {
+                padding: 1.5rem 1.25rem;
+                border-radius: 16px;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .controls-bar {
+                padding: 0.75rem 1rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+            .controls-bar .left,
+            .controls-bar .right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .briefing-item {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0.6rem 0.75rem;
+            }
+
+            .briefing-item .item-label {
+                flex: 1 1 100%;
+                order: 2;
+                font-size: 0.85rem;
+            }
+
+            .briefing-item .item-toggle {
+                order: 1;
+            }
+
+            .briefing-item .item-input {
+                flex: 1 1 100%;
+                order: 3;
+                min-width: 0;
+            }
+
+            .briefing-item .item-input input {
+                font-size: 0.8rem;
+                padding: 0.35rem 0.6rem;
+            }
+
+            .category-header {
+                padding: 0.7rem 1rem;
+            }
+            .category-header h2 {
+                font-size: 0.9rem;
+            }
+
+            .summary-panel {
+                border-radius: 18px;
+                max-height: 95vh;
+            }
+            .summary-panel .summary-header {
+                padding: 1rem 1.25rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .summary-panel .summary-body {
+                padding: 1rem 1.25rem 1.5rem;
+            }
+
+            .summary-item {
+                flex-wrap: wrap;
+                gap: 0.3rem 0.6rem;
+                padding: 0.5rem 0;
+            }
+            .summary-item .s-value {
+                max-width: 100%;
+            }
+
+            .btn {
+                font-size: 0.8rem;
+                padding: 0.45rem 1rem;
+            }
+            .btn-sm {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.7rem;
+            }
+
+            .toggle-track {
+                width: 38px;
+                height: 20px;
+            }
+            .toggle-track .thumb {
+                width: 16px;
+                height: 16px;
+                top: 2px;
+                left: 2px;
+            }
+            .toggle-wrapper input:checked+.toggle-track .thumb {
+                transform: translateX(18px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            .header .sub {
+                font-size: 0.8rem;
+            }
+            .controls-bar .left,
+            .controls-bar .right {
+                flex-direction: column;
+                width: 100%;
+            }
+            .controls-bar .left .btn,
+            .controls-bar .right .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .badge-count {
+                text-align: center;
+            }
+        }
+
+        /* ── Scrollbar styling ── */
+        .summary-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .summary-body::-webkit-scrollbar-track {
+            background: #f0f4f8;
+            border-radius: 10px;
+        }
+        .summary-body::-webkit-scrollbar-thumb {
+            background: #d0d7e0;
+            border-radius: 10px;
+        }
+        .summary-body::-webkit-scrollbar-thumb:hover {
+            background: #b0c4d4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+
+        <!-- ─── HEADER ─── -->
+        <header class="header">
+            <div class="header-badge">✈︎ Safety Emergency Procedures Manual</div>
+            <h1>3.2.2 <span>PIC Pre-Flight Safety Briefing</span></h1>
+            <p class="sub">Crew coordination · Communication · Threat &amp; Error Management</p>
+            <div class="meta">
+                <span>📋 Section 3.2.2</span>
+                <span>📅 <span id="dateDisplay"></span></span>
+                <span>⏱️ Pre-flight</span>
+            </div>
+        </header>
+
+        <!-- ─── CONTROLS ─── -->
+        <div class="controls-bar">
+            <div class="left">
+                <button class="btn btn-primary" id="summarizeBtn">
+                    <span>📋</span> Summarize
+                </button>
+                <button class="btn btn-outline btn-sm" id="resetAllBtn">
+                    ↻ Reset All
+                </button>
+                <span class="badge-count" id="progressCount">0 / 0 covered</span>
+            </div>
+            <div class="right">
+                <button class="btn btn-outline btn-sm" id="expandAllBtn">⊞ Expand All</button>
+                <button class="btn btn-outline btn-sm" id="collapseAllBtn">⊟ Collapse All</button>
+            </div>
+        </div>
+
+        <!-- ─── CATEGORIES ─── -->
+        <div id="briefingContainer"></div>
+
+        <!-- ─── TOAST ─── -->
+        <div class="toast" id="toast"></div>
+
+        <!-- ─── SUMMARY OVERLAY ─── -->
+        <div class="summary-overlay" id="summaryOverlay">
+            <div class="summary-panel">
+                <div class="summary-header">
+                    <h2>
+                        📋 Briefing Summary
+                        <span class="count" id="summaryCount">0 items</span>
+                    </h2>
+                    <div class="summary-actions">
+                        <button class="btn btn-success btn-sm" id="copySummaryBtn">
+                            📄 Copy
+                        </button>
+                        <button class="btn btn-outline btn-sm" id="closeSummaryBtn">
+                            ✕ Close
+                        </button>
+                    </div>
+                </div>
+                <div class="summary-body" id="summaryBody">
+                    <!-- dynamically filled -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DATA
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const briefingData = [{
+            id: 'intro-1',
+            category: 'Introduction',
+            icon: '👋',
+            label: 'Flight crew members introduction',
+            hint: '(names, roles, experience)'
+        }, {
+            id: 'intro-2',
+            category: 'Introduction',
+            icon: '👋',
+            label: 'Chain of command and crew roles',
+            hint: '(e.g. augmented crew)'
+        }, {
+            id: 'flight-1',
+            category: 'Flight details',
+            icon: '🛫',
+            label: 'Taxi time',
+            hint: '(estimated)'
+        }, {
+            id: 'flight-2',
+            category: 'Flight details',
+            icon: '🛫',
+            label: 'Flight Time',
+            hint: '(scheduled / block)'
+        }, {
+            id: 'flight-3',
+            category: 'Flight details',
+            icon: '🛫',
+            label: 'Special station details / procedures',
+            hint: '(airfield, ATC, terrain)'
+        }, {
+            id: 'safety-1',
+            category: 'Safety',
+            icon: '🛡️',
+            label: 'Passenger safety information',
+            hint: '(briefing, exits, equipment)'
+        }, {
+            id: 'safety-2',
+            category: 'Safety',
+            icon: '🛡️',
+            label: 'Special handling passengers',
+            hint: '(UM / VVIP / PRM etc.)'
+        }, {
+            id: 'safety-3',
+            category: 'Safety',
+            icon: '🛡️',
+            label: 'Re-fueling with passengers onboard',
+            hint: '(procedures, precautions)'
+        }, {
+            id: 'safety-4',
+            category: 'Safety',
+            icon: '🛡️',
+            label: 'Weather / turbulence',
+            hint: '(forecast, enroute, alternates)'
+        }, {
+            id: 'security-1',
+            category: 'Security',
+            icon: '🔒',
+            label: 'Any security issues pertaining to flight',
+            hint: '(threats, advisories, protocols)'
+        }, {
+            id: 'comm-1',
+            category: 'Communication',
+            icon: '📡',
+            label: 'Standard communication',
+            hint: '(frequencies, call signs, procedures)'
+        }, {
+            id: 'comm-2',
+            category: 'Communication',
+            icon: '📡',
+            label: 'Alternate means of communication',
+            hint: '(if defect / situation precludes standard)'
+        }, {
+            id: 'ac-1',
+            category: 'Aircraft',
+            icon: '✈️',
+            label: 'Any aircraft defects that affect safety or operations',
+            hint: '(MEL, CDL, snags, limitations)'
+        }, {
+            id: 'other-1',
+            category: 'Other',
+            icon: '📌',
+            label: 'Other issues, concerns, or questions',
+            hint: '(obtain feedback from crew)'
+        }];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const state = {};
+
+        briefingData.forEach(item => {
+            state[item.id] = {
+                checked: false,
+                value: ''
+            };
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DOM REFS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const container = document.getElementById('briefingContainer');
+        const progressCount = document.getElementById('progressCount');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const resetAllBtn = document.getElementById('resetAllBtn');
+        const expandAllBtn = document.getElementById('expandAllBtn');
+        const collapseAllBtn = document.getElementById('collapseAllBtn');
+        const summaryOverlay = document.getElementById('summaryOverlay');
+        const summaryBody = document.getElementById('summaryBody');
+        const summaryCount = document.getElementById('summaryCount');
+        const closeSummaryBtn = document.getElementById('closeSummaryBtn');
+        const copySummaryBtn = document.getElementById('copySummaryBtn');
+        const toast = document.getElementById('toast');
+        const dateDisplay = document.getElementById('dateDisplay');
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getCategoryIcon(category) {
+            const map = {
+                'Introduction': '👋',
+                'Flight details': '🛫',
+                'Safety': '🛡️',
+                'Security': '🔒',
+                'Communication': '📡',
+                'Aircraft': '✈️',
+                'Other': '📌'
+            };
+            return map[category] || '📋';
+        }
+
+        function getCategoryColor(category) {
+            const map = {
+                'Introduction': '#e8f0fe',
+                'Flight details': '#e6f4ea',
+                'Safety': '#fef3e2',
+                'Security': '#fce8e6',
+                'Communication': '#e3f0fa',
+                'Aircraft': '#f3e8f9',
+                'Other': '#f2f2f2'
+            };
+            return map[category] || '#f5f5f5';
+        }
+
+        function updateProgress() {
+            const total = briefingData.length;
+            const done = briefingData.filter(d => state[d.id].checked).length;
+            progressCount.textContent = `${done} / ${total} covered`;
+        }
+
+        function showToast(msg, duration = 2200) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function render() {
+            // Group by category
+            const groups = {};
+            briefingData.forEach(item => {
+                if (!groups[item.category]) groups[item.category] = [];
+                groups[item.category].push(item);
+            });
+
+            let html = '';
+            for (const [category, items] of Object.entries(groups)) {
+                const icon = getCategoryIcon(category);
+                const bg = getCategoryColor(category);
+                const itemCount = items.length;
+                const doneInCat = items.filter(d => state[d.id].checked).length;
+
+                html += `
+                    <div class="category" data-category="${category}">
+                        <div class="category-header" style="background:${bg};">
+                            <span class="icon">${icon}</span>
+                            <h2>${category}</h2>
+                            <span class="count">${doneInCat}/${itemCount}</span>
+                        </div>
+                        <div class="category-body">
+                `;
+
+                items.forEach(item => {
+                    const s = state[item.id];
+                    const checked = s.checked ? 'checked' : '';
+                    const val = s.value || '';
+
+                    html += `
+                        <div class="briefing-item" data-id="${item.id}">
+                            <div class="item-toggle">
+                                <label class="toggle-wrapper">
+                                    <span class="toggle-label-yes">Y</span>
+                                    <input type="checkbox" class="toggle-input" data-id="${item.id}" ${checked} />
+                                    <span class="toggle-track"><span class="thumb"></span></span>
+                                    <span class="toggle-label-no">N</span>
+                                </label>
+                            </div>
+                            <div class="item-label">
+                                ${item.label}
+                                ${item.hint ? `<span class="hint">${item.hint}</span>` : ''}
+                            </div>
+                            <div class="item-input">
+                                <input type="text" class="value-input" data-id="${item.id}" 
+                                       placeholder="Add notes / value..." value="${val}" />
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+
+            // ── Attach events ──
+            document.querySelectorAll('.toggle-input').forEach(el => {
+                el.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    state[id].checked = this.checked;
+                    updateProgress();
+                });
+            });
+
+            document.querySelectorAll('.value-input').forEach(el => {
+                el.addEventListener('input', function() {
+                    const id = this.dataset.id;
+                    state[id].value = this.value;
+                });
+                // also update on blur to catch any final value
+                el.addEventListener('blur', function() {
+                    const id = this.dataset.id;
+                    state[id].value = this.value;
+                });
+            });
+
+            updateProgress();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  SUMMARY
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function buildSummary() {
+            const checked = briefingData.filter(d => state[d.id].checked);
+            return checked;
+        }
+
+        function renderSummary() {
+            const checked = buildSummary();
+            summaryCount.textContent = `${checked.length} item${checked.length !== 1 ? 's' : ''}`;
+
+            if (checked.length === 0) {
+                summaryBody.innerHTML = `
+                    <div class="empty-state">
+                        <span class="big-icon">📭</span>
+                        No items marked as covered yet.<br>
+                        Toggle items to "Yes" and add notes, then summarize.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            checked.forEach(item => {
+                const val = state[item.id].value.trim();
+                const displayVal = val || '<span class="empty-value">(no notes)</span>';
+                const cat = item.category;
+                html += `
+                    <div class="summary-item">
+                        <span class="bullet">•</span>
+                        <span class="s-category">${cat}</span>
+                        <span class="s-label">${item.label}</span>
+                        <span class="s-value">${displayVal}</span>
+                    </div>
+                `;
+            });
+
+            summaryBody.innerHTML = html;
+        }
+
+        function openSummary() {
+            renderSummary();
+            summaryOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSummary() {
+            summaryOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  COPY
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getSummaryText() {
+            const checked = buildSummary();
+            if (checked.length === 0) return 'No items marked as covered.';
+
+            const lines = [];
+            lines.push('✈︎ PIC PRE-FLIGHT SAFETY BRIEFING — SUMMARY');
+            lines.push('─────────────────────────────────────────────');
+            lines.push('');
+
+            let cat = '';
+            checked.forEach(item => {
+                if (item.category !== cat) {
+                    cat = item.category;
+                    lines.push(`[ ${cat.toUpperCase()} ]`);
+                }
+                const val = state[item.id].value.trim();
+                const displayVal = val || '(no notes)';
+                lines.push(`  • ${item.label} → ${displayVal}`);
+            });
+
+            lines.push('');
+            lines.push(`Generated: ${new Date().toLocaleString()}`);
+            lines.push('─────────────────────────────────────────────');
+            return lines.join('\n');
+        }
+
+        async function copySummary() {
+            const text = getSummaryText();
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('✅ Summary copied to clipboard!');
+            } catch (_) {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                showToast('✅ Summary copied!');
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  RESET
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function resetAll() {
+            if (!confirm('Reset all items to "No" and clear notes?')) return;
+            briefingData.forEach(item => {
+                state[item.id].checked = false;
+                state[item.id].value = '';
+            });
+            render();
+            showToast('↻ All items reset');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  EXPAND / COLLAPSE (toggle visibility)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function expandAll() {
+            document.querySelectorAll('.category .category-body').forEach(el => {
+                el.style.display = '';
+            });
+            showToast('⊞ Expanded all categories');
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.category .category-body').forEach(el => {
+                el.style.display = 'none';
+            });
+            showToast('⊟ Collapsed all categories');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        // Set date
+        dateDisplay.textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        render();
+
+        // ── Event listeners ──
+        summarizeBtn.addEventListener('click', openSummary);
+        closeSummaryBtn.addEventListener('click', closeSummary);
+        copySummaryBtn.addEventListener('click', copySummary);
+        resetAllBtn.addEventListener('click', resetAll);
+        expandAllBtn.addEventListener('click', expandAll);
+        collapseAllBtn.addEventListener('click', collapseAll);
+
+        // Close overlay on backdrop click
+        summaryOverlay.addEventListener('click', function(e) {
+            if (e.target === this) closeSummary();
+        });
+
+        // Close with Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && summaryOverlay.classList.contains('active')) {
+                closeSummary();
+            }
+        });
+
+        // ── Re-render when state changes from outside (e.g. reset) ──
+        // (already handled in resetAll → render())
+
+        console.log('✈︎ PIC Pre-Flight Briefing ready');
+    </script>
+
+</body>
+</html>
