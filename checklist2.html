@@ -482,6 +482,11 @@
             padding: 1.5rem 2rem 2rem;
             overflow-y: auto;
             flex: 1;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .summary-panel .summary-body .empty-state {
@@ -489,6 +494,7 @@
             color: #8a9aa8;
             padding: 2.5rem 1rem;
             font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
         }
 
         .summary-panel .summary-body .empty-state .big-icon {
@@ -497,58 +503,7 @@
             margin-bottom: 0.75rem;
         }
 
-        .summary-item {
-            display: flex;
-            align-items: baseline;
-            gap: 0.75rem;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid #f2f5f9;
-            font-size: 0.92rem;
-            line-height: 1.4;
-        }
-
-        .summary-item:last-child {
-            border-bottom: none;
-        }
-
-        .summary-item .bullet {
-            color: #0f7b4a;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .summary-item .s-label {
-            font-weight: 500;
-            color: #1a2a3a;
-        }
-
-        .summary-item .s-value {
-            color: #3d5569;
-            background: #f2f6fa;
-            padding: 0.1rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.82rem;
-            word-break: break-word;
-            max-width: 280px;
-        }
-
-        .summary-item .s-value.empty-value {
-            color: #b0c4d4;
-            font-style: italic;
-        }
-
-        .summary-item .s-category {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #7a8fa0;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            background: #eef2f7;
-            padding: 0.05rem 0.5rem;
-            border-radius: 100px;
-            flex-shrink: 0;
-        }
-
+        /* ── Toast ── */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -664,15 +619,7 @@
             }
             .summary-panel .summary-body {
                 padding: 1rem 1.25rem 1.5rem;
-            }
-
-            .summary-item {
-                flex-wrap: wrap;
-                gap: 0.3rem 0.6rem;
-                padding: 0.5rem 0;
-            }
-            .summary-item .s-value {
-                max-width: 100%;
+                font-size: 0.8rem;
             }
 
             .btn {
@@ -721,7 +668,6 @@
             }
         }
 
-        /* ── Scrollbar styling ── */
         .summary-body::-webkit-scrollbar {
             width: 6px;
         }
@@ -973,7 +919,6 @@
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         function render() {
-            // Group by category
             const groups = {};
             briefingData.forEach(item => {
                 if (!groups[item.category]) groups[item.category] = [];
@@ -1032,7 +977,6 @@
 
             container.innerHTML = html;
 
-            // ── Attach events ──
             document.querySelectorAll('.toggle-input').forEach(el => {
                 el.addEventListener('change', function() {
                     const id = this.dataset.id;
@@ -1046,7 +990,6 @@
                     const id = this.dataset.id;
                     state[id].value = this.value;
                 });
-                // also update on blur to catch any final value
                 el.addEventListener('blur', function() {
                     const id = this.dataset.id;
                     state[id].value = this.value;
@@ -1057,45 +1000,35 @@
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  SUMMARY
+        //  SUMMARY — ALL ITEMS, DEFAULT "checked"
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        function buildSummary() {
-            const checked = briefingData.filter(d => state[d.id].checked);
-            return checked;
+        function getSummaryText() {
+            const lines = [];
+            lines.push('3.2.2 SEPM');
+            lines.push('');
+
+            let currentCategory = '';
+            briefingData.forEach(item => {
+                if (item.category !== currentCategory) {
+                    currentCategory = item.category;
+                    lines.push(`[ ${currentCategory.toUpperCase()} ]`);
+                }
+                const note = state[item.id].value.trim();
+                const displayNote = note || 'checked';
+                lines.push(`  • ${item.label} → ${displayNote}`);
+            });
+
+            return lines.join('\n');
         }
 
         function renderSummary() {
-            const checked = buildSummary();
-            summaryCount.textContent = `${checked.length} item${checked.length !== 1 ? 's' : ''}`;
+            const text = getSummaryText();
+            const count = briefingData.length;
+            summaryCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
 
-            if (checked.length === 0) {
-                summaryBody.innerHTML = `
-                    <div class="empty-state">
-                        <span class="big-icon">📭</span>
-                        No items marked as covered yet.<br>
-                        Toggle items to "Yes" and add notes, then summarize.
-                    </div>
-                `;
-                return;
-            }
-
-            let html = '';
-            checked.forEach(item => {
-                const val = state[item.id].value.trim();
-                const displayVal = val || '<span class="empty-value">(no notes)</span>';
-                const cat = item.category;
-                html += `
-                    <div class="summary-item">
-                        <span class="bullet">•</span>
-                        <span class="s-category">${cat}</span>
-                        <span class="s-label">${item.label}</span>
-                        <span class="s-value">${displayVal}</span>
-                    </div>
-                `;
-            });
-
-            summaryBody.innerHTML = html;
+            // Show as pre-formatted text in the body
+            summaryBody.textContent = text;
         }
 
         function openSummary() {
@@ -1113,39 +1046,12 @@
         //  COPY
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        function getSummaryText() {
-            const checked = buildSummary();
-            if (checked.length === 0) return 'No items marked as covered.';
-
-            const lines = [];
-            lines.push('✈︎ PIC PRE-FLIGHT SAFETY BRIEFING — SUMMARY');
-            lines.push('─────────────────────────────────────────────');
-            lines.push('');
-
-            let cat = '';
-            checked.forEach(item => {
-                if (item.category !== cat) {
-                    cat = item.category;
-                    lines.push(`[ ${cat.toUpperCase()} ]`);
-                }
-                const val = state[item.id].value.trim();
-                const displayVal = val || '(no notes)';
-                lines.push(`  • ${item.label} → ${displayVal}`);
-            });
-
-            lines.push('');
-            lines.push(`Generated: ${new Date().toLocaleString()}`);
-            lines.push('─────────────────────────────────────────────');
-            return lines.join('\n');
-        }
-
         async function copySummary() {
             const text = getSummaryText();
             try {
                 await navigator.clipboard.writeText(text);
                 showToast('✅ Summary copied to clipboard!');
             } catch (_) {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
@@ -1171,7 +1077,7 @@
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  EXPAND / COLLAPSE (toggle visibility)
+        //  EXPAND / COLLAPSE
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         function expandAll() {
@@ -1192,7 +1098,6 @@
         //  INIT
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        // Set date
         dateDisplay.textContent = new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -1201,7 +1106,6 @@
 
         render();
 
-        // ── Event listeners ──
         summarizeBtn.addEventListener('click', openSummary);
         closeSummaryBtn.addEventListener('click', closeSummary);
         copySummaryBtn.addEventListener('click', copySummary);
@@ -1209,22 +1113,15 @@
         expandAllBtn.addEventListener('click', expandAll);
         collapseAllBtn.addEventListener('click', collapseAll);
 
-        // Close overlay on backdrop click
         summaryOverlay.addEventListener('click', function(e) {
             if (e.target === this) closeSummary();
         });
 
-        // Close with Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && summaryOverlay.classList.contains('active')) {
                 closeSummary();
             }
         });
-
-        // ── Re-render when state changes from outside (e.g. reset) ──
-        // (already handled in resetAll → render())
-
-        console.log('✈︎ PIC Pre-Flight Briefing ready');
     </script>
 
 </body>
