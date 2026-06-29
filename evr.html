@@ -1282,7 +1282,7 @@
             { id: 15, type: 'report', label: 'Checklist 15' },
             { id: 16, type: 'report', label: 'Checklist 16' },
             { id: 17, type: 'report', label: 'Checklist 17' },
-            { id: 18, type: 'placeholder', label: 'Checklist 18' },
+            { id: 18, type: 'embed', label: 'Checklist 18', url: 'checklist18.html' },
             { id: 19, type: 'placeholder', label: 'Checklist 19' },
             { id: 20, type: 'placeholder', label: 'Checklist 20' },
             { id: 21, type: 'placeholder', label: 'Checklist 21' },
@@ -1541,7 +1541,7 @@
             const panelHeader = `
                 <div class="panel-header">
                     <h2>${checklist.label}</h2>
-                    <div class="sub">${checklist.type === 'report' ? '✏️ Type your report below. Text is auto‑saved.' : checklist.type === 'link' ? '🔗 Opens in a new tab' : checklist.type === 'embed' ? '💧 Tank Level Monitor' : '⏳ Coming soon'}</div>
+                    <div class="sub">${checklist.type === 'report' ? '✏️ Type your report below. Text is auto‑saved.' : checklist.type === 'link' ? '🔗 Opens in a new tab' : checklist.type === 'embed' ? '📋 Document List' : '⏳ Coming soon'}</div>
                 </div>
             `;
 
