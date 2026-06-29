@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PIC Pre-Flight Safety Briefing</title>
+    <title>ICC Pre-Flight Safety Briefing</title>
     <style>
         /* ── Reset & Base ── */
         *,
@@ -691,12 +691,12 @@
         <!-- ─── HEADER ─── -->
         <header class="header">
             <div class="header-badge">✈︎ Safety Emergency Procedures Manual</div>
-            <h1>3.2.2 <span>PIC Pre-Flight Safety Briefing</span></h1>
-            <p class="sub">Crew coordination · Communication · Threat &amp; Error Management</p>
+            <h1>3.2.4 <span>ICC Pre-Flight Safety Briefing</span></h1>
+            <p class="sub">10‑minute briefing · ICC responsibility · Threat &amp; Error Management</p>
             <div class="meta">
-                <span>📋 Section 3.2.2</span>
+                <span>📋 Section 3.2.4</span>
                 <span>📅 <span id="dateDisplay"></span></span>
-                <span>⏱️ Pre-flight</span>
+                <span>⏱️ Originating flight</span>
             </div>
         </header>
 
@@ -749,93 +749,111 @@
 
     <script>
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  DATA
+        //  DATA – ICC PRE-FLIGHT SAFETY BRIEFING
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         const briefingData = [{
-            id: 'intro-1',
-            category: 'Introduction',
-            icon: '👋',
-            label: 'Flight crew members introduction',
-            hint: '(names, roles, experience)'
+            id: 'gen-1',
+            category: 'General Requirements',
+            icon: '📋',
+            label: '10‑minute safety briefing (originating flight)',
+            hint: '(3.2.4.1)'
         }, {
-            id: 'intro-2',
-            category: 'Introduction',
-            icon: '👋',
-            label: 'Chain of command and crew roles',
-            hint: '(e.g. augmented crew)'
+            id: 'gen-2',
+            category: 'General Requirements',
+            icon: '📋',
+            label: 'ICC responsibility (cannot delegate)',
+            hint: '(3.2.4.2)'
         }, {
-            id: 'flight-1',
-            category: 'Flight details',
-            icon: '🛫',
-            label: 'Taxi time',
-            hint: '(estimated)'
+            id: 'gen-3',
+            category: 'General Requirements',
+            icon: '📋',
+            label: 'Objective – ensure all cabin crew have required knowledge',
+            hint: '(3.2.4.3)'
         }, {
-            id: 'flight-2',
-            category: 'Flight details',
-            icon: '🛫',
-            label: 'Flight Time',
-            hint: '(scheduled / block)'
+            id: 'gen-4',
+            category: 'General Requirements',
+            icon: '📋',
+            label: 'Nominate alternate ICC (senior ICC rated / most experienced)',
+            hint: '(3.2.4.4)'
         }, {
-            id: 'flight-3',
-            category: 'Flight details',
-            icon: '🛫',
-            label: 'Special station details / procedures',
-            hint: '(airfield, ATC, terrain)'
+            id: 'gen-5',
+            category: 'General Requirements',
+            icon: '📋',
+            label: 'Absence of ICC – most senior ranking crew takes over',
+            hint: '(3.2.4.6)'
         }, {
-            id: 'safety-1',
-            category: 'Safety',
-            icon: '🛡️',
-            label: 'Passenger safety information',
-            hint: '(briefing, exits, equipment)'
-        }, {
-            id: 'safety-2',
-            category: 'Safety',
-            icon: '🛡️',
-            label: 'Special handling passengers',
-            hint: '(UM / VVIP / PRM etc.)'
-        }, {
-            id: 'safety-3',
-            category: 'Safety',
-            icon: '🛡️',
-            label: 'Re-fueling with passengers onboard',
-            hint: '(procedures, precautions)'
-        }, {
-            id: 'safety-4',
-            category: 'Safety',
-            icon: '🛡️',
-            label: 'Weather / turbulence',
-            hint: '(forecast, enroute, alternates)'
-        }, {
-            id: 'security-1',
-            category: 'Security',
-            icon: '🔒',
-            label: 'Any security issues pertaining to flight',
-            hint: '(threats, advisories, protocols)'
-        }, {
-            id: 'comm-1',
-            category: 'Communication',
-            icon: '📡',
-            label: 'Standard communication',
-            hint: '(frequencies, call signs, procedures)'
-        }, {
-            id: 'comm-2',
-            category: 'Communication',
-            icon: '📡',
-            label: 'Alternate means of communication',
-            hint: '(if defect / situation precludes standard)'
-        }, {
-            id: 'ac-1',
-            category: 'Aircraft',
-            icon: '✈️',
-            label: 'Any aircraft defects that affect safety or operations',
-            hint: '(MEL, CDL, snags, limitations)'
-        }, {
-            id: 'other-1',
-            category: 'Other',
+            id: 'topic-1',
+            category: 'Briefing Topics',
             icon: '📌',
-            label: 'Other issues, concerns, or questions',
-            hint: '(obtain feedback from crew)'
+            label: 'Validity of Attestation & cross‑checking',
+            hint: '(alternate cross‑checks ICC)'
+        }, {
+            id: 'topic-2',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Latest circulars (FSM, FSA, FOTM)',
+            hint: ''
+        }, {
+            id: 'topic-3',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Emergency equipment & assigned doors/exits',
+            hint: '(operation & location)'
+        }, {
+            id: 'topic-4',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Drills and commands review',
+            hint: ''
+        }, {
+            id: 'topic-5',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Security Alert vigilance',
+            hint: '(when declared)'
+        }, {
+            id: 'topic-6',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Common safety issues (stowage of loose items)',
+            hint: ''
+        }, {
+            id: 'topic-7',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Cabin baggage & PED usage',
+            hint: ''
+        }, {
+            id: 'topic-8',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'Passenger type and profile',
+            hint: ''
+        }, {
+            id: 'topic-9',
+            category: 'Briefing Topics',
+            icon: '📌',
+            label: 'In‑flight emergencies (e.g. turbulence)',
+            hint: ''
+        }, {
+            id: 'tem-man',
+            category: 'Briefing Topics',
+            icon: '🧑‍✈️',
+            label: 'TEM – Man (low recency, fatigue, fasting)',
+            hint: 'Crew condition affecting performance'
+        }, {
+            id: 'tem-machine',
+            category: 'Briefing Topics',
+            icon: '⚙️',
+            label: 'TEM – Machine (different config, new equipment, defects)',
+            hint: 'Aircraft & equipment factors'
+        }, {
+            id: 'tem-env',
+            category: 'Briefing Topics',
+            icon: '🌍',
+            label: 'TEM – Environment (hot/cold, delays, passenger profile, turbulence)',
+            hint: 'External factors & threats'
         }];
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -875,26 +893,16 @@
 
         function getCategoryIcon(category) {
             const map = {
-                'Introduction': '👋',
-                'Flight details': '🛫',
-                'Safety': '🛡️',
-                'Security': '🔒',
-                'Communication': '📡',
-                'Aircraft': '✈️',
-                'Other': '📌'
+                'General Requirements': '📋',
+                'Briefing Topics': '📌'
             };
             return map[category] || '📋';
         }
 
         function getCategoryColor(category) {
             const map = {
-                'Introduction': '#e8f0fe',
-                'Flight details': '#e6f4ea',
-                'Safety': '#fef3e2',
-                'Security': '#fce8e6',
-                'Communication': '#e3f0fa',
-                'Aircraft': '#f3e8f9',
-                'Other': '#f2f2f2'
+                'General Requirements': '#e8f0fe',
+                'Briefing Topics': '#fef3e2'
             };
             return map[category] || '#f5f5f5';
         }
@@ -963,7 +971,7 @@
                             </div>
                             <div class="item-input">
                                 <input type="text" class="value-input" data-id="${item.id}" 
-                                       placeholder="Add notes / value..." value="${val}" />
+                                       placeholder="Threats / mitigation / notes..." value="${val}" />
                             </div>
                         </div>
                     `;
@@ -1000,12 +1008,12 @@
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  SUMMARY — ALL ITEMS, DEFAULT "checked"
+        //  SUMMARY – ALL ITEMS, DEFAULT "checked"
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         function getSummaryText() {
             const lines = [];
-            lines.push('3.2.2 SEPM');
+            lines.push('3.2.4 SEPM');
             lines.push('');
 
             let currentCategory = '';
@@ -1016,6 +1024,7 @@
                 }
                 const note = state[item.id].value.trim();
                 const displayNote = note || 'checked';
+                // The label already contains the TEM examples, so it will appear in the summary.
                 lines.push(`  • ${item.label} → ${displayNote}`);
             });
 
@@ -1026,8 +1035,6 @@
             const text = getSummaryText();
             const count = briefingData.length;
             summaryCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-
-            // Show as pre-formatted text in the body
             summaryBody.textContent = text;
         }
 
