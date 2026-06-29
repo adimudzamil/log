@@ -1037,58 +1037,6 @@
             background: var(--navy3);
         }
 
-        /* ── Report Import/Export Buttons ── */
-        .report-io {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 6px 0 10px;
-        }
-        .report-io .btn-io {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            font-family: inherit;
-            transition: all .2s;
-            background: var(--surface2);
-            color: var(--text2);
-            border: 1px solid var(--border);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .report-io .btn-io:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow);
-        }
-        .report-io .btn-io.primary {
-            background: var(--navy);
-            color: #fff;
-            border-color: var(--navy);
-        }
-        .report-io .btn-io.primary:hover {
-            background: var(--navy3);
-        }
-        .report-io .btn-io.danger {
-            background: #EF4444;
-            color: #fff;
-            border-color: #EF4444;
-        }
-        .report-io .btn-io.danger:hover {
-            background: #DC2626;
-        }
-
-        /* ── Hidden file input ── */
-        #importFileInput {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-        }
-
         /* ══════════════════════════════════════════
            TOAST
         ══════════════════════════════════════════ */
@@ -1224,7 +1172,7 @@
     <header class="hdr">
         <div class="hdr-logo">
             <span class="hdr-emoji">📋</span>
-            <span class="hdr-name">EVR <em>Pro</em></span>
+            <span class="hdr-name">Checklist <em>Dashboard</em></span>
         </div>
         <div class="hdr-spacer"></div>
         <button class="hdr-btn" id="settingsBtn" title="Settings" aria-label="Settings">⚙️</button>
@@ -1292,27 +1240,13 @@
                     </div>
                 </div>
 
-                <!-- Reports Backup -->
-                <div style="margin:1.5rem 0;">
-                    <div style="font-size:0.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;">💾 Reports</div>
-                    <div class="report-io">
-                        <button class="btn-io primary" id="exportReportsBtn">⬇ Export All</button>
-                        <button class="btn-io" id="importReportsBtn">⬆ Import</button>
-                        <button class="btn-io danger" id="clearReportsBtn">🗑️ Clear All</button>
-                    </div>
-                    <div style="font-size:0.7rem;color:var(--text3);margin-top:2px;">
-                        Export as .json · Import merges (overwrites existing)
-                    </div>
-                    <input type="file" id="importFileInput" accept=".json" />
-                </div>
-
                 <!-- About -->
                 <div>
                     <div style="font-size:0.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;">ℹ️ About</div>
                     <div class="about-text">
-                        <strong>EVR‑pro Version 1.0</strong> — Central hub for all 22 checklists.<br />
-                        Report notes auto‑save locally. Full export/import of all reports.<br />
-                        Built with ❤️ by <strong>2100551</strong>
+                        <strong>Checklist Dashboard</strong> — Central hub for all 22 checklists.<br />
+                        Report notes auto‑save locally. Link tabs open external tools.<br />
+                        Built with ❤️ by <strong>2100551</strong> · v2.0
                     </div>
                 </div>
 
@@ -1349,9 +1283,9 @@
             { id: 16, type: 'report', label: 'Checklist 16' },
             { id: 17, type: 'report', label: 'Checklist 17' },
             { id: 18, type: 'embed', label: 'Checklist 18', url: 'checklist18.html' },
-            { id: 19, type: 'report', label: 'Checklist 19' },
+            { id: 19, type: 'placeholder', label: 'Checklist 19' },
             { id: 20, type: 'placeholder', label: 'Checklist 20' },
-            { id: 21, type: 'report', label: 'Checklist 21' },
+            { id: 21, type: 'placeholder', label: 'Checklist 21' },
             { id: 22, type: 'embed', label: 'Checklist 22', url: 'checklist22.html' },
         ];
 
@@ -1387,12 +1321,6 @@
         const modalShowAll = document.getElementById('modalShowAll');
         const modalHideAll = document.getElementById('modalHideAll');
 
-        // Report I/O
-        const exportBtn = document.getElementById('exportReportsBtn');
-        const importBtn = document.getElementById('importReportsBtn');
-        const clearBtn = document.getElementById('clearReportsBtn');
-        const importFileInput = document.getElementById('importFileInput');
-
         let toastTimer = null;
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1421,6 +1349,7 @@
                 cyberpunk: '#CC0066'
             };
             document.querySelector('meta[name="theme-color"]').content = map[id] || '#001F4E';
+            // Re-render to update embed iframe with new theme
             render();
         }
 
@@ -1488,107 +1417,27 @@
             localStorage.setItem(getReportKey(id), text);
         }
 
-        function getAllReports() {
-            const reports = {};
-            CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                const text = getReportText(c.id);
-                if (text) reports[c.id] = text;
-            });
-            return reports;
-        }
-
-        function loadReportsFromJSON(data) {
-            if (!data || typeof data !== 'object') return false;
-            let count = 0;
-            for (const [id, text] of Object.entries(data)) {
-                const numId = parseInt(id);
-                if (!isNaN(numId) && text && typeof text === 'string') {
-                    saveReportText(numId, text);
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        function exportReports() {
-            const reports = getAllReports();
-            if (Object.keys(reports).length === 0) {
-                showToast('No reports to export', 'err');
-                return;
-            }
-            const payload = {
-                _meta: {
-                    exported: new Date().toISOString(),
-                    version: '1.0',
-                    app: 'EVR-pro'
-                },
-                reports
+        function getTypeBadge(type) {
+            const map = {
+                report: '📝 report',
+                link: '🔗 link',
+                placeholder: '⏳ soon',
+                embed: '🖥️ embed'
             };
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `EVR_Reports_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(`Exported ${Object.keys(reports).length} reports`, 'ok');
+            return map[type] || type;
         }
 
-        function importReports(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    const reports = data.reports || data; // support both formats
-                    if (!reports || typeof reports !== 'object') {
-                        showToast('Invalid file format', 'err');
-                        return;
-                    }
-                    // Confirm merge
-                    const replace = confirm(
-                        'Import will merge (overwrite existing) reports.\n\n' +
-                        'Click OK to merge, Cancel to replace all existing reports.'
-                    );
-                    if (!replace) {
-                        // Replace: clear all existing reports first
-                        CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                            saveReportText(c.id, '');
-                        });
-                        showToast('All existing reports cleared. Importing...', 'ok');
-                    }
-                    const count = loadReportsFromJSON(reports);
-                    // Re-render current content if it's a report
-                    render();
-                    showToast(`Imported ${count} reports`, 'ok');
-                } catch (err) {
-                    showToast('Error reading file: ' + err.message, 'err');
-                }
-            };
-            reader.readAsText(file);
+        function getTypeClass(type) {
+            return type;
         }
 
-        function clearAllReports() {
-            if (!confirm('Delete ALL report data? This cannot be undone.')) return;
-            CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                saveReportText(c.id, '');
-            });
-            render();
-            showToast('All reports cleared', 'ok');
-        }
-
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  TOAST
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        function showToast(msg, type = '') {
+        function showToast(msg) {
             toastGlobal.textContent = msg;
-            toastGlobal.className = 'toast-global show ' + (type === 'err' ? 'err' : '');
+            toastGlobal.classList.add('show');
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => {
                 toastGlobal.classList.remove('show');
-            }, 3000);
+            }, 2200);
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1663,20 +1512,6 @@
             } else if (visible.length === 0) {
                 activeTabId = null;
             }
-        }
-
-        function getTypeBadge(type) {
-            const map = {
-                report: '📝 report',
-                link: '🔗 link',
-                placeholder: '⏳ soon',
-                embed: '🖥️ embed'
-            };
-            return map[type] || type;
-        }
-
-        function getTypeClass(type) {
-            return type;
         }
 
         function renderContent() {
@@ -1929,23 +1764,7 @@
                 });
             });
 
-            // ── Report I/O events ──
-            exportBtn.addEventListener('click', exportReports);
-
-            importBtn.addEventListener('click', () => {
-                importFileInput.click();
-            });
-
-            importFileInput.addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    importReports(e.target.files[0]);
-                    e.target.value = ''; // reset
-                }
-            });
-
-            clearBtn.addEventListener('click', clearAllReports);
-
-            // ── Settings modal events ──
+            // ── Event listeners ──
             showAllBtn.addEventListener('click', showAllTabs);
             hideAllBtn.addEventListener('click', hideAllTabs);
             settingsBtn.addEventListener('click', openSettings);
@@ -1968,7 +1787,7 @@
                 }
             });
 
-            console.log('📋 EVR-pro Dashboard ready');
+            console.log('📋 Dashboard ready');
         }
 
         document.addEventListener('DOMContentLoaded', init);
