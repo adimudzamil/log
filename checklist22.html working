@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Checklist 22 – Tank Levels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ══════════════════════════════════════════
+           THEME VARIABLES (mirroring dashboard)
+        ══════════════════════════════════════════ */
+        :root {
+            --bg: #F4F7FB;
+            --surface: #FFFFFF;
+            --surface2: #EEF3FA;
+            --border: #D6E0EF;
+            --border2: #C0CFDF;
+            --text: #0D1F3C;
+            --text2: #4A6280;
+            --text3: #8FA3BC;
+            --navy: #003580;
+            --navy2: #001F4E;
+            --navy3: #00418A;
+            --gold: #C9A84C;
+            --gold2: #E8C96A;
+            --shadow: 0 2px 12px rgba(0, 31, 78, 0.08);
+            --shadow2: 0 8px 30px rgba(0, 31, 78, 0.12);
+            --radius: 14px;
+            --radius-sm: 10px;
+            --transition: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ── Dark ── */
+        [data-theme="dark"] {
+            --bg: #0D1525;
+            --surface: #162035;
+            --surface2: #1C2A42;
+            --border: #243350;
+            --border2: #2E4070;
+            --text: #E8EEF7;
+            --text2: #8FA3BC;
+            --text3: #4A6280;
+            --shadow: 0 2px 12px rgba(0, 0, 0, .3);
+            --shadow2: 0 8px 30px rgba(0, 0, 0, .4);
+        }
+
+        /* ── Black ── */
+        [data-theme="black"] {
+            --bg: #000;
+            --surface: #0A0A0A;
+            --surface2: #111;
+            --border: #1A1A1A;
+            --border2: #222;
+            --text: #F0F0F0;
+            --text2: #888;
+            --text3: #444;
+            --shadow: 0 2px 12px rgba(0, 0, 0, .6);
+            --shadow2: 0 8px 30px rgba(0, 0, 0, .8);
+        }
+
+        /* ── Modern ── */
+        [data-theme="modern"] {
+            --navy: #1D4ED8;
+            --navy2: #1E3A8A;
+            --navy3: #2563EB;
+            --gold: #F59E0B;
+            --gold2: #FCD34D;
+        }
+
+        /* ── Jarvis ── */
+        [data-theme="jarvis"] {
+            --bg: #0A0E1A;
+            --surface: #111827;
+            --surface2: #1A2332;
+            --border: #2D3A4F;
+            --border2: #3B4D6B;
+            --text: #E2E8F0;
+            --text2: #94A3B8;
+            --text3: #475569;
+            --navy: #00B4D8;
+            --navy2: #0077B6;
+            --navy3: #00B4D8;
+            --gold: #00E5FF;
+            --gold2: #4DD0E1;
+            --shadow: 0 2px 12px rgba(0, 180, 216, 0.15);
+            --shadow2: 0 8px 30px rgba(0, 180, 216, 0.2);
+        }
+
+        /* ── Cyberpunk ── */
+        [data-theme="cyberpunk"] {
+            --bg: #0B0A0F;
+            --surface: #1A1425;
+            --surface2: #251F33;
+            --border: #3A2D4A;
+            --border2: #5A3D6A;
+            --text: #F0E6FF;
+            --text2: #B89FD0;
+            --text3: #6A4F7A;
+            --navy: #FF007F;
+            --navy2: #CC0066;
+            --navy3: #FF2E9C;
+            --gold: #00FFD1;
+            --gold2: #66FFE0;
+            --shadow: 0 2px 12px rgba(255, 0, 127, 0.2);
+            --shadow2: 0 8px 30px rgba(255, 0, 127, 0.25);
+        }
+
+        /* ══════════════════════════════════════════
+           RESET & BASE
+        ══════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ══════════════════════════════════════════
+           MAIN CARD
+        ══════════════════════════════════════════ */
+        .container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow2);
+            padding: 32px 28px 36px;
+            max-width: 720px;
+            width: 100%;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .header h1 em {
+            color: var(--gold);
+            font-style: normal;
+        }
+        .header .sub {
+            font-size: 0.75rem;
+            color: var(--text3);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+
+        /* ══════════════════════════════════════════
+           TANK GRID
+        ══════════════════════════════════════════ */
+        .tank-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 480px) {
+            .tank-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        .tank {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .tank-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text2);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tank-label .icon {
+            font-size: 1.1rem;
+        }
+        .tank-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 10px;
+            transition: color var(--transition);
+            letter-spacing: -0.02em;
+            background: var(--surface2);
+            padding: 2px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            min-width: 70px;
+            text-align: center;
+        }
+
+        /* ── Slider Track ── */
+        .slider-wrapper {
+            position: relative;
+            width: 52px;
+            height: 260px;
+            background: var(--surface2);
+            border-radius: 30px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            transition: border-color var(--transition);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        .slider-wrapper:hover {
+            border-color: var(--navy);
+        }
+
+        /* ── Fill (water) ── */
+        .slider-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 0 0 28px 28px;
+            background: linear-gradient(180deg, var(--water-light, #7BC8F0), var(--water-color, #1A85C7));
+            transition: height 0.05s linear, background var(--transition);
+            overflow: hidden;
+            will-change: height;
+            min-height: 4px;
+        }
+        /* Water surface wave (static wave pattern) */
+        .slider-fill .wave {
+            position: absolute;
+            top: -8px;
+            left: -10%;
+            right: -10%;
+            height: 20px;
+            background: radial-gradient(ellipse at 30% 50%, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            animation: waveFlow 2.4s ease-in-out infinite alternate;
+            will-change: transform;
+            pointer-events: none;
+        }
+        /* Slosh effect – triggered on release */
+        .slider-fill.slosh .wave {
+            animation: slosh 0.6s ease-in-out;
+        }
+        @keyframes waveFlow {
+            0% {
+                transform: translateX(-8px) scaleY(0.8);
+            }
+            100% {
+                transform: translateX(8px) scaleY(1.2);
+            }
+        }
+        @keyframes slosh {
+            0% {
+                transform: translateX(-20px) scaleY(1.4);
+            }
+            30% {
+                transform: translateX(20px) scaleY(0.6);
+            }
+            60% {
+                transform: translateX(-12px) scaleY(1.2);
+            }
+            100% {
+                transform: translateX(0) scaleY(1);
+            }
+        }
+
+        /* ── Handle ── */
+        .slider-handle {
+            position: absolute;
+            left: 50%;
+            width: 32px;
+            height: 32px;
+            margin-left: -16px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 3px solid var(--navy);
+            box-shadow: var(--shadow2), 0 0 0 2px var(--surface);
+            transform: translateY(-50%);
+            touch-action: none;
+            cursor: grab;
+            transition: border-color var(--transition), transform 0.15s ease;
+            z-index: 10;
+            will-change: transform;
+        }
+        .slider-handle:active {
+            cursor: grabbing;
+            transform: translateY(-50%) scale(1.12);
+            border-color: var(--gold);
+        }
+        .slider-handle::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── Markers ── */
+        .markers {
+            position: absolute;
+            right: -48px;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4px 0;
+            pointer-events: none;
+        }
+        .marker {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: 0.04em;
+            line-height: 1;
+            text-align: left;
+            opacity: 0.6;
+            transition: color var(--transition);
+        }
+        .marker.active {
+            color: var(--navy);
+            opacity: 1;
+            font-weight: 800;
+        }
+
+        /* ── Water & Waste specific colours ── */
+        .tank.water .slider-fill {
+            --water-color: #1A85C7;
+            --water-light: #7BC8F0;
+        }
+        .tank.waste .slider-fill {
+            --water-color: #8B5A2B;
+            --water-light: #C49A6C;
+        }
+        [data-theme="jarvis"] .tank.water .slider-fill {
+            --water-color: #00B4D8;
+            --water-light: #80E0FF;
+        }
+        [data-theme="jarvis"] .tank.waste .slider-fill {
+            --water-color: #4DD0E1;
+            --water-light: #A8E6CF;
+        }
+        [data-theme="cyberpunk"] .tank.water .slider-fill {
+            --water-color: #FF007F;
+            --water-light: #FF66B2;
+        }
+        [data-theme="cyberpunk"] .tank.waste .slider-fill {
+            --water-color: #00FFD1;
+            --water-light: #66FFE0;
+        }
+
+        /* ══════════════════════════════════════════
+           SUMMARY BUTTON
+        ══════════════════════════════════════════ */
+        .summary-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            margin-top: 4px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: #fff;
+            box-shadow: var(--shadow);
+            transition: all var(--transition);
+            cursor: pointer;
+            letter-spacing: 0.02em;
+        }
+        .btn:hover {
+            background: var(--navy3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow2);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn .icon {
+            font-size: 1.1rem;
+        }
+        .btn .badge {
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .btn.gold {
+            background: var(--gold);
+            color: var(--navy2);
+        }
+        .btn.gold:hover {
+            background: var(--gold2);
+        }
+
+        .toast-msg {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast-msg.show {
+            opacity: 1;
+        }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 16px 24px;
+            }
+            .slider-wrapper {
+                width: 44px;
+                height: 220px;
+            }
+            .slider-handle {
+                width: 28px;
+                height: 28px;
+                margin-left: -14px;
+            }
+            .markers {
+                right: -40px;
+            }
+            .marker {
+                font-size: 0.5rem;
+            }
+            .tank-value {
+                font-size: 1.3rem;
+                min-width: 60px;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+        <!-- Header -->
+        <div class="header">
+            <h1>Checklist <em>22</em></h1>
+            <span class="sub">💧 Tank Monitor</span>
+        </div>
+
+        <!-- Tank Grid -->
+        <div class="tank-grid">
+            <!-- Water Tank -->
+            <div class="tank water" id="tankWater">
+                <div class="tank-label"><span class="icon">💧</span> Water</div>
+                <div class="tank-value" id="waterValue">100%</div>
+                <div class="slider-wrapper" id="waterSlider">
+                    <div class="slider-fill" id="waterFill" style="height: 100%;">
+                        <div class="wave"></div>
+                    </div>
+                    <div class="slider-handle" id="waterHandle" style="top: 0%;"></div>
+                    <div class="markers">
+                        <span class="marker" data-val="100">100</span>
+                        <span class="marker" data-val="75">75</span>
+                        <span class="marker" data-val="50">50</span>
+                        <span class="marker" data-val="25">25</span>
+                        <span class="marker" data-val="0">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waste Tank -->
+            <div class="tank waste" id="tankWaste">
+                <div class="tank-label"><span class="icon">🗑️</span> Waste</div>
+                <div class="tank-value" id="wasteValue">0%</div>
+                <div class="slider-wrapper" id="wasteSlider">
+                    <div class="slider-fill" id="wasteFill" style="height: 0%;">
+                        <div class="wave"></div>
+                    </div>
+                    <div class="slider-handle" id="wasteHandle" style="top: 100%;"></div>
+                    <div class="markers">
+                        <span class="marker" data-val="100">100</span>
+                        <span class="marker" data-val="75">75</span>
+                        <span class="marker" data-val="50">50</span>
+                        <span class="marker" data-val="25">25</span>
+                        <span class="marker" data-val="0">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Area -->
+        <div class="summary-area">
+            <button class="btn gold" id="summarizeBtn">
+                <span class="icon">📋</span> Summarize &amp; Copy
+                <span class="badge">Ctrl+C</span>
+            </button>
+            <span class="toast-msg" id="toastMsg">✓ Copied!</span>
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const state = {
+            water: 100,
+            waste: 0,
+        };
+
+        // DOM refs
+        const waterSlider = document.getElementById('waterSlider');
+        const wasteSlider = document.getElementById('wasteSlider');
+        const waterFill = document.getElementById('waterFill');
+        const wasteFill = document.getElementById('wasteFill');
+        const waterHandle = document.getElementById('waterHandle');
+        const wasteHandle = document.getElementById('wasteHandle');
+        const waterValue = document.getElementById('waterValue');
+        const wasteValue = document.getElementById('wasteValue');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const toastMsg = document.getElementById('toastMsg');
+
+        // Markers
+        const allMarkers = document.querySelectorAll('.marker');
+        const snapPoints = [0, 25, 50, 75, 100];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  THEME SYNC (from parent iframe)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function syncTheme() {
+            // Read theme from URL param (set by dashboard)
+            const params = new URLSearchParams(window.location.search);
+            const theme = params.get('theme') || 'ops';
+            document.body.setAttribute('data-theme', theme);
+            // Also store for future use
+            localStorage.setItem('dashboard_theme', theme);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  SLIDER ENGINE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getSliderConfig(sliderEl) {
+            const isWater = sliderEl.id === 'waterSlider';
+            return {
+                isWater,
+                fill: isWater ? waterFill : wasteFill,
+                handle: isWater ? waterHandle : wasteHandle,
+                valueEl: isWater ? waterValue : wasteValue,
+                getCurrent: () => isWater ? state.water : state.waste,
+                setState: (v) => {
+                    if (isWater) state.water = v;
+                    else state.waste = v;
+                },
+                label: isWater ? 'Water' : 'Waste',
+            };
+        }
+
+        function updateSlider(sliderEl, percent) {
+            const cfg = getSliderConfig(sliderEl);
+            const clamped = Math.max(0, Math.min(100, percent));
+            const rounded = Math.round(clamped);
+
+            // Update state
+            cfg.setState(rounded);
+
+            // Update fill height (0% = bottom, 100% = top)
+            const fillHeight = rounded;
+            cfg.fill.style.height = fillHeight + '%';
+
+            // Update handle position: top = 100 - rounded
+            const handleTop = 100 - rounded;
+            cfg.handle.style.top = handleTop + '%';
+
+            // Update value display
+            cfg.valueEl.textContent = rounded + '%';
+
+            // Update markers
+            const sliderRect = sliderEl.getBoundingClientRect();
+            const totalHeight = sliderRect.height;
+            const fillPx = (rounded / 100) * totalHeight;
+            const fillTop = sliderRect.bottom - fillPx;
+
+            const markers = sliderEl.querySelectorAll('.marker');
+            markers.forEach(m => {
+                const val = parseInt(m.dataset.val);
+                const markerY = sliderRect.top + (1 - val / 100) * totalHeight;
+                const dist = Math.abs(markerY - fillTop);
+                m.classList.toggle('active', dist < 12);
+            });
+        }
+
+        function snapToNearest(value) {
+            let closest = snapPoints[0];
+            let minDiff = Math.abs(value - closest);
+            for (const p of snapPoints) {
+                const diff = Math.abs(value - p);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = p;
+                }
+            }
+            return closest;
+        }
+
+        // ── Pointer / touch handling ──
+
+        function setupSlider(sliderEl) {
+            let isDragging = false;
+            let cfg = getSliderConfig(sliderEl);
+
+            function getPercentFromEvent(e) {
+                const rect = sliderEl.getBoundingClientRect();
+                const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+                const relativeY = (clientY - rect.top) / rect.height;
+                // 0% at bottom, 100% at top
+                const percent = 100 - Math.max(0, Math.min(1, relativeY)) * 100;
+                return Math.max(0, Math.min(100, percent));
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                isDragging = true;
+                sliderEl.style.cursor = 'grabbing';
+                // Remove slosh from previous drag
+                cfg.fill.classList.remove('slosh');
+                // Update immediately on click
+                const percent = getPercentFromEvent(e);
+                const rounded = Math.round(percent);
+                updateSlider(sliderEl, rounded);
+            }
+
+            function onMove(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const percent = getPercentFromEvent(e);
+                const rounded = Math.round(percent);
+                updateSlider(sliderEl, rounded);
+            }
+
+            function onEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                sliderEl.style.cursor = 'default';
+
+                // Snap to nearest marker
+                const current = cfg.getCurrent();
+                const snapped = snapToNearest(current);
+                if (snapped !== current) {
+                    updateSlider(sliderEl, snapped);
+                }
+
+                // Trigger slosh effect
+                cfg.fill.classList.remove('slosh');
+                // Force reflow then add class to restart animation
+                void cfg.fill.offsetWidth;
+                cfg.fill.classList.add('slosh');
+
+                // Update markers one last time
+                const markers = sliderEl.querySelectorAll('.marker');
+                markers.forEach(m => {
+                    const val = parseInt(m.dataset.val);
+                    m.classList.toggle('active', val === snapped);
+                });
+            }
+
+            // Mouse events
+            sliderEl.addEventListener('mousedown', onStart);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+
+            // Touch events
+            sliderEl.addEventListener('touchstart', onStart, { passive: false });
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd, { passive: false });
+
+            // Also allow clicking on markers to jump
+            sliderEl.querySelectorAll('.marker').forEach(marker => {
+                marker.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = parseInt(marker.dataset.val);
+                    updateSlider(sliderEl, val);
+                    // Trigger slosh
+                    cfg.fill.classList.remove('slosh');
+                    void cfg.fill.offsetWidth;
+                    cfg.fill.classList.add('slosh');
+                });
+            });
+
+            // Initial update with default values
+            const initial = cfg.getCurrent();
+            updateSlider(sliderEl, initial);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  SUMMARY & COPY
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getSummary() {
+            return `Water Level: ${state.water}% / Waste Level: ${state.waste}%`;
+        }
+
+        function copySummary() {
+            const text = getSummary();
+            navigator.clipboard.writeText(text).then(() => {
+                toastMsg.textContent = '✓ Copied!';
+                toastMsg.classList.add('show');
+                setTimeout(() => toastMsg.classList.remove('show'), 2000);
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                toastMsg.textContent = '✓ Copied!';
+                toastMsg.classList.add('show');
+                setTimeout(() => toastMsg.classList.remove('show'), 2000);
+            });
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function init() {
+            syncTheme();
+
+            // Setup sliders
+            setupSlider(waterSlider);
+            setupSlider(wasteSlider);
+
+            // Summary button
+            summarizeBtn.addEventListener('click', copySummary);
+
+            // Keyboard shortcut: Ctrl+C on the page copies summary
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                    // Only if focus is not on an input/textarea
+                    const tag = document.activeElement?.tagName || '';
+                    if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) {
+                        e.preventDefault();
+                        copySummary();
+                    }
+                }
+            });
+
+            console.log('💧 Checklist 22 ready');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
