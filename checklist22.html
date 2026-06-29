@@ -194,9 +194,6 @@
             align-items: center;
             gap: 4px;
         }
-        .flight-selector label .icon {
-            font-size: 0.9rem;
-        }
         .flight-selector input,
         .flight-selector select {
             font-family: 'Inter', sans-serif;
@@ -210,6 +207,11 @@
             outline: none;
             min-width: 100px;
             flex: 1 1 120px;
+        }
+        /* Give the aircraft dropdown more grow priority */
+        .flight-selector select {
+            flex: 2 1 140px;
+            min-width: 110px;
         }
         .flight-selector input:focus,
         .flight-selector select:focus {
@@ -598,8 +600,13 @@
             .flight-selector select {
                 font-size: 0.75rem;
                 padding: 5px 8px;
-                min-width: 70px;
-                flex: 1 1 70px;
+                min-width: 80px;
+                flex: 1 1 80px;
+            }
+            /* Give dropdown more room on mobile */
+            .flight-selector select {
+                flex: 2 1 100px;
+                min-width: 90px;
             }
             .flight-selector .btn-check {
                 font-size: 0.65rem;
@@ -696,6 +703,10 @@
                 flex: 1 1 60px;
                 font-size: 0.7rem;
             }
+            .flight-selector select {
+                flex: 2 1 70px;
+                min-width: 70px;
+            }
         }
     </style>
 </head>
@@ -708,11 +719,11 @@
             <span class="sub">💧 Flight Water Monitor</span>
         </div>
 
-        <!-- Flight Selector -->
+        <!-- Flight Selector – emojis removed for more space -->
         <div class="flight-selector">
-            <label><span class="icon">✈️</span> Flight</label>
+            <label>Flight</label>
             <input type="text" id="flightInput" placeholder="e.g. MH081 or 081" />
-            <label><span class="icon">🛩️</span> Aircraft</label>
+            <label>Aircraft</label>
             <select id="aircraftSelect">
                 <option value="b737">B737-800</option>
                 <option value="a330_200">A330-200</option>
