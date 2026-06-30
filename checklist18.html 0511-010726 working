@@ -492,28 +492,23 @@
         'use strict';
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  DATA (updated and sorted alphabetically)
+        //  DATA
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         const ITEMS = [
-            { id: 'akl-declaration', label: 'AKL Declaration form' },
-            { id: 'aus-465', label: 'AUS 465 declaration form' },
+            { id: 'ind-baggage', label: 'IND baggage declaration form' },
+            { id: 'ind-arrival', label: 'IND arrival form' },
             { id: 'bkk-passport', label: 'BKK passport pic / signed form' },
+            { id: 'aus-465', label: 'AUS 465 declaration form' },
+            { id: 'jpn-declaration', label: 'JPN declaration form' },
             { id: 'fumigation', label: 'Fumigation Form / Cans' },
             { id: 'gendec', label: 'GenDec' },
-            { id: 'health-ebola', label: 'Health form (Ebola etc.)' },
-            { id: 'ind-arrival', label: 'IND arrival form' },
-            { id: 'ind-baggage', label: 'IND baggage declaration form' },
-            { id: 'ind-dep-clearance', label: 'IND DEP clearance form' },
-            { id: 'indemnity-allergy', label: 'Indemnity Allergy form' },
-            { id: 'indemnity-lmu', label: 'Indemnity LMU no meal form' },
-            { id: 'indemnity-pregnancy', label: 'Indemnity Pregnancy form' },
-            { id: 'jpn-declaration', label: 'JPN declaration form' },
-            { id: 'lmc', label: 'LMC form' },
-            { id: 'ntl-depo', label: 'NTL / Depo form' },
-            { id: 'pax-landing', label: 'Pax Landing form' },
             { id: 'special-handling', label: 'Special Handling Form' },
+            { id: 'health-ebola', label: 'Health form (Ebola etc.)' },
             { id: 'ypta-um', label: 'YPTA / UM documents' },
+            { id: 'pregnancy', label: 'Pregnancy form' },
+            { id: 'allergy', label: 'Allergy form' },
+            { id: 'ntl-depo', label: 'NTL / Depo form' },
         ];
 
         const STORAGE_KEY = 'checklist18_selected';
@@ -601,6 +596,9 @@
                     toggleItem(id);
                 });
             });
+
+            // ── Keyboard shortcut: Ctrl+A to select all ──
+            // (handled globally)
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
