@@ -29,34 +29,6 @@
             --radius-sm: 10px;
             --transition: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             --danger: #D32F2F;
-            --water-color: #1A85C7;
-            --water-light: #7BC8F0;
-            --waste-color: #8B5A2B;
-            --waste-light: #C49A6C;
-        }
-
-        /* ── Ops (default, explicit) ── */
-        [data-theme="ops"] {
-            --bg: #F4F7FB;
-            --surface: #FFFFFF;
-            --surface2: #EEF3FA;
-            --border: #D6E0EF;
-            --border2: #C0CFDF;
-            --text: #0D1F3C;
-            --text2: #4A6280;
-            --text3: #8FA3BC;
-            --navy: #003580;
-            --navy2: #001F4E;
-            --navy3: #00418A;
-            --gold: #C9A84C;
-            --gold2: #E8C96A;
-            --shadow: 0 2px 12px rgba(0, 31, 78, 0.08);
-            --shadow2: 0 8px 30px rgba(0, 31, 78, 0.12);
-            --danger: #D32F2F;
-            --water-color: #1A85C7;
-            --water-light: #7BC8F0;
-            --waste-color: #8B5A2B;
-            --waste-light: #C49A6C;
         }
 
         /* ── Dark ── */
@@ -72,10 +44,6 @@
             --shadow: 0 2px 12px rgba(0, 0, 0, .3);
             --shadow2: 0 8px 30px rgba(0, 0, 0, .4);
             --danger: #EF5350;
-            --water-color: #4A90D9;
-            --water-light: #80B5E8;
-            --waste-color: #9B7B5A;
-            --waste-light: #C4A68A;
         }
 
         /* ── Black ── */
@@ -91,34 +59,15 @@
             --shadow: 0 2px 12px rgba(0, 0, 0, .6);
             --shadow2: 0 8px 30px rgba(0, 0, 0, .8);
             --danger: #FF6B6B;
-            --water-color: #5B8DEE;
-            --water-light: #A0BDF0;
-            --waste-color: #AA8A6A;
-            --waste-light: #CCB89A;
         }
 
         /* ── Modern ── */
         [data-theme="modern"] {
-            --bg: #F0F4FF;
-            --surface: #FFFFFF;
-            --surface2: #EBF2FF;
-            --border: #C7D7F7;
-            --border2: #A0BBF0;
-            --text: #1E293B;
-            --text2: #475569;
-            --text3: #94A3B8;
             --navy: #1D4ED8;
             --navy2: #1E3A8A;
             --navy3: #2563EB;
             --gold: #F59E0B;
             --gold2: #FCD34D;
-            --shadow: 0 2px 12px rgba(30, 58, 138, 0.08);
-            --shadow2: 0 8px 30px rgba(30, 58, 138, 0.14);
-            --danger: #DC2626;
-            --water-color: #1D4ED8;
-            --water-light: #8BB3F0;
-            --waste-color: #8B5A2B;
-            --waste-light: #C49A6C;
         }
 
         /* ── Jarvis ── */
@@ -139,10 +88,6 @@
             --shadow: 0 2px 12px rgba(0, 180, 216, 0.15);
             --shadow2: 0 8px 30px rgba(0, 180, 216, 0.2);
             --danger: #FF6B6B;
-            --water-color: #00B4D8;
-            --water-light: #80E0FF;
-            --waste-color: #4DD0E1;
-            --waste-light: #A8E6CF;
         }
 
         /* ── Cyberpunk ── */
@@ -163,86 +108,6 @@
             --shadow: 0 2px 12px rgba(255, 0, 127, 0.2);
             --shadow2: 0 8px 30px rgba(255, 0, 127, 0.25);
             --danger: #FF4D8C;
-            --water-color: #FF007F;
-            --water-light: #FF66B2;
-            --waste-color: #00FFD1;
-            --waste-light: #66FFE0;
-        }
-
-        /* ══════════════════════════════════════════
-           NEW THEMES
-        ══════════════════════════════════════════ */
-
-        /* ── EARTHY (Louis Vuitton inspired) ── */
-        [data-theme="earthy"] {
-            --bg: #F5F0E8;
-            --surface: #E8DCC8;
-            --surface2: #D4C5A9;
-            --border: #A68B6D;
-            --border2: #8B6B3A;
-            --text: #2C1A1A;
-            --text2: #7A5A3A;
-            --text3: #B89A7A;
-            --navy: #C5A55A;
-            --navy2: #4A2C2A;
-            --navy3: #D4B86A;
-            --gold: #C5A55A;
-            --gold2: #D4B86A;
-            --shadow: 0 2px 12px rgba(74, 44, 42, 0.12);
-            --shadow2: 0 8px 30px rgba(74, 44, 42, 0.18);
-            --danger: #7A3A2A;
-            --water-color: #8B6B3A;
-            --water-light: #C5A55A;
-            --waste-color: #7A5A3A;
-            --waste-light: #A68B6D;
-        }
-
-        /* ── MILITARY (Camo Green/Sand) ── */
-        [data-theme="military"] {
-            --bg: #2E3A2E;
-            --surface: #3A4A3A;
-            --surface2: #4A5A4A;
-            --border: #5A6A5A;
-            --border2: #6A7A6A;
-            --text: #E8F0E8;
-            --text2: #B0C0B0;
-            --text3: #7A8A7A;
-            --navy: #8B9A6B;
-            --navy2: #1A2A1A;
-            --navy3: #A0B08A;
-            --gold: #C4A86B;
-            --gold2: #D4B88A;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-            --shadow2: 0 8px 30px rgba(0, 0, 0, 0.45);
-            --danger: #C4A86B;
-            --water-color: #6A8A6A;
-            --water-light: #A0B8A0;
-            --waste-color: #8A7A5A;
-            --waste-light: #B0A080;
-        }
-
-        /* ── GOAT (Qatar Airways inspired) ── */
-        [data-theme="goat"] {
-            --bg: #1A0A0A;
-            --surface: #2A1418;
-            --surface2: #3A1E24;
-            --border: #5A2A30;
-            --border2: #7A3A40;
-            --text: #F0E8E0;
-            --text2: #C8A890;
-            --text3: #8A6A5A;
-            --navy: #8A1A2A;
-            --navy2: #4A0A12;
-            --navy3: #A02A3A;
-            --gold: #C9A84C;
-            --gold2: #E8C96A;
-            --shadow: 0 2px 12px rgba(74, 10, 18, 0.5);
-            --shadow2: 0 8px 30px rgba(74, 10, 18, 0.6);
-            --danger: #C9A84C;
-            --water-color: #8A1A2A;
-            --water-light: #C9A84C;
-            --waste-color: #7A3A40;
-            --waste-light: #A86A6A;
         }
 
         /* ══════════════════════════════════════════
@@ -343,6 +208,7 @@
             min-width: 100px;
             flex: 1 1 120px;
         }
+        /* Give the aircraft dropdown more grow priority */
         .flight-selector select {
             flex: 2 1 140px;
             min-width: 110px;
@@ -479,7 +345,7 @@
             left: 0;
             right: 0;
             border-radius: 0 0 28px 28px;
-            background: linear-gradient(180deg, var(--water-light), var(--water-color));
+            background: linear-gradient(180deg, var(--water-light, #7BC8F0), var(--water-color, #1A85C7));
             transition: height 0.05s linear, background var(--transition);
             overflow: hidden;
             will-change: height;
@@ -585,12 +451,28 @@
 
         /* ── Water & Waste specific colours ── */
         .tank.water .slider-fill {
-            --water-color: var(--water-color);
-            --water-light: var(--water-light);
+            --water-color: #1A85C7;
+            --water-light: #7BC8F0;
         }
         .tank.waste .slider-fill {
-            --water-color: var(--waste-color);
-            --water-light: var(--waste-light);
+            --water-color: #8B5A2B;
+            --water-light: #C49A6C;
+        }
+        [data-theme="jarvis"] .tank.water .slider-fill {
+            --water-color: #00B4D8;
+            --water-light: #80E0FF;
+        }
+        [data-theme="jarvis"] .tank.waste .slider-fill {
+            --water-color: #4DD0E1;
+            --water-light: #A8E6CF;
+        }
+        [data-theme="cyberpunk"] .tank.water .slider-fill {
+            --water-color: #FF007F;
+            --water-light: #FF66B2;
+        }
+        [data-theme="cyberpunk"] .tank.waste .slider-fill {
+            --water-color: #00FFD1;
+            --water-light: #66FFE0;
         }
 
         /* ── Warning message ── */
@@ -721,6 +603,7 @@
                 min-width: 80px;
                 flex: 1 1 80px;
             }
+            /* Give dropdown more room on mobile */
             .flight-selector select {
                 flex: 2 1 100px;
                 min-width: 90px;
@@ -1323,10 +1206,8 @@
         function syncTheme() {
             const params = new URLSearchParams(window.location.search);
             const theme = params.get('theme') || 'ops';
-            const validThemes = ['ops', 'dark', 'black', 'modern', 'jarvis', 'cyberpunk', 'earthy', 'military', 'goat'];
-            const finalTheme = validThemes.includes(theme) ? theme : 'ops';
-            document.body.setAttribute('data-theme', finalTheme);
-            localStorage.setItem('dashboard_theme', finalTheme);
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('dashboard_theme', theme);
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

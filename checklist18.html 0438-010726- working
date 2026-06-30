@@ -33,27 +33,6 @@
             --selected-text: #005A9C;
         }
 
-        [data-theme="ops"] {
-            --bg: #F4F7FB;
-            --surface: #FFFFFF;
-            --surface2: #EEF3FA;
-            --border: #D6E0EF;
-            --border2: #C0CFDF;
-            --text: #0D1F3C;
-            --text2: #4A6280;
-            --text3: #8FA3BC;
-            --navy: #003580;
-            --navy2: #001F4E;
-            --navy3: #00418A;
-            --gold: #C9A84C;
-            --gold2: #E8C96A;
-            --shadow: 0 2px 12px rgba(0, 31, 78, 0.08);
-            --shadow2: 0 8px 30px rgba(0, 31, 78, 0.12);
-            --selected-bg: #E3F0FA;
-            --selected-border: #1A85C7;
-            --selected-text: #005A9C;
-        }
-
         [data-theme="dark"] {
             --bg: #0D1525;
             --surface: #162035;
@@ -87,21 +66,11 @@
         }
 
         [data-theme="modern"] {
-            --bg: #F0F4FF;
-            --surface: #FFFFFF;
-            --surface2: #EBF2FF;
-            --border: #C7D7F7;
-            --border2: #A0BBF0;
-            --text: #1E293B;
-            --text2: #475569;
-            --text3: #94A3B8;
             --navy: #1D4ED8;
             --navy2: #1E3A8A;
             --navy3: #2563EB;
             --gold: #F59E0B;
             --gold2: #FCD34D;
-            --shadow: 0 2px 12px rgba(30, 58, 138, 0.08);
-            --shadow2: 0 8px 30px rgba(30, 58, 138, 0.14);
             --selected-bg: #EFF6FF;
             --selected-border: #1D4ED8;
             --selected-text: #1E3A8A;
@@ -147,76 +116,6 @@
             --selected-bg: #2A0A20;
             --selected-border: #FF007F;
             --selected-text: #FF66B2;
-        }
-
-        /* ══════════════════════════════════════════
-           NEW THEMES
-        ══════════════════════════════════════════ */
-
-        /* ── EARTHY (Louis Vuitton inspired) ── */
-        [data-theme="earthy"] {
-            --bg: #F5F0E8;
-            --surface: #E8DCC8;
-            --surface2: #D4C5A9;
-            --border: #A68B6D;
-            --border2: #8B6B3A;
-            --text: #2C1A1A;
-            --text2: #7A5A3A;
-            --text3: #B89A7A;
-            --navy: #C5A55A;
-            --navy2: #4A2C2A;
-            --navy3: #D4B86A;
-            --gold: #C5A55A;
-            --gold2: #D4B86A;
-            --shadow: 0 2px 12px rgba(74, 44, 42, 0.12);
-            --shadow2: 0 8px 30px rgba(74, 44, 42, 0.18);
-            --selected-bg: #D4C5A9;
-            --selected-border: #C5A55A;
-            --selected-text: #4A2C2A;
-        }
-
-        /* ── MILITARY (Camo Green/Sand) ── */
-        [data-theme="military"] {
-            --bg: #2E3A2E;
-            --surface: #3A4A3A;
-            --surface2: #4A5A4A;
-            --border: #5A6A5A;
-            --border2: #6A7A6A;
-            --text: #E8F0E8;
-            --text2: #B0C0B0;
-            --text3: #7A8A7A;
-            --navy: #8B9A6B;
-            --navy2: #1A2A1A;
-            --navy3: #A0B08A;
-            --gold: #C4A86B;
-            --gold2: #D4B88A;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-            --shadow2: 0 8px 30px rgba(0, 0, 0, 0.45);
-            --selected-bg: #5A6A5A;
-            --selected-border: #C4A86B;
-            --selected-text: #E8F0E8;
-        }
-
-        /* ── GOAT (Qatar Airways inspired) ── */
-        [data-theme="goat"] {
-            --bg: #1A0A0A;
-            --surface: #2A1418;
-            --surface2: #3A1E24;
-            --border: #5A2A30;
-            --border2: #7A3A40;
-            --text: #F0E8E0;
-            --text2: #C8A890;
-            --text3: #8A6A5A;
-            --navy: #8A1A2A;
-            --navy2: #4A0A12;
-            --navy3: #A02A3A;
-            --gold: #C9A84C;
-            --gold2: #E8C96A;
-            --shadow: 0 2px 12px rgba(74, 10, 18, 0.5);
-            --shadow2: 0 8px 30px rgba(74, 10, 18, 0.6);
-            --selected-bg: #3A1E24;
-            --selected-border: #C9A84C;
-            --selected-text: #F0E8E0;
         }
 
         /* ══════════════════════════════════════════
@@ -537,11 +436,8 @@
         function syncTheme() {
             const params = new URLSearchParams(window.location.search);
             const theme = params.get('theme') || 'ops';
-            // Check if the theme is valid – if not, fall back to 'ops'
-            const validThemes = ['ops', 'dark', 'black', 'modern', 'jarvis', 'cyberpunk', 'earthy', 'military', 'goat'];
-            const finalTheme = validThemes.includes(theme) ? theme : 'ops';
-            document.body.setAttribute('data-theme', finalTheme);
-            localStorage.setItem('dashboard_theme', finalTheme);
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('dashboard_theme', theme);
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
