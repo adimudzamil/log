@@ -118,73 +118,6 @@
         }
 
         /* ══════════════════════════════════════════
-           NEW THEMES
-        ══════════════════════════════════════════ */
-
-        /* ── EARTHY (Louis Vuitton inspired) ── */
-        [data-theme="earthy"] {
-            --bg: #F5F0E8;
-            --surface: #E8DCC8;
-            --surface2: #D4C5A9;
-            --border: #A68B6D;
-            --border2: #8B6B3A;
-            --text: #2C1A1A;
-            --text2: #7A5A3A;
-            --text3: #B89A7A;
-            --navy: #C5A55A;
-            --navy2: #4A2C2A;
-            --navy3: #D4B86A;
-            --gold: #C5A55A;
-            --gold2: #D4B86A;
-            --gold3: #E8DCC8;
-            --shadow: 0 2px 12px rgba(74, 44, 42, 0.12);
-            --shadow2: 0 8px 30px rgba(74, 44, 42, 0.18);
-            --glow: 0 0 25px rgba(197, 165, 90, 0.25);
-        }
-
-        /* ── MILITARY (Camo Green/Sand) ── */
-        [data-theme="military"] {
-            --bg: #2E3A2E;
-            --surface: #3A4A3A;
-            --surface2: #4A5A4A;
-            --border: #5A6A5A;
-            --border2: #6A7A6A;
-            --text: #E8F0E8;
-            --text2: #B0C0B0;
-            --text3: #7A8A7A;
-            --navy: #8B9A6B;
-            --navy2: #1A2A1A;
-            --navy3: #A0B08A;
-            --gold: #C4A86B;
-            --gold2: #D4B88A;
-            --gold3: #3A4A3A;
-            --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-            --shadow2: 0 8px 30px rgba(0, 0, 0, 0.45);
-            --glow: 0 0 25px rgba(196, 168, 107, 0.2);
-        }
-
-        /* ── GOAT (Qatar Airways inspired) ── */
-        [data-theme="goat"] {
-            --bg: #1A0A0A;
-            --surface: #2A1418;
-            --surface2: #3A1E24;
-            --border: #5A2A30;
-            --border2: #7A3A40;
-            --text: #F0E8E0;
-            --text2: #C8A890;
-            --text3: #8A6A5A;
-            --navy: #8A1A2A;
-            --navy2: #4A0A12;
-            --navy3: #A02A3A;
-            --gold: #C9A84C;
-            --gold2: #E8C96A;
-            --gold3: #2A1418;
-            --shadow: 0 2px 12px rgba(74, 10, 18, 0.5);
-            --shadow2: 0 8px 30px rgba(74, 10, 18, 0.6);
-            --glow: 0 0 25px rgba(201, 168, 76, 0.2);
-        }
-
-        /* ══════════════════════════════════════════
            RESET & BASE
         ══════════════════════════════════════════ */
         *,
@@ -291,69 +224,6 @@
             background: rgba(255, 255, 255, .1);
             color: #fff;
             transform: scale(1.05);
-        }
-
-        /* ══════════════════════════════════════════
-           BACKUP BANNER
-        ══════════════════════════════════════════ */
-        .backup-banner {
-            display: none;
-            background: linear-gradient(135deg, #8B1A1A, #C0392B);
-            color: #fff;
-            padding: 10px 20px;
-            text-align: center;
-            font-size: 0.82rem;
-            font-weight: 600;
-            border-bottom: 2px solid var(--gold);
-            flex-shrink: 0;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            transition: background var(--transition);
-            position: relative;
-            z-index: 90;
-        }
-        .backup-banner.show {
-            display: flex;
-        }
-        .backup-banner .bb-text {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .backup-banner .bb-text .icon {
-            font-size: 1.2rem;
-        }
-        .backup-banner .bb-btn {
-            background: var(--gold);
-            color: var(--navy2);
-            border: none;
-            border-radius: 6px;
-            padding: 4px 16px;
-            font-weight: 700;
-            font-size: 0.75rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all .2s;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-        }
-        .backup-banner .bb-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-        }
-        .backup-banner .bb-dismiss {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, .6);
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 0 4px;
-            transition: color .2s;
-        }
-        .backup-banner .bb-dismiss:hover {
-            color: #fff;
         }
 
         /* ══════════════════════════════════════════
@@ -1209,79 +1079,9 @@
         .report-io .btn-io.danger:hover {
             background: #DC2626;
         }
-        .report-io .btn-io.gold {
-            background: var(--gold);
-            color: var(--navy2);
-            border-color: var(--gold);
-        }
-        .report-io .btn-io.gold:hover {
-            background: var(--gold2);
-        }
-        .report-io .btn-io.link {
-            background: var(--surface);
-            color: var(--text2);
-            border-color: var(--border2);
-        }
-        .report-io .btn-io.link:hover {
-            border-color: var(--navy);
-            color: var(--navy);
-        }
-        .report-io .btn-io.link.linked {
-            border-color: #22C55E;
-            color: #16A34A;
-        }
-
-        /* ── Backup status ── */
-        .backup-status {
-            font-size: 0.78rem;
-            color: var(--text3);
-            padding: 4px 0 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .backup-status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-        .backup-status .dot.good {
-            background: #22C55E;
-        }
-        .backup-status .dot.warn {
-            background: #F59E0B;
-        }
-        .backup-status .dot.bad {
-            background: #EF4444;
-        }
-        .backup-status .dot.saving {
-            background: #F59E0B;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.5;
-                transform: scale(0.8);
-            }
-        }
 
         /* ── Hidden file input ── */
         #importFileInput {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-        }
-        #linkFileInput {
             position: absolute;
             left: -9999px;
             width: 1px;
@@ -1313,9 +1113,6 @@
         .toast-global.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
-        }
-        .toast-global.err {
-            border-left-color: #EF4444;
         }
 
         /* ══════════════════════════════════════════
@@ -1399,14 +1196,6 @@
             body.layout-vertical .tab-item:hover::after {
                 display: none;
             }
-            .backup-banner {
-                font-size: 0.72rem;
-                padding: 8px 14px;
-            }
-            .backup-banner .bb-btn {
-                font-size: 0.68rem;
-                padding: 3px 12px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1426,9 +1215,6 @@
                 height: 34px;
                 font-size: 10px;
             }
-            .backup-banner .bb-text .icon {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -1443,16 +1229,6 @@
         <div class="hdr-spacer"></div>
         <button class="hdr-btn" id="settingsBtn" title="Settings" aria-label="Settings">⚙️</button>
     </header>
-
-    <!-- ═══════ BACKUP BANNER ═══════ -->
-    <div class="backup-banner" id="backupBanner">
-        <span class="bb-text">
-            <span class="icon">⚠️</span>
-            <span id="bbMessage">Your data is stored locally. Back up your reports regularly!</span>
-        </span>
-        <button class="bb-btn" id="bbBackupBtn">📥 Backup Now</button>
-        <button class="bb-dismiss" id="bbDismissBtn">✕</button>
-    </div>
 
     <!-- ═══════ TAB BAR WRAP ═══════ -->
     <div class="tab-bar-wrap" id="tabBarWrap">
@@ -1480,26 +1256,6 @@
                 <button class="close-btn" id="closeSettingsBtn">✕</button>
             </div>
             <div class="modal-body">
-
-                <!-- Backup Status -->
-                <div style="margin-bottom:1.5rem;">
-                    <div style="font-size:0.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;">💾 Backup Status</div>
-                    <div class="backup-status" id="backupStatus">
-                        <span class="dot" id="backupDot"></span>
-                        <span id="backupStatusText">Checking…</span>
-                    </div>
-                    <div class="report-io" style="margin-top:6px;">
-                        <button class="btn-io primary" id="exportAllBtn">⬇ Export JSON</button>
-                        <button class="btn-io" id="importAllBtn">⬆ Import</button>
-                        <button class="btn-io link" id="linkFileBtn">🔗 Link File</button>
-                        <button class="btn-io link linked" id="unlinkFileBtn" style="display:none;">🔓 Unlink</button>
-                    </div>
-                    <input type="file" id="importAllFileInput" accept=".json" />
-                    <input type="file" id="linkFileInput" accept=".json" />
-                    <div style="font-size:0.7rem;color:var(--text3);margin-top:4px;">
-                        Export saves all reports · Import merges (overwrites existing) · Linked file auto-saves
-                    </div>
-                </div>
 
                 <!-- Theme -->
                 <div style="margin-bottom:1.5rem;">
@@ -1536,18 +1292,18 @@
                     </div>
                 </div>
 
-                <!-- Reports Backup (legacy) -->
+                <!-- Reports Backup -->
                 <div style="margin:1.5rem 0;">
-                    <div style="font-size:0.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;">📄 Reports</div>
+                    <div style="font-size:0.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;">💾 Reports</div>
                     <div class="report-io">
-                        <button class="btn-io primary" id="exportReportsBtn">⬇ Export Reports</button>
-                        <button class="btn-io" id="importReportsBtn">⬆ Import Reports</button>
+                        <button class="btn-io primary" id="exportReportsBtn">⬇ Export All</button>
+                        <button class="btn-io" id="importReportsBtn">⬆ Import</button>
                         <button class="btn-io danger" id="clearReportsBtn">🗑️ Clear All</button>
                     </div>
-                    <input type="file" id="importFileInput" accept=".json" />
                     <div style="font-size:0.7rem;color:var(--text3);margin-top:2px;">
-                        Export only report data · Import merges (overwrites existing)
+                        Export as .json · Import merges (overwrites existing)
                     </div>
+                    <input type="file" id="importFileInput" accept=".json" />
                 </div>
 
                 <!-- About -->
@@ -1603,9 +1359,6 @@
         const REPORT_PREFIX = 'dashboard_report_';
         const THEME_KEY = 'dashboard_theme';
         const LAYOUT_KEY = 'dashboard_layout';
-        const BACKUP_DISMISS_KEY = 'dashboard_backup_dismissed';
-        const BACKUP_LAST_KEY = 'dashboard_backup_last';
-        const LINKED_FILE_KEY = 'dashboard_linked_file';
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         //  STATE
@@ -1613,9 +1366,6 @@
 
         let activeTabId = 1;
         let visibleIds = [];
-        let fileHandle = null;
-        let fsaSupported = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
-        let backupBannerShown = false;
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         //  DOM REFS
@@ -1628,10 +1378,6 @@
         const themeGrid = document.getElementById('themeGrid');
         const layoutGrid = document.getElementById('layoutGrid');
         const toastGlobal = document.getElementById('toastGlobal');
-        const backupBanner = document.getElementById('backupBanner');
-        const bbMessage = document.getElementById('bbMessage');
-        const bbBackupBtn = document.getElementById('bbBackupBtn');
-        const bbDismissBtn = document.getElementById('bbDismissBtn');
 
         const showAllBtn = document.getElementById('showAllBtn');
         const hideAllBtn = document.getElementById('hideAllBtn');
@@ -1647,18 +1393,6 @@
         const clearBtn = document.getElementById('clearReportsBtn');
         const importFileInput = document.getElementById('importFileInput');
 
-        // Full backup I/O
-        const exportAllBtn = document.getElementById('exportAllBtn');
-        const importAllBtn = document.getElementById('importAllBtn');
-        const importAllFileInput = document.getElementById('importAllFileInput');
-        const linkFileBtn = document.getElementById('linkFileBtn');
-        const unlinkFileBtn = document.getElementById('unlinkFileBtn');
-        const linkFileInput = document.getElementById('linkFileInput');
-
-        // Backup status
-        const backupDot = document.getElementById('backupDot');
-        const backupStatusText = document.getElementById('backupStatusText');
-
         let toastTimer = null;
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1672,9 +1406,6 @@
             { id: 'black', label: 'Black', sub: 'OLED Black', swatch: 'linear-gradient(90deg,#000,#444)' },
             { id: 'jarvis', label: 'Jarvis', sub: 'Futuristic · Cyan', swatch: 'linear-gradient(90deg,#0077B6,#00E5FF)' },
             { id: 'cyberpunk', label: 'Cyberpunk', sub: 'Neon · Pink', swatch: 'linear-gradient(90deg,#CC0066,#00FFD1)' },
-            { id: 'earthy', label: 'Earthy', sub: 'Luxury · Brown/Gold', swatch: 'linear-gradient(90deg,#F5F0E8,#C5A55A)' },
-            { id: 'military', label: 'Military', sub: 'Camo · Green/Sand', swatch: 'linear-gradient(90deg,#2E3A2E,#C4A86B)' },
-            { id: 'goat', label: 'Goat', sub: 'Qatar · Maroon/Gold', swatch: 'linear-gradient(90deg,#4A0A12,#C9A84C)' },
         ];
 
         function setTheme(id) {
@@ -1687,10 +1418,7 @@
                 dark: '#0D1525',
                 black: '#000000',
                 jarvis: '#0077B6',
-                cyberpunk: '#CC0066',
-                earthy: '#4A2C2A',
-                military: '#2E3A2E',
-                goat: '#4A0A12'
+                cyberpunk: '#CC0066'
             };
             document.querySelector('meta[name="theme-color"]').content = map[id] || '#001F4E';
             render();
@@ -1769,209 +1497,8 @@
             return reports;
         }
 
-        function getAllData() {
-            return {
-                reports: getAllReports(),
-                visibility: visibleIds,
-                activeTab: activeTabId,
-                theme: document.body.dataset.theme,
-                layout: document.body.classList.contains('layout-vertical') ? 'vertical' : 'horizontal'
-            };
-        }
-
-        function loadAllData(data) {
-            if (!data || typeof data !== 'object') return false;
-            let count = 0;
-            // Load reports
-            if (data.reports && typeof data.reports === 'object') {
-                for (const [id, text] of Object.entries(data.reports)) {
-                    const numId = parseInt(id);
-                    if (!isNaN(numId) && text && typeof text === 'string') {
-                        saveReportText(numId, text);
-                        count++;
-                    }
-                }
-            }
-            // Load visibility
-            if (data.visibility && Array.isArray(data.visibility) && data.visibility.length) {
-                visibleIds = data.visibility;
-                saveVisibility(visibleIds);
-            }
-            // Load active tab
-            if (data.activeTab && visibleIds.includes(data.activeTab)) {
-                activeTabId = data.activeTab;
-            }
-            // Load theme
-            if (data.theme && THEMES.some(t => t.id === data.theme)) {
-                setTheme(data.theme);
-            }
-            // Load layout
-            if (data.layout) {
-                setLayout(data.layout);
-            }
-            return count;
-        }
-
-        function getLastBackup() {
-            const val = localStorage.getItem(BACKUP_LAST_KEY);
-            if (val) {
-                try {
-                    return new Date(parseInt(val));
-                } catch (_) { return null; }
-            }
-            return null;
-        }
-
-        function setLastBackup() {
-            localStorage.setItem(BACKUP_LAST_KEY, String(Date.now()));
-        }
-
-        function getBackupDismissed() {
-            const val = localStorage.getItem(BACKUP_DISMISS_KEY);
-            if (val) {
-                try {
-                    const ts = parseInt(val);
-                    // Dismiss lasts for 7 days
-                    if (Date.now() - ts < 7 * 24 * 60 * 60 * 1000) return true;
-                } catch (_) { return false; }
-            }
-            return false;
-        }
-
-        function setBackupDismissed() {
-            localStorage.setItem(BACKUP_DISMISS_KEY, String(Date.now()));
-        }
-
-        function getLinkedFileId() {
-            return localStorage.getItem(LINKED_FILE_KEY) || null;
-        }
-
-        function setLinkedFileId(id) {
-            if (id) {
-                localStorage.setItem(LINKED_FILE_KEY, id);
-            } else {
-                localStorage.removeItem(LINKED_FILE_KEY);
-            }
-        }
-
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  BACKUP BANNER
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        function checkBackupStatus() {
-            const last = getLastBackup();
-            const dismissed = getBackupDismissed();
-
-            if (dismissed) {
-                backupBanner.classList.remove('show');
-                return;
-            }
-
-            // If no backup ever, or older than 3 days
-            if (!last || (Date.now() - last.getTime() > 3 * 24 * 60 * 60 * 1000)) {
-                backupBanner.classList.add('show');
-                bbMessage.textContent = last ?
-                    `Your last backup was ${last.toLocaleDateString()}. Please back up your reports!` :
-                    '⚠️ Your data is stored locally. Please back up your reports!';
-                backupBannerShown = true;
-            } else {
-                backupBanner.classList.remove('show');
-            }
-        }
-
-        bbBackupBtn.addEventListener('click', () => {
-            // Trigger export
-            exportFullBackup();
-            // Also dismiss the banner for a while
-            setBackupDismissed();
-            backupBanner.classList.remove('show');
-        });
-
-        bbDismissBtn.addEventListener('click', () => {
-            setBackupDismissed();
-            backupBanner.classList.remove('show');
-        });
-
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  FULL BACKUP
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        function exportFullBackup() {
-            const data = getAllData();
-            if (Object.keys(data.reports).length === 0) {
-                showToast('No data to export', 'err');
-                return;
-            }
-            const payload = {
-                _meta: {
-                    exported: new Date().toISOString(),
-                    version: '1.0',
-                    app: 'EVR-pro',
-                    type: 'full'
-                },
-                ...data
-            };
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `EVR_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            setLastBackup();
-            showToast(`Backup saved — ${Object.keys(data.reports).length} reports`, 'ok');
-            updateBackupStatus();
-        }
-
-        function importFullBackup(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    // Support both full and reports-only formats
-                    const reports = data.reports || data;
-                    if (!reports || typeof reports !== 'object') {
-                        showToast('Invalid file format', 'err');
-                        return;
-                    }
-                    // Check if it's a full backup with metadata
-                    if (data._meta && data._meta.type === 'full') {
-                        // Full backup: load everything
-                        const count = loadAllData(data);
-                        // Re-render everything
-                        render();
-                        setLastBackup();
-                        showToast(`Imported full backup — ${count} reports`, 'ok');
-                        updateBackupStatus();
-                        return;
-                    }
-
-                    // Fallback: reports-only
-                    const replace = confirm(
-                        'This appears to be a reports-only file.\n\n' +
-                        'Click OK to merge (overwrite existing reports), Cancel to replace all.'
-                    );
-                    if (!replace) {
-                        CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                            saveReportText(c.id, '');
-                        });
-                    }
-                    const count = loadReportsFromJSON(reports);
-                    render();
-                    setLastBackup();
-                    showToast(`Imported ${count} reports`, 'ok');
-                    updateBackupStatus();
-                } catch (err) {
-                    showToast('Error reading file: ' + err.message, 'err');
-                }
-            };
-            reader.readAsText(file);
-        }
-
         function loadReportsFromJSON(data) {
-            if (!data || typeof data !== 'object') return 0;
+            if (!data || typeof data !== 'object') return false;
             let count = 0;
             for (const [id, text] of Object.entries(data)) {
                 const numId = parseInt(id);
@@ -1983,131 +1510,72 @@
             return count;
         }
 
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  LINKED FILE (File System Access API)
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        async function linkBackupFile() {
-            if (!fsaSupported) {
-                showToast('File linking not supported on this browser — use Export/Import instead', 'err');
+        function exportReports() {
+            const reports = getAllReports();
+            if (Object.keys(reports).length === 0) {
+                showToast('No reports to export', 'err');
                 return;
             }
-            try {
-                // Try to open an existing file first, or create new
-                let handle;
+            const payload = {
+                _meta: {
+                    exported: new Date().toISOString(),
+                    version: '1.0',
+                    app: 'EVR-pro'
+                },
+                reports
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `EVR_Reports_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`Exported ${Object.keys(reports).length} reports`, 'ok');
+        }
+
+        function importReports(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
                 try {
-                    [handle] = await window.showOpenFilePicker({
-                        types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }],
-                        multiple: false
-                    });
-                } catch (openErr) {
-                    // User cancelled or file not found — offer to create
-                    if (openErr.name === 'AbortError') return;
-                    handle = await window.showSaveFilePicker({
-                        suggestedName: 'EVR_Backup.json',
-                        types: [{ description: 'JSON Backup', accept: { 'application/json': ['.json'] } }]
-                    });
+                    const data = JSON.parse(e.target.result);
+                    const reports = data.reports || data; // support both formats
+                    if (!reports || typeof reports !== 'object') {
+                        showToast('Invalid file format', 'err');
+                        return;
+                    }
+                    // Confirm merge
+                    const replace = confirm(
+                        'Import will merge (overwrite existing) reports.\n\n' +
+                        'Click OK to merge, Cancel to replace all existing reports.'
+                    );
+                    if (!replace) {
+                        // Replace: clear all existing reports first
+                        CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
+                            saveReportText(c.id, '');
+                        });
+                        showToast('All existing reports cleared. Importing...', 'ok');
+                    }
+                    const count = loadReportsFromJSON(reports);
+                    // Re-render current content if it's a report
+                    render();
+                    showToast(`Imported ${count} reports`, 'ok');
+                } catch (err) {
+                    showToast('Error reading file: ' + err.message, 'err');
                 }
-
-                fileHandle = handle;
-                const fileId = Date.now() + '-' + Math.random().toString(36).slice(2, 6);
-                setLinkedFileId(fileId);
-                updateLinkBtn(true);
-                showToast('File linked — auto-saving enabled', 'ok');
-
-                // Initial save
-                await writeToLinkedFile();
-
-            } catch (e) {
-                if (e.name !== 'AbortError') {
-                    showToast('Could not link file: ' + e.message, 'err');
-                }
-            }
+            };
+            reader.readAsText(file);
         }
 
-        async function unlinkBackupFile() {
-            fileHandle = null;
-            setLinkedFileId(null);
-            updateLinkBtn(false);
-            showToast('File unlinked', 'ok');
-        }
-
-        async function writeToLinkedFile() {
-            if (!fileHandle) return false;
-            try {
-                const data = getAllData();
-                const payload = {
-                    _meta: {
-                        exported: new Date().toISOString(),
-                        version: '1.0',
-                        app: 'EVR-pro',
-                        type: 'full'
-                    },
-                    ...data
-                };
-                const writable = await fileHandle.createWritable();
-                await writable.write(JSON.stringify(payload, null, 2));
-                await writable.close();
-                setLastBackup();
-                updateBackupStatus();
-                return true;
-            } catch (e) {
-                console.warn('Auto-save write failed:', e);
-                return false;
-            }
-        }
-
-        function updateLinkBtn(linked) {
-            if (linked) {
-                linkFileBtn.style.display = 'none';
-                unlinkFileBtn.style.display = 'inline-flex';
-                unlinkFileBtn.className = 'btn-io link linked';
-            } else {
-                linkFileBtn.style.display = 'inline-flex';
-                unlinkFileBtn.style.display = 'none';
-                if (!fsaSupported) {
-                    linkFileBtn.style.opacity = '0.5';
-                    linkFileBtn.title = 'Not supported on this browser';
-                }
-            }
-        }
-
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  BACKUP STATUS UI
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        function updateBackupStatus() {
-            const last = getLastBackup();
-            const dot = backupDot;
-            const text = backupStatusText;
-
-            if (!dot || !text) return;
-
-            if (last) {
-                const days = Math.floor((Date.now() - last.getTime()) / (24 * 60 * 60 * 1000));
-                if (days < 1) {
-                    dot.className = 'dot good';
-                    text.textContent = `✅ Backed up today (${last.toLocaleTimeString()})`;
-                } else if (days < 3) {
-                    dot.className = 'dot good';
-                    text.textContent = `✅ Backed up ${days} day${days > 1 ? 's' : ''} ago`;
-                } else if (days < 7) {
-                    dot.className = 'dot warn';
-                    text.textContent = `⚠️ Last backup ${days} days ago — consider backing up`;
-                } else {
-                    dot.className = 'dot bad';
-                    text.textContent = `🔴 Last backup ${days} days ago — please back up now!`;
-                }
-            } else {
-                dot.className = 'dot bad';
-                text.textContent = '🔴 No backup found — please export your data!';
-            }
-
-            // Check if linked file
-            const linked = getLinkedFileId();
-            if (linked) {
-                text.textContent += ' 🔗 (linked)';
-            }
+        function clearAllReports() {
+            if (!confirm('Delete ALL report data? This cannot be undone.')) return;
+            CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
+                saveReportText(c.id, '');
+            });
+            render();
+            showToast('All reports cleared', 'ok');
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2133,24 +1601,6 @@
             renderVisibilityList();
             updateLayoutGrid();
             updateThemeGrid();
-            updateBackupStatus();
-            checkBackupStatus();
-
-            // Restore linked file state
-            const linkedId = getLinkedFileId();
-            if (linkedId && fsaSupported) {
-                // Try to restore file handle from session
-                // We can't restore the handle without user interaction, but we can show the UI state
-                updateLinkBtn(true);
-                // Attempt to re-link if we have a file ID
-                if (!fileHandle) {
-                    // We need user to re-link via the button
-                    // Show a hint
-                    // Don't show a toast every time
-                }
-            } else {
-                updateLinkBtn(false);
-            }
         }
 
         function renderTabBar() {
@@ -2317,8 +1767,6 @@
 
                 textarea.addEventListener('input', function() {
                     saveReportText(checklist.id, this.value);
-                    // Auto-save triggers backup status update
-                    updateBackupStatus();
                 });
 
                 copyBtn.addEventListener('click', function() {
@@ -2347,7 +1795,6 @@
                     toastMsg.textContent = '💾 Saved!';
                     toastMsg.classList.add('show');
                     setTimeout(() => toastMsg.classList.remove('show'), 1200);
-                    updateBackupStatus();
                 });
 
                 clearBtn.addEventListener('click', function() {
@@ -2357,7 +1804,6 @@
                     toastMsg.textContent = '🗑️ Cleared.';
                     toastMsg.classList.add('show');
                     setTimeout(() => toastMsg.classList.remove('show'), 1200);
-                    updateBackupStatus();
                 });
             }
         }
@@ -2436,7 +1882,6 @@
 
         function openSettings() {
             renderVisibilityList();
-            updateBackupStatus();
             settingsModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -2444,75 +1889,6 @@
         function closeSettings() {
             settingsModal.classList.remove('active');
             document.body.style.overflow = '';
-        }
-
-        // ── Report I/O ──
-
-        function exportReports() {
-            const reports = getAllReports();
-            if (Object.keys(reports).length === 0) {
-                showToast('No reports to export', 'err');
-                return;
-            }
-            const payload = {
-                _meta: {
-                    exported: new Date().toISOString(),
-                    version: '1.0',
-                    app: 'EVR-pro'
-                },
-                reports
-            };
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `EVR_Reports_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(`Exported ${Object.keys(reports).length} reports`, 'ok');
-        }
-
-        function importReports(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    const reports = data.reports || data;
-                    if (!reports || typeof reports !== 'object') {
-                        showToast('Invalid file format', 'err');
-                        return;
-                    }
-                    const replace = confirm(
-                        'Import will merge (overwrite existing) reports.\n\n' +
-                        'Click OK to merge, Cancel to replace all existing reports.'
-                    );
-                    if (!replace) {
-                        CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                            saveReportText(c.id, '');
-                        });
-                    }
-                    const count = loadReportsFromJSON(reports);
-                    render();
-                    setLastBackup();
-                    showToast(`Imported ${count} reports`, 'ok');
-                    updateBackupStatus();
-                } catch (err) {
-                    showToast('Error reading file: ' + err.message, 'err');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function clearAllReports() {
-            if (!confirm('Delete ALL report data? This cannot be undone.')) return;
-            CHECKLISTS.filter(c => c.type === 'report').forEach(c => {
-                saveReportText(c.id, '');
-            });
-            render();
-            showToast('All reports cleared', 'ok');
-            updateBackupStatus();
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2555,26 +1931,19 @@
 
             // ── Report I/O events ──
             exportBtn.addEventListener('click', exportReports);
-            importBtn.addEventListener('click', () => importFileInput.click());
+
+            importBtn.addEventListener('click', () => {
+                importFileInput.click();
+            });
+
             importFileInput.addEventListener('change', (e) => {
                 if (e.target.files && e.target.files[0]) {
                     importReports(e.target.files[0]);
-                    e.target.value = '';
+                    e.target.value = ''; // reset
                 }
             });
-            clearBtn.addEventListener('click', clearAllReports);
 
-            // ── Full backup I/O events ──
-            exportAllBtn.addEventListener('click', exportFullBackup);
-            importAllBtn.addEventListener('click', () => importAllFileInput.click());
-            importAllFileInput.addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
-                    importFullBackup(e.target.files[0]);
-                    e.target.value = '';
-                }
-            });
-            linkFileBtn.addEventListener('click', linkBackupFile);
-            unlinkFileBtn.addEventListener('click', unlinkBackupFile);
+            clearBtn.addEventListener('click', clearAllReports);
 
             // ── Settings modal events ──
             showAllBtn.addEventListener('click', showAllTabs);
@@ -2599,24 +1968,7 @@
                 }
             });
 
-            // ── Auto-save linked file on visibility change ──
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && fileHandle) {
-                    writeToLinkedFile();
-                }
-            });
-
-            // ── Periodic backup check ──
-            setInterval(() => {
-                checkBackupStatus();
-                updateBackupStatus();
-                // Auto-save to linked file periodically if linked
-                if (fileHandle) {
-                    writeToLinkedFile();
-                }
-            }, 5 * 60 * 1000); // every 5 minutes
-
-            console.log('📋 EVR-pro Dashboard ready — with backup protection');
+            console.log('📋 EVR-pro Dashboard ready');
         }
 
         document.addEventListener('DOMContentLoaded', init);
