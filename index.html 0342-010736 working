@@ -1053,7 +1053,34 @@
             --meta-color: #0A0E1A;
         }
 
-        /* ── CYBER ───────────────────────────────────────────── */
+        /* ── NEW THEMES ───────────────────────────────────────── */
+        /* EARTHY */
+        [data-theme="earthy"] {
+            --h-grad-a: #996B42;
+            --h-grad-b: #4C3D2E;
+            --tab-bg: linear-gradient(135deg, #4C3D2E, #996B42);
+            --accent: #996B42;
+            --accent2: #4C3D2E;
+            --accent3: #D6A986;
+            --btn-active: #E9D0C1;
+            --rec-grad-a: #996B42;
+            --rec-grad-b: #4C3D2E;
+            --body-bg: #E9D0C1;
+            --surface: #D6A986;
+            --surface2: #9D8979;
+            --border: #9D8979;
+            --text: #4C3D2E;
+            --text2: #9D8979;
+            --text3: #D6A986;
+            --session-active-a: #996B42;
+            --session-active-b: #4C3D2E;
+            --log-time-col: #996B42;
+            --sett-hdr-a: #996B42;
+            --sett-hdr-b: #4C3D2E;
+            --sett-gold: #D6A986;
+            --meta-color: #4C3D2E;
+        }
+        /* CYBER */
         [data-theme="cyber"] {
             --h-grad-a: #66FCF1;
             --h-grad-b: #45A29E;
@@ -1079,8 +1106,33 @@
             --sett-gold: #66FCF1;
             --meta-color: #0B0C10;
         }
-
-        /* ── NEON ────────────────────────────────────────────── */
+        /* FOREST */
+        [data-theme="forest"] {
+            --h-grad-a: #86C232;
+            --h-grad-b: #61892F;
+            --tab-bg: linear-gradient(135deg, #222629, #474B4F);
+            --accent: #86C232;
+            --accent2: #61892F;
+            --accent3: #61892F;
+            --btn-active: #61892F;
+            --rec-grad-a: #86C232;
+            --rec-grad-b: #61892F;
+            --body-bg: #222629;
+            --surface: #474B4F;
+            --surface2: #6B6E70;
+            --border: #6B6E70;
+            --text: #FFFFFF;
+            --text2: #86C232;
+            --text3: #61892F;
+            --session-active-a: #86C232;
+            --session-active-b: #61892F;
+            --log-time-col: #86C232;
+            --sett-hdr-a: #86C232;
+            --sett-hdr-b: #61892F;
+            --sett-gold: #86C232;
+            --meta-color: #222629;
+        }
+        /* NEON */
         [data-theme="neon"] {
             --h-grad-a: #CB2D6F;
             --h-grad-b: #501F3A;
@@ -1105,60 +1157,6 @@
             --sett-hdr-b: #501F3A;
             --sett-gold: #14A098;
             --meta-color: #0F292F;
-        }
-
-        /* ── EARTHY (Louis Vuitton – Luxury) ────────────────── */
-        [data-theme="earthy"] {
-            --h-grad-a: #4A2C2A;
-            --h-grad-b: #C5A55A;
-            --tab-bg: linear-gradient(135deg, #4A2C2A, #C5A55A);
-            --accent: #C5A55A;
-            --accent2: #8B6B3A;
-            --accent3: #A68B6D;
-            --btn-active: #E8DCC8;
-            --rec-grad-a: #C5A55A;
-            --rec-grad-b: #8B6B3A;
-            --body-bg: #F5F0E8;
-            --surface: #E8DCC8;
-            --surface2: #D4C5A9;
-            --border: #A68B6D;
-            --text: #2C1A1A;
-            --text2: #7A5A3A;
-            --text3: #B89A7A;
-            --session-active-a: #C5A55A;
-            --session-active-b: #8B6B3A;
-            --log-time-col: #C5A55A;
-            --sett-hdr-a: #4A2C2A;
-            --sett-hdr-b: #C5A55A;
-            --sett-gold: #C5A55A;
-            --meta-color: #4A2C2A;
-        }
-
-        /* ── FOREST (Military/Camo – Acid Green) ────────────── */
-        [data-theme="forest"] {
-            --h-grad-a: #1A2A1A;
-            --h-grad-b: #0A0A0A;
-            --tab-bg: linear-gradient(135deg, #1A2A1A, #0A0A0A);
-            --accent: #7FFF00;
-            --accent2: #4C8B00;
-            --accent3: #7FFF00;
-            --btn-active: #3A4A3A;
-            --rec-grad-a: #7FFF00;
-            --rec-grad-b: #4C8B00;
-            --body-bg: #1A1A1A;
-            --surface: #2E3A2E;
-            --surface2: #3A4A3A;
-            --border: #4A5A4A;
-            --text: #E0E0E0;
-            --text2: #A0B0A0;
-            --text3: #6A7A6A;
-            --session-active-a: #7FFF00;
-            --session-active-b: #4C8B00;
-            --log-time-col: #7FFF00;
-            --sett-hdr-a: #1A2A1A;
-            --sett-hdr-b: #7FFF00;
-            --sett-gold: #7FFF00;
-            --meta-color: #1A1A1A;
         }
 
         /* ══════════════════════════════════════════ APPLY THEME VARS TO EXISTING ELEMENTS ══════════════════════════════════════════ */
@@ -1843,27 +1841,26 @@
                                 <div class="theme-name">Midnight</div>
                                 <div class="theme-sub">OLED Black</div>
                             </button>
+                            <!-- NEW THEMES -->
+                            <button class="theme-btn" data-theme="earthy" onclick="applyTheme('earthy')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#E9D0C1,#4C3D2E)"></div>
+                                <div class="theme-name">Earthy</div>
+                                <div class="theme-sub">Warm · Beige</div>
+                            </button>
                             <button class="theme-btn" data-theme="cyber" onclick="applyTheme('cyber')">
                                 <div class="theme-swatch" style="background:linear-gradient(90deg,#0B0C10,#66FCF1)"></div>
                                 <div class="theme-name">Cyber</div>
                                 <div class="theme-sub">Dark · Cyan</div>
                             </button>
+                            <button class="theme-btn" data-theme="forest" onclick="applyTheme('forest')">
+                                <div class="theme-swatch" style="background:linear-gradient(90deg,#222629,#86C232)"></div>
+                                <div class="theme-name">Forest</div>
+                                <div class="theme-sub">Dark · Lime</div>
+                            </button>
                             <button class="theme-btn" data-theme="neon" onclick="applyTheme('neon')">
                                 <div class="theme-swatch" style="background:linear-gradient(90deg,#501F3A,#CB2D6F)"></div>
                                 <div class="theme-name">Neon</div>
                                 <div class="theme-sub">Purple · Pink</div>
-                            </button>
-                            <!-- UPDATED: Earthy (Louis Vuitton) -->
-                            <button class="theme-btn" data-theme="earthy" onclick="applyTheme('earthy')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#F5F0E8,#C5A55A)"></div>
-                                <div class="theme-name">Earthy</div>
-                                <div class="theme-sub">Luxury · Brown/Gold</div>
-                            </button>
-                            <!-- UPDATED: Forest (Military/Camo) -->
-                            <button class="theme-btn" data-theme="forest" onclick="applyTheme('forest')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#1A1A1A,#7FFF00)"></div>
-                                <div class="theme-name">Forest</div>
-                                <div class="theme-sub">Camo · Acid Green</div>
                             </button>
                         </div>
                     </div>
@@ -2857,9 +2854,9 @@
             dark: '#0d1a33',
             midnight: '#000000',
             cockpit: '#0A0E1A',
-            earthy: '#4A2C2A',
+            earthy: '#4C3D2E',
             cyber: '#0B0C10',
-            forest: '#1A1A1A',
+            forest: '#222629',
             neon: '#0F292F'
         };
 
