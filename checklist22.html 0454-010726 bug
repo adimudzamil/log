@@ -473,16 +473,13 @@
             border-color: var(--navy);
         }
 
-        /* ── FIX: Added fallback colours ── */
         .slider-fill {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             border-radius: 0 0 28px 28px;
-            background: linear-gradient(180deg,
-                    var(--water-light, #7BC8F0),
-                    var(--water-color, #1A85C7));
+            background: linear-gradient(180deg, var(--water-light), var(--water-color));
             transition: height 0.05s linear, background var(--transition);
             overflow: hidden;
             will-change: height;
@@ -584,6 +581,16 @@
             color: var(--navy);
             opacity: 1;
             font-weight: 800;
+        }
+
+        /* ── Water & Waste specific colours ── */
+        .tank.water .slider-fill {
+            --water-color: var(--water-color);
+            --water-light: var(--water-light);
+        }
+        .tank.waste .slider-fill {
+            --water-color: var(--waste-color);
+            --water-light: var(--waste-light);
         }
 
         /* ── Warning message ── */
@@ -1310,7 +1317,7 @@
         const snapPoints = [0, 25, 50, 75, 100];
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  THEME SYNC (with fallback and logging)
+        //  THEME SYNC
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         function syncTheme() {
@@ -1320,7 +1327,6 @@
             const finalTheme = validThemes.includes(theme) ? theme : 'ops';
             document.body.setAttribute('data-theme', finalTheme);
             localStorage.setItem('dashboard_theme', finalTheme);
-            console.log('🎨 Theme applied:', finalTheme);
         }
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
