@@ -1053,112 +1053,6 @@
             --meta-color: #0A0E1A;
         }
 
-        /* ── NEW THEMES ───────────────────────────────────────── */
-        /* EARTHY */
-        [data-theme="earthy"] {
-            --h-grad-a: #996B42;
-            --h-grad-b: #4C3D2E;
-            --tab-bg: linear-gradient(135deg, #4C3D2E, #996B42);
-            --accent: #996B42;
-            --accent2: #4C3D2E;
-            --accent3: #D6A986;
-            --btn-active: #E9D0C1;
-            --rec-grad-a: #996B42;
-            --rec-grad-b: #4C3D2E;
-            --body-bg: #E9D0C1;
-            --surface: #D6A986;
-            --surface2: #9D8979;
-            --border: #9D8979;
-            --text: #4C3D2E;
-            --text2: #9D8979;
-            --text3: #D6A986;
-            --session-active-a: #996B42;
-            --session-active-b: #4C3D2E;
-            --log-time-col: #996B42;
-            --sett-hdr-a: #996B42;
-            --sett-hdr-b: #4C3D2E;
-            --sett-gold: #D6A986;
-            --meta-color: #4C3D2E;
-        }
-        /* CYBER */
-        [data-theme="cyber"] {
-            --h-grad-a: #66FCF1;
-            --h-grad-b: #45A29E;
-            --tab-bg: linear-gradient(135deg, #0B0C10, #1F2833);
-            --accent: #66FCF1;
-            --accent2: #45A29E;
-            --accent3: #45A29E;
-            --btn-active: #45A29E;
-            --rec-grad-a: #66FCF1;
-            --rec-grad-b: #45A29E;
-            --body-bg: #0B0C10;
-            --surface: #1F2833;
-            --surface2: #1F2833;
-            --border: #45A29E;
-            --text: #C5C6C7;
-            --text2: #45A29E;
-            --text3: #45A29E;
-            --session-active-a: #66FCF1;
-            --session-active-b: #45A29E;
-            --log-time-col: #66FCF1;
-            --sett-hdr-a: #66FCF1;
-            --sett-hdr-b: #45A29E;
-            --sett-gold: #66FCF1;
-            --meta-color: #0B0C10;
-        }
-        /* FOREST */
-        [data-theme="forest"] {
-            --h-grad-a: #86C232;
-            --h-grad-b: #61892F;
-            --tab-bg: linear-gradient(135deg, #222629, #474B4F);
-            --accent: #86C232;
-            --accent2: #61892F;
-            --accent3: #61892F;
-            --btn-active: #61892F;
-            --rec-grad-a: #86C232;
-            --rec-grad-b: #61892F;
-            --body-bg: #222629;
-            --surface: #474B4F;
-            --surface2: #6B6E70;
-            --border: #6B6E70;
-            --text: #FFFFFF;
-            --text2: #86C232;
-            --text3: #61892F;
-            --session-active-a: #86C232;
-            --session-active-b: #61892F;
-            --log-time-col: #86C232;
-            --sett-hdr-a: #86C232;
-            --sett-hdr-b: #61892F;
-            --sett-gold: #86C232;
-            --meta-color: #222629;
-        }
-        /* NEON */
-        [data-theme="neon"] {
-            --h-grad-a: #CB2D6F;
-            --h-grad-b: #501F3A;
-            --tab-bg: linear-gradient(135deg, #0F292F, #501F3A);
-            --accent: #CB2D6F;
-            --accent2: #14A098;
-            --accent3: #14A098;
-            --btn-active: #14A098;
-            --rec-grad-a: #CB2D6F;
-            --rec-grad-b: #501F3A;
-            --body-bg: #0F292F;
-            --surface: #501F3A;
-            --surface2: #0F292F;
-            --border: #14A098;
-            --text: #CCCCCC;
-            --text2: #14A098;
-            --text3: #CB2D6F;
-            --session-active-a: #CB2D6F;
-            --session-active-b: #501F3A;
-            --log-time-col: #CB2D6F;
-            --sett-hdr-a: #CB2D6F;
-            --sett-hdr-b: #501F3A;
-            --sett-gold: #14A098;
-            --meta-color: #0F292F;
-        }
-
         /* ══════════════════════════════════════════ APPLY THEME VARS TO EXISTING ELEMENTS ══════════════════════════════════════════ */
         body {
             background-color: var(--body-bg) !important;
@@ -1499,10 +1393,10 @@
             margin-top: 1px;
         }
 
-        /* Theme grid — now 3 columns */
+        /* Theme grid */
         .theme-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
@@ -1635,6 +1529,8 @@
             color: var(--accent);
             letter-spacing: 0.08em;
         }
+
+        /* Meta theme color update handled by JS */
 
         /* ══════════════════════════════════════════ 2-COLUMN BUTTON GRID OVERRIDE ══════════════════════════════════════════ */
         body.grid-2col .buttons-grid {
@@ -1840,27 +1736,6 @@
                                 <div class="theme-swatch" style="background:linear-gradient(90deg,#000000,#5b8dee)"></div>
                                 <div class="theme-name">Midnight</div>
                                 <div class="theme-sub">OLED Black</div>
-                            </button>
-                            <!-- NEW THEMES -->
-                            <button class="theme-btn" data-theme="earthy" onclick="applyTheme('earthy')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#E9D0C1,#4C3D2E)"></div>
-                                <div class="theme-name">Earthy</div>
-                                <div class="theme-sub">Warm · Beige</div>
-                            </button>
-                            <button class="theme-btn" data-theme="cyber" onclick="applyTheme('cyber')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#0B0C10,#66FCF1)"></div>
-                                <div class="theme-name">Cyber</div>
-                                <div class="theme-sub">Dark · Cyan</div>
-                            </button>
-                            <button class="theme-btn" data-theme="forest" onclick="applyTheme('forest')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#222629,#86C232)"></div>
-                                <div class="theme-name">Forest</div>
-                                <div class="theme-sub">Dark · Lime</div>
-                            </button>
-                            <button class="theme-btn" data-theme="neon" onclick="applyTheme('neon')">
-                                <div class="theme-swatch" style="background:linear-gradient(90deg,#501F3A,#CB2D6F)"></div>
-                                <div class="theme-name">Neon</div>
-                                <div class="theme-sub">Purple · Pink</div>
                             </button>
                         </div>
                     </div>
@@ -2853,11 +2728,7 @@
             modern: '#1e3a8a',
             dark: '#0d1a33',
             midnight: '#000000',
-            cockpit: '#0A0E1A',
-            earthy: '#4C3D2E',
-            cyber: '#0B0C10',
-            forest: '#222629',
-            neon: '#0F292F'
+            cockpit: '#0A0E1A'
         };
 
         function applyTheme(theme) {
@@ -3038,6 +2909,5 @@
             });
         }
     </script>
-    <script src="https://gnrcounter.com/counter.php?accId=5a888a8c18748f69460d5c4fc6b40d8f"></script>
 </body>
 </html>
