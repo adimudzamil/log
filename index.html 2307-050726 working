@@ -1825,28 +1825,6 @@
         </div>
     </div>
 
-    <!-- Edit Event Modal (time + remarks) -->
-    <div class="modal" id="editEventModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">✏️</div>
-                <div class="modal-title" id="editEventTitle">Edit Event</div>
-            </div>
-            <div class="modal-message" style="margin-bottom: 10px;">
-                <label for="editEventTimeInput" style="display:block; font-weight:600; margin-bottom:6px;">Time (HH:MM:SS)</label>
-                <input type="text" id="editEventTimeInput" placeholder="23:46:23" maxlength="8" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:'Consolas','Courier New',monospace; font-size:1rem;">
-            </div>
-            <div class="modal-message">
-                <label for="editEventMemoInput" style="display:block; font-weight:600; margin-bottom:6px;">Remarks</label>
-                <textarea id="editEventMemoInput" rows="3" placeholder="e.g. given by leading" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:inherit; font-size:1rem; resize:vertical;"></textarea>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" id="saveEditEventBtn">Save</button>
-                <button class="modal-btn secondary" id="cancelEditEventBtn">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Manage Buttons Modal -->
     <div class="modal" id="manageButtonsModal">
         <div class="modal-content" style="max-width: 600px;">
@@ -2046,8 +2024,7 @@
             { icon: '👨‍✈️', label: 'Crew Boarding', isDefault: true, visible: true },
             { icon: '👷‍♂️', label: 'Ground Staff', isDefault: true, visible: true },
             { icon: '🔧', label: 'Engineer', isDefault: true, visible: true },
-            // PATCH 2: AIC icon changed from 🛩️ to ♻️
-            { icon: '♻️', label: 'AIC', isDefault: true, visible: true },
+            { icon: '🛩️', label: 'AIC', isDefault: true, visible: true },
             { icon: '🍱', label: 'Catering', isDefault: true, visible: true },
             { icon: '📢👨‍✈️', label: 'PIC Announcement', isDefault: true, visible: true },
             { icon: '🔴💺', label: 'Seatbelt On', isDefault: true, visible: true },
@@ -2100,14 +2077,6 @@
         const eventActionDeleteBtn = document.getElementById('eventActionDeleteBtn');
         const eventActionCancelBtn = document.getElementById('eventActionCancelBtn');
 
-        // PATCH 5: DOM refs for edit-event modal
-        const editEventModal = document.getElementById('editEventModal');
-        const editEventTitle = document.getElementById('editEventTitle');
-        const editEventTimeInput = document.getElementById('editEventTimeInput');
-        const editEventMemoInput = document.getElementById('editEventMemoInput');
-        const saveEditEventBtn = document.getElementById('saveEditEventBtn');
-        const cancelEditEventBtn = document.getElementById('cancelEditEventBtn');
-
         // ═══════════════════════════════════════════════════
         // APP STATE — multi-session
         // ═══════════════════════════════════════════════════
@@ -2120,9 +2089,6 @@
         let selectedButton = null;
         let pendingAction = null; // for export-warning modal
         let pendingEventLabel = null;
-
-        // PATCH 6: new state variable for edit modal
-        let pendingEditEventId = null;
 
         // ── helpers ──────────────────────────────────────────
         function genId() {
@@ -2232,13 +2198,6 @@
                 }));
             } else {
                 buttonLayout = [...defaultButtons];
-            }
-
-            // PATCH 3: one-time icon fix: force AIC to the new recycling icon
-            const aicBtn = buttonLayout.find(b => b.label === 'AIC');
-            if (aicBtn && aicBtn.icon !== '♻️') {
-                aicBtn.icon = '♻️';
-                saveButtonLayout();
             }
         }
 
@@ -2516,37 +2475,6 @@
             return formatTime(date, timezone).replace(/:/g, '').substring(0, 4);
         }
 
-        // PATCH 6: time-conversion helpers for edit modal
-        // Converts a UTC-based event Date into the calendar date + time it
-        // represents in the event's own recorded GMT offset.
-        function getLocalPartsFromUTC(date, timezone) {
-            let totalMinutes = date.getUTCHours() * 60 + date.getUTCMinutes();
-            totalMinutes += timezone.totalOffsetMinutes;
-            let dayOffset = 0;
-            if (totalMinutes < 0) {
-                totalMinutes += 1440;
-                dayOffset = -1;
-            }
-            if (totalMinutes >= 1440) {
-                totalMinutes -= 1440;
-                dayOffset = 1;
-            }
-            const hour = Math.floor(totalMinutes / 60);
-            const minute = totalMinutes % 60;
-            const second = date.getUTCSeconds();
-            const baseUTC = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + dayOffset));
-            return { year: baseUTC.getUTCFullYear(), month: baseUTC.getUTCMonth(), day: baseUTC.getUTCDate(), hour,
-                minute, second };
-        }
-
-        // Reverses getLocalPartsFromUTC: given local calendar date/time parts
-        // and a GMT offset, returns the correct underlying UTC Date to store.
-        function buildUTCFromLocalParts(parts, timezone) {
-            const localAsUTCMs = Date.UTC(parts.year, parts.month, parts.day, parts.hour, parts.minute, parts.second);
-            const utcMs = localAsUTCMs - timezone.totalOffsetMinutes * 60000;
-            return new Date(utcMs);
-        }
-
         function getLatestEventForLabel(label) {
             // events is stored newest-first (unshift), so first match = latest
             return events.find(e => e.eventLabel === label) || null;
@@ -2653,14 +2581,13 @@
                     button.innerHTML =
                         `<span>${btn.icon}</span>${btn.label}<span class="event-btn-time">${t}</span>`;
                     const pressedColors = getPressedButtonColors();
-                    // PATCH 1: use setProperty with 'important' to override CSS !important
-                    button.style.setProperty('background-color', pressedColors.bg, 'important');
-                    button.style.setProperty('color', pressedColors.text, 'important');
+                    button.style.backgroundColor = pressedColors.bg;
+                    button.style.color = pressedColors.text;
                 } else {
                     button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
                     // reset to theme defaults
-                    button.style.removeProperty('background-color');
-                    button.style.removeProperty('color');
+                    button.style.backgroundColor = '';
+                    button.style.color = '';
                 }
 
                 if (editMode) {
@@ -2828,50 +2755,6 @@
             }
         }
 
-        // PATCH 7: openEditEventModal + saveEditedEvent
-        function openEditEventModal(eventId) {
-            const ev = events.find(e => e.id === eventId);
-            if (!ev) return;
-            pendingEditEventId = eventId;
-            const parts = getLocalPartsFromUTC(new Date(ev.timestamp), ev.timezone);
-            const hh = String(parts.hour).padStart(2, '0');
-            const mm = String(parts.minute).padStart(2, '0');
-            const ss = String(parts.second).padStart(2, '0');
-            editEventTitle.textContent = ev.eventLabel;
-            editEventTimeInput.value = `${hh}:${mm}:${ss}`;
-            editEventMemoInput.value = ev.memo || '';
-            editEventModal.style.display = 'flex';
-        }
-
-        function saveEditedEvent() {
-            const ev = events.find(e => e.id === pendingEditEventId);
-            if (!ev) {
-                editEventModal.style.display = 'none';
-                pendingEditEventId = null;
-                return;
-            }
-            const timeVal = editEventTimeInput.value.trim();
-            const match = timeVal.match(/^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
-            if (!match) {
-                alert('Please enter a valid time as HH:MM or HH:MM:SS, e.g. 23:46:23');
-                return;
-            }
-            const h = Math.min(23, parseInt(match[1], 10) || 0);
-            const m = Math.min(59, parseInt(match[2], 10) || 0);
-            const s = Math.min(59, parseInt(match[3] || '0', 10) || 0);
-            const parts = getLocalPartsFromUTC(new Date(ev.timestamp), ev.timezone);
-            parts.hour = h;
-            parts.minute = m;
-            parts.second = s;
-            ev.timestamp = buildUTCFromLocalParts(parts, ev.timezone).toISOString();
-            ev.memo = editEventMemoInput.value.trim();
-            saveEvents();
-            editEventModal.style.display = 'none';
-            pendingEditEventId = null;
-            renderButtons();
-            renderEvents();
-        }
-
         // ═══════════════════════════════════════════════════
         // RENDER EVENT LOG
         // ═══════════════════════════════════════════════════
@@ -2906,29 +2789,13 @@
                     logTzDiv.className = 'log-timezone';
                     logTzDiv.textContent = formatTimezone(event.timezone);
                     logContentDiv.appendChild(logTzDiv);
-
-                    // PATCH 8: add ✏️ Edit button next to 🗑️ Delete
-                    const editBtn = document.createElement('button');
-                    editBtn.className = 'delete-event-btn';
-                    editBtn.style.backgroundColor = 'var(--accent)';
-                    editBtn.textContent = '✏️';
-                    editBtn.addEventListener('click', () => openEditEventModal(event.id));
-
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-event-btn';
                     deleteBtn.textContent = '🗑️';
                     deleteBtn.addEventListener('click', () => deleteEvent(event.id));
-
-                    const actionsWrap = document.createElement('div');
-                    actionsWrap.style.display = 'flex';
-                    actionsWrap.style.flexDirection = 'column';
-                    actionsWrap.style.gap = '6px';
-                    actionsWrap.appendChild(editBtn);
-                    actionsWrap.appendChild(deleteBtn);
-
                     logItem.appendChild(logTimeDiv);
                     logItem.appendChild(logContentDiv);
-                    logItem.appendChild(actionsWrap);
+                    logItem.appendChild(deleteBtn);
                     logList.appendChild(logItem);
                 } catch (err) {
                     console.error('Error rendering event', index, err);
@@ -3176,19 +3043,6 @@
                 if (e.target === eventActionModal) {
                     eventActionModal.style.display = 'none';
                     pendingEventLabel = null;
-                }
-            });
-
-            // PATCH 9: edit-event modal buttons
-            saveEditEventBtn.addEventListener('click', saveEditedEvent);
-            cancelEditEventBtn.addEventListener('click', () => {
-                editEventModal.style.display = 'none';
-                pendingEditEventId = null;
-            });
-            window.addEventListener('click', (e) => {
-                if (e.target === editEventModal) {
-                    editEventModal.style.display = 'none';
-                    pendingEditEventId = null;
                 }
             });
         }
