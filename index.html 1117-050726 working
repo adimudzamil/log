@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICC Timestamp Logger</title>
-    <meta name="theme-color" content="#1a73e8" />
-    <link rel="manifest" href="manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="ICC Logger" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
+    <meta name="theme-color" content="#1a73e8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ICC Logger">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
     <style>
         * {
             box-sizing: border-box;
@@ -194,32 +194,6 @@
 
         .event-btn:active {
             transform: translateY(0);
-        }
-
-        /* ─── PATCH 1: darken + time-badge styles ─── */
-        .event-btn.has-time {
-            filter: brightness(0.62);
-            animation: eventBtnFlash 0.45s ease-out;
-        }
-
-        .event-btn-time {
-            display: block;
-            margin-top: 4px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.78rem;
-            font-weight: 800;
-            letter-spacing: 0.03em;
-        }
-
-        @keyframes eventBtnFlash {
-            0% {
-                filter: brightness(1.35);
-                transform: scale(1.05);
-            }
-            100% {
-                filter: brightness(0.62);
-                transform: scale(1);
-            }
         }
 
         .event-btn.edit-mode {
@@ -1698,11 +1672,11 @@
             <div class="session-form">
                 <div class="form-group">
                     <label for="flightNumber">Flight Number</label>
-                    <input type="text" id="flightNumber" placeholder="e.g., MH123/123/0123" />
+                    <input type="text" id="flightNumber" placeholder="e.g., MH123/123/0123">
                 </div>
                 <div class="form-group">
                     <label for="sessionDate">Date</label>
-                    <input type="date" id="sessionDate" />
+                    <input type="date" id="sessionDate">
                 </div>
             </div>
 
@@ -1713,7 +1687,7 @@
                     <option value="-">-</option>
                 </select>
                 <select class="timezone-part" id="gmtHours">
-                    <!-- Hours 0-14 populated by JavaScript -->
+                    <!-- Hours 0-14 will be populated by JavaScript -->
                 </select>
                 <select class="timezone-part" id="gmtMinutes">
                     <option value="00">:00</option>
@@ -1725,7 +1699,7 @@
 
             <button class="add-memo-btn" id="startSessionBtn" style="width: 100%;">Start New Session</button>
             <div class="current-session" id="currentSession">
-                <span style="color: #d93025; font-weight: bold;">⚠️ NO SESSION ACTIVE</span><br />
+                <span style="color: #d93025; font-weight: bold;">⚠️ NO SESSION ACTIVE</span><br>
                 <span style="font-size: 0.9rem;">Click "Start New Session" above</span>
             </div>
             <div class="session-stats" id="sessionStats">No events recorded</div>
@@ -1744,7 +1718,7 @@
             </button>
 
             <div class="memo-section">
-                <input type="text" class="memo-input" id="memoInput" placeholder="Add a memo..." />
+                <input type="text" class="memo-input" id="memoInput" placeholder="Add a memo...">
                 <button class="voice-btn" id="voiceBtn">🎤</button>
             </div>
             <button class="add-memo-btn" id="addMemoBtn">Add Custom Event</button>
@@ -1805,22 +1779,6 @@
         </div>
     </div>
 
-    <!-- ─── PATCH 2: Event Action Modal (Add Another / Delete Latest) ─── -->
-    <div class="modal" id="eventActionModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">🕐</div>
-                <div class="modal-title" id="eventActionTitle">Event</div>
-            </div>
-            <div class="modal-message" id="eventActionMessage"></div>
-            <div class="modal-buttons" style="flex-direction: column;">
-                <button class="modal-btn primary" id="eventActionAddBtn" style="margin-bottom: 8px; width: 100%;">➕ Add Another Entry</button>
-                <button class="modal-btn warning" id="eventActionDeleteBtn" style="margin-bottom: 8px; width: 100%;">🗑️ Delete Latest Entry</button>
-                <button class="modal-btn secondary" id="eventActionCancelBtn" style="width: 100%;">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Manage Buttons Modal -->
     <div class="modal" id="manageButtonsModal">
         <div class="modal-content" style="max-width: 600px;">
@@ -1832,8 +1790,8 @@
             <div class="add-custom-section">
                 <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--text);">Add Custom Button</h3>
                 <div class="custom-button-inputs">
-                    <input type="text" class="custom-icon-input" id="customIcon" placeholder="📌" maxlength="2" />
-                    <input type="text" class="custom-label-input" id="customLabel" placeholder="Event Name" />
+                    <input type="text" class="custom-icon-input" id="customIcon" placeholder="📌" maxlength="2">
+                    <input type="text" class="custom-label-input" id="customLabel" placeholder="Event Name">
                 </div>
                 <button class="add-custom-btn" id="addCustomButton">Add Button</button>
             </div>
@@ -1895,11 +1853,13 @@
                                 <div class="theme-name">Neon</div>
                                 <div class="theme-sub">Purple · Pink</div>
                             </button>
+                            <!-- UPDATED: Earthy (Louis Vuitton) -->
                             <button class="theme-btn" data-theme="earthy" onclick="applyTheme('earthy')">
                                 <div class="theme-swatch" style="background:linear-gradient(90deg,#F5F0E8,#C5A55A)"></div>
                                 <div class="theme-name">Earthy</div>
                                 <div class="theme-sub">Luxury · Brown/Gold</div>
                             </button>
+                            <!-- UPDATED: Forest (Military/Camo) -->
                             <button class="theme-btn" data-theme="forest" onclick="applyTheme('forest')">
                                 <div class="theme-swatch" style="background:linear-gradient(90deg,#1A1A1A,#7FFF00)"></div>
                                 <div class="theme-name">Forest</div>
@@ -1966,12 +1926,12 @@
                     <div class="sett-section-hdr">ℹ️ About</div>
                     <div class="sett-section-body">
                         <div class="about-block">
-                            <strong>ICC Timestamp Logger v2</strong><br />
-                            Real-time event timestamping tool for supervisory cabin crew.<br />
-                            Records boarding milestones, crew events, and ground ops with per-event timezone capture across multiple flight sectors.<br /><br />
-                            Built for ICC operations.<br />
-                            Works fully offline · No data leaves your device.<br />
-                            Export to CSV · TXT · PDF · Voyage Report format.<br /><br />
+                            <strong>ICC Timestamp Logger v2</strong><br>
+                            Real-time event timestamping tool for supervisory cabin crew.<br>
+                            Records boarding milestones, crew events, and ground ops with per-event timezone capture across multiple flight sectors.<br><br>
+                            Built for ICC operations.<br>
+                            Works fully offline · No data leaves your device.<br>
+                            Export to CSV · TXT · PDF · Voyage Report format.<br><br>
                             <span class="byline">✦ by *2100551*</span>
                         </div>
                     </div>
@@ -2046,14 +2006,6 @@
         const addCustomButton = document.getElementById('addCustomButton');
         const closeManageBtn = document.getElementById('closeManageBtn');
 
-        // ─── PATCH 3: new DOM refs ───
-        const eventActionModal = document.getElementById('eventActionModal');
-        const eventActionTitle = document.getElementById('eventActionTitle');
-        const eventActionMessage = document.getElementById('eventActionMessage');
-        const eventActionAddBtn = document.getElementById('eventActionAddBtn');
-        const eventActionDeleteBtn = document.getElementById('eventActionDeleteBtn');
-        const eventActionCancelBtn = document.getElementById('eventActionCancelBtn');
-
         // ═══════════════════════════════════════════════════
         // APP STATE — multi-session
         // ═══════════════════════════════════════════════════
@@ -2061,16 +2013,14 @@
            icc_events_<id> → [ …event objects… ]
            icc_active_id → "<id>"
            aviationButtonLayout → (unchanged) */
-        let sessions = [];
-        let activeId = null;
-        let events = [];
+        let sessions = []; // all session meta objects
+        let activeId = null; // currently visible session id
+        let events = []; // events for active session (mirror of storage)
         let recognition = null;
         let buttonLayout = null;
         let editMode = false;
         let selectedButton = null;
         let pendingAction = null; // for export-warning modal
-        // ─── PATCH 4: new state variable ───
-        let pendingEventLabel = null;
 
         // ── helpers ──────────────────────────────────────────
         function genId() {
@@ -2378,16 +2328,9 @@
         }
 
         function setDefaultTimezone() {
-            const saved = JSON.parse(localStorage.getItem('icc_default_tz') || 'null');
-            if (saved) {
-                document.getElementById('gmtSign').value = saved.sign;
-                document.getElementById('gmtHours').value = saved.hours;
-                document.getElementById('gmtMinutes').value = String(saved.minutes).padStart(2, '0');
-            } else {
-                gmtSignSelect.value = '+';
-                gmtHoursSelect.value = 8;
-                gmtMinutesSelect.value = '00';
-            }
+            gmtSignSelect.value = '+';
+            gmtHoursSelect.value = 8;
+            gmtMinutesSelect.value = '00';
         }
 
         function getCurrentTimezone() {
@@ -2453,16 +2396,6 @@
             return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
-        // ─── PATCH 5: formatHHMM + getLatestEventForLabel ───
-        function formatHHMM(date, timezone) {
-            return formatTime(date, timezone).replace(/:/g, '').substring(0, 4);
-        }
-
-        function getLatestEventForLabel(label) {
-            // events is stored newest-first (unshift), so first match = latest
-            return events.find(e => e.eventLabel === label) || null;
-        }
-
         // ═══════════════════════════════════════════════════
         // UI UPDATE
         // ═══════════════════════════════════════════════════
@@ -2495,7 +2428,6 @@
         // ═══════════════════════════════════════════════════
         // BUTTONS GRID
         // ═══════════════════════════════════════════════════
-        // ─── PATCH 6: replace renderButtons() and add handleEventButtonClick ───
         function renderButtons() {
             buttonsGrid.innerHTML = '';
             buttonLayout.forEach((btn, index) => {
@@ -2504,36 +2436,15 @@
                 button.className = 'event-btn';
                 button.dataset.event = btn.label;
                 button.dataset.index = index;
-                const latest = getLatestEventForLabel(btn.label);
-                if (latest && !editMode) {
-                    button.classList.add('has-time');
-                    const t = formatHHMM(new Date(latest.timestamp), latest.timezone);
-                    button.innerHTML =
-                        `<span>${btn.icon}</span>${btn.label}<span class="event-btn-time">${t}</span>`;
-                } else {
-                    button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
-                }
+                button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
                 if (editMode) {
                     button.classList.add('edit-mode');
                     button.addEventListener('click', () => handleButtonSwap(index));
                 } else {
-                    button.addEventListener('click', () => handleEventButtonClick(btn.label));
+                    button.addEventListener('click', () => recordEvent(btn.label));
                 }
                 buttonsGrid.appendChild(button);
             });
-        }
-
-        function handleEventButtonClick(label) {
-            const latest = getLatestEventForLabel(label);
-            if (!latest) {
-                recordEvent(label);
-                return;
-            }
-            pendingEventLabel = label;
-            const t = formatHHMM(new Date(latest.timestamp), latest.timezone);
-            eventActionTitle.textContent = label;
-            eventActionMessage.textContent = `Last logged at ${t}. Add another entry for this event, or delete it?`;
-            eventActionModal.style.display = 'flex';
         }
 
         function handleButtonSwap(index) {
@@ -2630,7 +2541,6 @@
         // ═══════════════════════════════════════════════════
         // RECORD EVENTS
         // ═══════════════════════════════════════════════════
-        // ─── PATCH 6: replace recordEvent() ───
         function recordEvent(eventType, isCustom = false) {
             if (!activeId) {
                 alert('Please start a session first');
@@ -2661,22 +2571,16 @@
                 }
                 badge.textContent = events.length;
             }
-            renderButtons();
             renderEvents();
             sessionStatsDiv.textContent = `${events.length} event${events.length !== 1 ? 's' : ''} recorded`;
         }
 
-        // ─── PATCH 6: replace deleteEvent() and add deleteEventSilently ───
-        function deleteEventSilently(eventId) {
-            events = events.filter(e => e.id !== eventId);
-            saveEvents();
-            renderTabBar();
-            updateUI();
-        }
-
         function deleteEvent(eventId) {
             if (confirm('Delete this event?')) {
-                deleteEventSilently(eventId);
+                events = events.filter(e => e.id !== eventId);
+                saveEvents();
+                renderTabBar();
+                updateUI();
             }
         }
 
@@ -2942,34 +2846,6 @@
             customLabel.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addCustomButtonHandler();
             });
-
-            // ─── PATCH 7: wire up event-action modal buttons ───
-            eventActionAddBtn.addEventListener('click', () => {
-                eventActionModal.style.display = 'none';
-                if (pendingEventLabel) recordEvent(pendingEventLabel);
-                pendingEventLabel = null;
-            });
-
-            eventActionDeleteBtn.addEventListener('click', () => {
-                eventActionModal.style.display = 'none';
-                if (pendingEventLabel) {
-                    const latest = getLatestEventForLabel(pendingEventLabel);
-                    if (latest) deleteEventSilently(latest.id);
-                }
-                pendingEventLabel = null;
-            });
-
-            eventActionCancelBtn.addEventListener('click', () => {
-                eventActionModal.style.display = 'none';
-                pendingEventLabel = null;
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === eventActionModal) {
-                    eventActionModal.style.display = 'none';
-                    pendingEventLabel = null;
-                }
-            });
         }
 
         // ═══════════════════════════════════════════════════
@@ -3053,6 +2929,19 @@
                 msg.style.display = 'none';
             }, 2500);
         }
+
+        // ── override setDefaultTimezone to respect saved pref ──
+        const _origSetDefaultTimezone = setDefaultTimezone;
+        setDefaultTimezone = function() {
+            const saved = JSON.parse(localStorage.getItem('icc_default_tz') || 'null');
+            if (saved) {
+                document.getElementById('gmtSign').value = saved.sign;
+                document.getElementById('gmtHours').value = saved.hours;
+                document.getElementById('gmtMinutes').value = String(saved.minutes).padStart(2, '0');
+            } else {
+                _origSetDefaultTimezone();
+            }
+        };
 
         // ── Grid columns ────────────────────────────────────
         function setGridCols(n) {
