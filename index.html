@@ -1838,7 +1838,7 @@
             </div>
             <div class="modal-message">
                 <label for="editEventMemoInput" style="display:block; font-weight:600; margin-bottom:6px;">Remarks</label>
-                <textarea id="editEventMemoInput" rows="3" placeholder="e.g. given by leading" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:inherit; font-size:1rem; resize:vertical;"></textarea>
+                <textarea id="editEventMemoInput" rows="3" placeholder="write anything" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:inherit; font-size:1rem; resize:vertical;"></textarea>
             </div>
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="saveEditEventBtn">Save</button>
@@ -1998,6 +1998,24 @@
                         <div id="tzSavedMsg" style="display:none;font-size:0.75rem;color:var(--accent3);font-weight:600;">✓ Default timezone saved</div>
                     </div>
                 </div>
+
+                <!-- PATCH 2: VOYAGE BOOKMARKLET SETUP -->
+                <div class="sett-section">
+                    <div class="sett-section-hdr">🔖 Voyage Report Bookmarklet Setup</div>
+                    <div class="sett-section-body">
+                        <div class="about-block">
+                            To auto-fill the Voyage Report form using the "Voyage" export button, you need to create a one-time bookmarklet in your browser:<br><br>
+                            <strong>1.</strong> Open your browser and create a new bookmark (any page, any name — e.g. "Fill Voyage Report").<br>
+                            <strong>2.</strong> Edit that bookmark's URL/address field and replace it entirely with the script below.<br>
+                            <strong>3.</strong> Save the bookmark.<br>
+                            <strong>4.</strong> On the voyage report form page, tap "Voyage" in this app first (copies the timestamps), then tap your saved bookmark and paste when prompted.
+                        </div>
+                        <textarea id="voyageBookmarkletScript" readonly rows="7" style="width:100%; margin-top:10px; padding:10px; font-family:'Consolas','Courier New',monospace; font-size:0.72rem; line-height:1.4; border:1px solid var(--border); border-radius:6px; background-color:var(--surface); color:var(--text); resize:vertical;">javascript:(function(){var d=prompt('Paste the copied timestamps here:');if(!d)return;var t=d.split('|');if(t.length<8){alert('Invalid data. Please copy from ICC Logger first.');return;}document.getElementById('boardingTimeForNB').value=t[0];document.getElementById('fltTiminglastPaxCleared1').value=t[1];document.getElementById('fltTimingcateringCompleted1').value=t[2];document.getElementById('fltTimingAICCompleted1').value=t[3];document.getElementById('fltTimingboardingClearance1').value=t[4];document.getElementById('fltTimingboardingCommence1').value=t[5];document.getElementById('fltTimingboardingCompleted1').value=t[6];document.getElementById('fltTimingdoorClosed1').value=t[7];alert('Form filled successfully!');})();</textarea>
+                        <button class="sett-danger-btn" style="border-color: var(--accent); color: var(--accent); margin-top: 8px;" onclick="copyBookmarkletScript()">📋 Copy Script</button>
+                        <div id="bookmarkletCopiedMsg" style="display:none; font-size:0.75rem; color:var(--accent3); font-weight:600; margin-top:6px;">✓ Script copied — now paste it into your bookmark's URL field</div>
+                    </div>
+                </div>
+
                 <!-- STORAGE -->
                 <div class="sett-section">
                     <div class="sett-section-hdr">🗄️ Storage</div>
@@ -2034,21 +2052,22 @@
         // MULTI-SESSION CONFIG
         // ═══════════════════════════════════════════════════
         const SECTOR_COLORS = ['sc-0', 'sc-1', 'sc-2', 'sc-3', 'sc-4', 'sc-5'];
+
+        // PATCH 1: reordered default button template
         const defaultButtons = [
+            { icon: '👤', label: 'Last Pax', isDefault: true, visible: true },
+            { icon: '👨‍✈️', label: 'Crew Boarding', isDefault: true, visible: true },
+            { icon: '♻️', label: 'AIC', isDefault: true, visible: true },
+            { icon: '🍱', label: 'Catering', isDefault: true, visible: true },
             { icon: '🛡️', label: 'Pre-Departure Safety', isDefault: true, visible: true },
             { icon: '🟢', label: 'Boarding Clearance', isDefault: true, visible: true },
             { icon: '🚶‍♂️', label: 'Boarding Commence', isDefault: true, visible: true },
-            { icon: '👤1️⃣', label: 'First Pax', isDefault: true, visible: true },
-            { icon: '👤', label: 'Last Pax', isDefault: true, visible: true },
             { icon: '✅', label: 'Boarding Completed', isDefault: true, visible: true },
-            { icon: '🚪', label: 'Door Close', isDefault: true, visible: true },
             { icon: '🚪➡️', label: 'Door Open', isDefault: true, visible: true },
-            { icon: '👨‍✈️', label: 'Crew Boarding', isDefault: true, visible: true },
-            { icon: '👷‍♂️', label: 'Ground Staff', isDefault: true, visible: true },
+            { icon: '🚪', label: 'Door Close', isDefault: true, visible: true },
             { icon: '🔧', label: 'Engineer', isDefault: true, visible: true },
-            // PATCH 2: AIC icon changed from 🛩️ to ♻️
-            { icon: '♻️', label: 'AIC', isDefault: true, visible: true },
-            { icon: '🍱', label: 'Catering', isDefault: true, visible: true },
+            { icon: '👷‍♂️', label: 'Ground Staff', isDefault: true, visible: true },
+            { icon: '👤1️⃣', label: 'First Pax', isDefault: true, visible: true },
             { icon: '📢👨‍✈️', label: 'PIC Announcement', isDefault: true, visible: true },
             { icon: '🔴💺', label: 'Seatbelt On', isDefault: true, visible: true },
             { icon: '🟢💺', label: 'Seatbelt Off', isDefault: true, visible: true }
@@ -3050,9 +3069,10 @@
                 toHHMM(find('Door Close'))
             ].join('|');
 
+            // PATCH 4: updated alert to point to Settings guide
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(data).then(() => {
-                    alert('✅ Copied for Voyage Report!\n\n1. Go to voyage report form\n2. Tap "Fill Voyage Report" bookmark\n3. Paste when prompted');
+                    alert('✅ Copied for Voyage Report!\n\n1. Go to voyage report form\n2. Tap your "Fill Voyage Report" bookmark\n3. Paste when prompted\n\nHaven\'t set up the bookmark yet? See Settings → 🔖 Voyage Report Bookmarklet Setup for instructions.');
                 }).catch(() => showVoyageDataModal(data));
             } else {
                 showVoyageDataModal(data);
@@ -3322,6 +3342,24 @@
         function loadTimeBadgeSize() {
             const saved = localStorage.getItem('icc_time_badge_size') || 'medium';
             setTimeBadgeSize(saved);
+        }
+
+        // PATCH 3: copyBookmarkletScript function
+        function copyBookmarkletScript() {
+            const scriptText = document.getElementById('voyageBookmarkletScript').value;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(scriptText).then(() => {
+                    const msg = document.getElementById('bookmarkletCopiedMsg');
+                    msg.style.display = 'block';
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 3000);
+                }).catch(() => {
+                    alert('Could not copy automatically. Long-press the text box above, select all, then copy manually.');
+                });
+            } else {
+                alert('Long-press the text box above, select all, then copy manually.');
+            }
         }
 
         // ── Storage info ─────────────────────────────────────
