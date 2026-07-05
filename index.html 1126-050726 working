@@ -196,8 +196,9 @@
             transform: translateY(0);
         }
 
-        /* ─── CONTRAST-AWARE: removed filter, uses inline bg+color via JS ─── */
+        /* ─── PATCH 1: darken + time-badge styles ─── */
         .event-btn.has-time {
+            filter: brightness(0.62);
             animation: eventBtnFlash 0.45s ease-out;
         }
 
@@ -212,12 +213,12 @@
 
         @keyframes eventBtnFlash {
             0% {
-                transform: scale(1.06);
-                box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+                filter: brightness(1.35);
+                transform: scale(1.05);
             }
             100% {
+                filter: brightness(0.62);
                 transform: scale(1);
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
             }
         }
 
@@ -1804,7 +1805,7 @@
         </div>
     </div>
 
-    <!-- Event Action Modal (Add Another / Delete Latest) -->
+    <!-- ─── PATCH 2: Event Action Modal (Add Another / Delete Latest) ─── -->
     <div class="modal" id="eventActionModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2045,7 +2046,7 @@
         const addCustomButton = document.getElementById('addCustomButton');
         const closeManageBtn = document.getElementById('closeManageBtn');
 
-        // DOM refs for event action modal
+        // ─── PATCH 3: new DOM refs ───
         const eventActionModal = document.getElementById('eventActionModal');
         const eventActionTitle = document.getElementById('eventActionTitle');
         const eventActionMessage = document.getElementById('eventActionMessage');
@@ -2056,6 +2057,10 @@
         // ═══════════════════════════════════════════════════
         // APP STATE — multi-session
         // ═══════════════════════════════════════════════════
+        /* storage shape: icc_sessions → [ { id, flightNumber, date, timezone, createdAt, colorIdx }, … ]
+           icc_events_<id> → [ …event objects… ]
+           icc_active_id → "<id>"
+           aviationButtonLayout → (unchanged) */
         let sessions = [];
         let activeId = null;
         let events = [];
@@ -2064,6 +2069,7 @@
         let editMode = false;
         let selectedButton = null;
         let pendingAction = null; // for export-warning modal
+        // ─── PATCH 4: new state variable ───
         let pendingEventLabel = null;
 
         // ── helpers ──────────────────────────────────────────
@@ -2447,6 +2453,7 @@
             return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
 
+        // ─── PATCH 5: formatHHMM + getLatestEventForLabel ───
         function formatHHMM(date, timezone) {
             return formatTime(date, timezone).replace(/:/g, '').substring(0, 4);
         }
@@ -2454,53 +2461,6 @@
         function getLatestEventForLabel(label) {
             // events is stored newest-first (unshift), so first match = latest
             return events.find(e => e.eventLabel === label) || null;
-        }
-
-        // ─── UPDATE 2: contrast-aware colour helpers ───
-        function hexToRgbObj(hex) {
-            hex = (hex || '#ffffff').trim().replace('#', '');
-            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
-            const num = parseInt(hex, 16) || 0xffffff;
-            return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
-        }
-
-        function rgbObjToHex(rgb) {
-            const c = v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
-            return '#' + c(rgb.r) + c(rgb.g) + c(rgb.b);
-        }
-
-        function relativeLuminance(rgb) {
-            const a = [rgb.r, rgb.g, rgb.b].map(v => {
-                v /= 255;
-                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-            });
-            return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
-        }
-
-        function mixRgb(rgb, target, amt) {
-            return {
-                r: rgb.r + (target.r - rgb.r) * amt,
-                g: rgb.g + (target.g - rgb.g) * amt,
-                b: rgb.b + (target.b - rgb.b) * amt
-            };
-        }
-
-        function getPressedButtonColors() {
-            const surfaceHex = getComputedStyle(document.documentElement).getPropertyValue('--surface');
-            const rgb = hexToRgbObj(surfaceHex);
-            const isDark = relativeLuminance(rgb) < 0.4;
-            if (isDark) {
-                // dark button -> go lighter, dark text
-                return {
-                    bg: rgbObjToHex(mixRgb(rgb, { r: 255, g: 255, b: 255 }, 0.55)),
-                    text: '#111111'
-                };
-            }
-            // light button -> go darker, light text
-            return {
-                bg: rgbObjToHex(mixRgb(rgb, { r: 0, g: 0, b: 0 }, 0.35)),
-                text: '#ffffff'
-            };
         }
 
         // ═══════════════════════════════════════════════════
@@ -2535,6 +2495,7 @@
         // ═══════════════════════════════════════════════════
         // BUTTONS GRID
         // ═══════════════════════════════════════════════════
+        // ─── PATCH 6: replace renderButtons() and add handleEventButtonClick ───
         function renderButtons() {
             buttonsGrid.innerHTML = '';
             buttonLayout.forEach((btn, index) => {
@@ -2543,24 +2504,15 @@
                 button.className = 'event-btn';
                 button.dataset.event = btn.label;
                 button.dataset.index = index;
-
                 const latest = getLatestEventForLabel(btn.label);
-                // ─── UPDATE 3: apply contrast-aware colours ───
                 if (latest && !editMode) {
                     button.classList.add('has-time');
                     const t = formatHHMM(new Date(latest.timestamp), latest.timezone);
                     button.innerHTML =
                         `<span>${btn.icon}</span>${btn.label}<span class="event-btn-time">${t}</span>`;
-                    const pressedColors = getPressedButtonColors();
-                    button.style.backgroundColor = pressedColors.bg;
-                    button.style.color = pressedColors.text;
                 } else {
                     button.innerHTML = `<span>${btn.icon}</span>${btn.label}`;
-                    // reset to theme defaults
-                    button.style.backgroundColor = '';
-                    button.style.color = '';
                 }
-
                 if (editMode) {
                     button.classList.add('edit-mode');
                     button.addEventListener('click', () => handleButtonSwap(index));
@@ -2678,6 +2630,7 @@
         // ═══════════════════════════════════════════════════
         // RECORD EVENTS
         // ═══════════════════════════════════════════════════
+        // ─── PATCH 6: replace recordEvent() ───
         function recordEvent(eventType, isCustom = false) {
             if (!activeId) {
                 alert('Please start a session first');
@@ -2713,6 +2666,7 @@
             sessionStatsDiv.textContent = `${events.length} event${events.length !== 1 ? 's' : ''} recorded`;
         }
 
+        // ─── PATCH 6: replace deleteEvent() and add deleteEventSilently ───
         function deleteEventSilently(eventId) {
             events = events.filter(e => e.id !== eventId);
             saveEvents();
@@ -2989,7 +2943,7 @@
                 if (e.key === 'Enter') addCustomButtonHandler();
             });
 
-            // event-action modal buttons
+            // ─── PATCH 7: wire up event-action modal buttons ───
             eventActionAddBtn.addEventListener('click', () => {
                 eventActionModal.style.display = 'none';
                 if (pendingEventLabel) recordEvent(pendingEventLabel);
@@ -3033,7 +2987,6 @@
             neon: '#0F292F'
         };
 
-        // ─── UPDATE 4: applyTheme now re-renders buttons ───
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('icc_theme', theme);
@@ -3044,10 +2997,6 @@
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.theme === theme);
             });
-            // re-render buttons so any "pressed" buttons pick up the new theme's contrast colours
-            if (typeof renderButtons === 'function' && typeof buttonLayout !== 'undefined' && buttonLayout) {
-                renderButtons();
-            }
         }
 
         function loadTheme() {
