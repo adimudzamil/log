@@ -196,16 +196,16 @@
             transform: translateY(0);
         }
 
+        /* ─── CONTRAST-AWARE: removed filter, uses inline bg+color via JS ─── */
         .event-btn.has-time {
             animation: eventBtnFlash 0.45s ease-out;
         }
 
-        /* ─── UPDATE 2: bigger/bolder time text using var ─── */
         .event-btn-time {
             display: block;
             margin-top: 4px;
             font-family: 'Consolas', 'Courier New', monospace;
-            font-size: var(--time-badge-size);
+            font-size: 0.78rem;
             font-weight: 800;
             letter-spacing: 0.03em;
         }
@@ -943,11 +943,6 @@
         }
         .sc-5 {
             background: #00bcd4;
-        }
-
-        /* ─── UPDATE 1: theme-independent font-size variable ─── */
-        :root {
-            --time-badge-size: 0.95rem;
         }
 
         /* ══════════════════════════════════════════ THEME VARIABLES ══════════════════════════════════════════ */
@@ -1928,25 +1923,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ─── UPDATE 4: Time Badge Size section ─── -->
-                <div class="sett-section">
-                    <div class="sett-section-hdr">🔤 Time Badge Size</div>
-                    <div class="sett-section-body">
-                        <div class="sett-row">
-                            <div>
-                                <div class="sett-label">Time font on pressed buttons</div>
-                                <div class="sett-sub">Adjusts the HHMM text shown on event buttons</div>
-                            </div>
-                        </div>
-                        <div class="seg-ctrl">
-                            <button class="seg-btn" id="badgeSmallBtn" onclick="setTimeBadgeSize('small')">Small</button>
-                            <button class="seg-btn active" id="badgeMediumBtn" onclick="setTimeBadgeSize('medium')">Medium</button>
-                            <button class="seg-btn" id="badgeLargeBtn" onclick="setTimeBadgeSize('large')">Large</button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- DEFAULT TIMEZONE -->
                 <div class="sett-section">
                     <div class="sett-section-hdr">🕐 Default Timezone</div>
@@ -2480,7 +2456,7 @@
             return events.find(e => e.eventLabel === label) || null;
         }
 
-        // ─── contrast-aware colour helpers ───
+        // ─── UPDATE 2: contrast-aware colour helpers ───
         function hexToRgbObj(hex) {
             hex = (hex || '#ffffff').trim().replace('#', '');
             if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -2509,27 +2485,21 @@
             };
         }
 
-        // ─── UPDATE 3: same-hue pressed colour (shade/tint of --accent) ───
         function getPressedButtonColors() {
             const surfaceHex = getComputedStyle(document.documentElement).getPropertyValue('--surface');
-            const accentHex = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-            const surfaceRgb = hexToRgbObj(surfaceHex);
-            const accentRgb = hexToRgbObj(accentHex);
-            const themeIsDark = relativeLuminance(surfaceRgb) < 0.4;
-
-            // Shift the theme's OWN accent colour lighter or darker —
-            // same hue family, e.g. light red -> dark red — instead of
-            // mixing toward plain black/white/gray.
-            const bgRgb = themeIsDark ?
-                mixRgb(accentRgb, { r: 255, g: 255, b: 255 }, 0.3) : // dark theme -> tint accent lighter
-                mixRgb(accentRgb, { r: 0, g: 0, b: 0 }, 0.3); // light theme -> shade accent darker
-
-            // Pick text colour based on the ACTUAL resulting background
-            // brightness, so contrast stays correct either way.
-            const textColor = relativeLuminance(bgRgb) > 0.5 ? '#111111' : '#ffffff';
+            const rgb = hexToRgbObj(surfaceHex);
+            const isDark = relativeLuminance(rgb) < 0.4;
+            if (isDark) {
+                // dark button -> go lighter, dark text
+                return {
+                    bg: rgbObjToHex(mixRgb(rgb, { r: 255, g: 255, b: 255 }, 0.55)),
+                    text: '#111111'
+                };
+            }
+            // light button -> go darker, light text
             return {
-                bg: rgbObjToHex(bgRgb),
-                text: textColor
+                bg: rgbObjToHex(mixRgb(rgb, { r: 0, g: 0, b: 0 }, 0.35)),
+                text: '#ffffff'
             };
         }
 
@@ -2575,6 +2545,7 @@
                 button.dataset.index = index;
 
                 const latest = getLatestEventForLabel(btn.label);
+                // ─── UPDATE 3: apply contrast-aware colours ───
                 if (latest && !editMode) {
                     button.classList.add('has-time');
                     const t = formatHHMM(new Date(latest.timestamp), latest.timezone);
@@ -3062,6 +3033,7 @@
             neon: '#0F292F'
         };
 
+        // ─── UPDATE 4: applyTheme now re-renders buttons ───
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('icc_theme', theme);
@@ -3156,28 +3128,6 @@
             }
         }
 
-        // ─── UPDATE 5: Time Badge Size ──────────────────────
-        const TIME_BADGE_SIZES = {
-            small: '0.78rem',
-            medium: '0.95rem',
-            large: '1.15rem'
-        };
-
-        function setTimeBadgeSize(size) {
-            const val = TIME_BADGE_SIZES[size] || TIME_BADGE_SIZES.medium;
-            document.documentElement.style.setProperty('--time-badge-size', val);
-            localStorage.setItem('icc_time_badge_size', size);
-            ['Small', 'Medium', 'Large'].forEach(label => {
-                const btn = document.getElementById('badge' + label + 'Btn');
-                if (btn) btn.classList.toggle('active', label.toLowerCase() === size);
-            });
-        }
-
-        function loadTimeBadgeSize() {
-            const saved = localStorage.getItem('icc_time_badge_size') || 'medium';
-            setTimeBadgeSize(saved);
-        }
-
         // ── Storage info ─────────────────────────────────────
         function updateStorageInfo() {
             const el = document.getElementById('storageInfo');
@@ -3240,7 +3190,6 @@
         // ── Load on boot ─────────────────────────────────────
         loadTheme();
         loadGridColsSetting();
-        loadTimeBadgeSize();
 
         // ═══════════════════════════════════════════════════
         // BOOT
