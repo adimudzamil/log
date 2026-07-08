@@ -200,6 +200,7 @@
             animation: eventBtnFlash 0.45s ease-out;
         }
 
+        /* ─── UPDATE 2: bigger/bolder time text using var ─── */
         .event-btn-time {
             display: block;
             margin-top: 4px;
@@ -1676,28 +1677,6 @@
             min-height: 64px;
             font-size: 0.9rem;
         }
-
-        /* ── IFRAME WRAPPER ── */
-        .iframe-wrapper {
-            margin-top: 30px;
-            border-top: 2px solid var(--border);
-            padding-top: 20px;
-        }
-
-        .iframe-wrapper iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
-            border-radius: 10px;
-            background: var(--surface);
-            box-shadow: var(--shadow);
-        }
-
-        @media (max-width: 600px) {
-            .iframe-wrapper iframe {
-                height: 500px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -1796,11 +1775,6 @@
             <div class="log-list" id="logList">
                 <div class="empty-log">No events recorded yet</div>
             </div>
-        </div>
-
-        <!-- ─── CHECKLIST IFRAME ─── -->
-        <div class="iframe-wrapper">
-            <iframe id="checklistFrame" src="checklist22.html"></iframe>
         </div>
     </div>
 
@@ -2002,7 +1976,7 @@
                         <div class="sett-row">
                             <div>
                                 <div class="sett-label">Home timezone</div>
-                                <div class="sett-sub">Pre‑filled when you start a new session</div>
+                                <div class="sett-sub">Pre-filled when you start a new session</div>
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;">
@@ -2030,7 +2004,7 @@
                     <div class="sett-section-hdr">🔖 Voyage Report Bookmarklet Setup</div>
                     <div class="sett-section-body">
                         <div class="about-block">
-                            To auto‑fill the Voyage Report form using the "Voyage" export button, you need to create a one‑time bookmarklet in your browser:<br><br>
+                            To auto-fill the Voyage Report form using the "Voyage" export button, you need to create a one-time bookmarklet in your browser:<br><br>
                             <strong>1.</strong> Open your browser and create a new bookmark (any page, any name — e.g. "Fill Voyage Report").<br>
                             <strong>2.</strong> Edit that bookmark's URL/address field and replace it entirely with the script below.<br>
                             <strong>3.</strong> Save the bookmark.<br>
@@ -2056,8 +2030,8 @@
                     <div class="sett-section-body">
                         <div class="about-block">
                             <strong>ICC Timestamp Logger v2</strong><br />
-                            Real‑time event timestamping tool for supervisory cabin crew.<br />
-                            Records boarding milestones, crew events, and ground ops with per‑event timezone capture across multiple flight sectors.<br /><br />
+                            Real-time event timestamping tool for supervisory cabin crew.<br />
+                            Records boarding milestones, crew events, and ground ops with per-event timezone capture across multiple flight sectors.<br /><br />
                             Built for ICC operations.<br />
                             Works fully offline · No data leaves your device.<br />
                             Export to CSV · TXT · PDF · Voyage Report format.<br /><br />
@@ -2823,34 +2797,26 @@
         }
 
         // ═══════════════════════════════════════════════════
-        // RECORD EVENTS  (UPDATED with memoOverride)
+        // RECORD EVENTS
         // ═══════════════════════════════════════════════════
-        function recordEvent(eventType, isCustom = false, memoOverride = null) {
+        function recordEvent(eventType, isCustom = false) {
             if (!activeId) {
                 alert('Please start a session first');
                 return;
             }
             const now = new Date();
             const timezone = getCurrentTimezone();
-            // Use the override if provided, otherwise read from the input field
-            const memo = (memoOverride !== null) ? memoOverride : memoInput.value.trim();
-
             const event = {
                 id: Date.now(),
                 timestamp: now.toISOString(),
                 eventType: isCustom ? 'custom' : eventType.toLowerCase().replace(/ /g, '_'),
                 eventLabel: eventType,
-                memo: memo,
+                memo: memoInput.value.trim(),
                 sessionId: activeId,
-                timezone: timezone
+                timezone
             };
             events.unshift(event);
-
-            // Only clear the input box if we used its value (i.e., no override)
-            if (memoOverride === null) {
-                memoInput.value = '';
-            }
-
+            memoInput.value = '';
             saveEvents();
             // update badge on active tab without full re-render
             const activeTab = tabBar.querySelector('.tab-item.active');
@@ -2867,22 +2833,6 @@
             renderEvents();
             sessionStatsDiv.textContent = `${events.length} event${events.length !== 1 ? 's' : ''} recorded`;
         }
-
-        // ─── postMessage listener ─────────────────────────────
-        // Listen for messages from the embedded checklist
-        window.addEventListener('message', function(event) {
-            // Dynamic origin check – works online, offline, localhost, and file://
-            if (event.origin !== window.location.origin) {
-                console.warn('Ignoring message from untrusted origin:', event.origin);
-                return;
-            }
-
-            const data = event.data;
-            if (data && data.type === 'recordEvent' && data.payload && data.payload.summary) {
-                // Record the event with the summary as the memo
-                recordEvent('Checklist Summary', true, data.payload.summary);
-            }
-        });
 
         function deleteEventSilently(eventId) {
             events = events.filter(e => e.id !== eventId);
