@@ -1683,20 +1683,6 @@
             letter-spacing: 0.08em;
         }
 
-        /* PATCH 1: header-byline style */
-        .header-byline {
-            display: inline-block;
-            margin-top: 4px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 0.08em;
-        }
-
         /* ══════════════════════════════════════════ 2-COLUMN BUTTON GRID OVERRIDE ══════════════════════════════════════════ */
         body.grid-2col .buttons-grid {
             grid-template-columns: repeat(2, 1fr) !important;
@@ -1771,8 +1757,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
             <div>
                 <h1 style="font-size:1.8rem;margin-bottom:2px;">ICC Timestamp Logger</h1>
-                <!-- PATCH 2: replace subtitle with pill badge -->
-                <span class="header-byline">✨ by *2100551*</span>
+                <p class="subtitle">by *2100551*</p>
             </div>
             <button class="hdr-gear-btn" id="settingsOpenBtn" title="Settings">⚙️</button>
         </div>
@@ -1786,7 +1771,7 @@
     </div>
 
     <div class="container">
-        <!-- Backup reminder banner -->
+        <!-- PATCH A: Backup reminder banner -->
         <div class="backup-reminder-banner" id="backupReminderBanner" style="display:none;">
             <div class="reminder-title">⚠️ Backup Reminder</div>
             <div class="reminder-text" id="backupReminderText">You haven't backed up your data recently.</div>
@@ -2110,7 +2095,7 @@
                     </div>
                 </div>
 
-                <!-- VOYAGE BOOKMARKLET SETUP -->
+                <!-- PATCH 2: VOYAGE BOOKMARKLET SETUP -->
                 <div class="sett-section">
                     <div class="sett-section-hdr">🔖 Voyage Report Bookmarklet Setup</div>
                     <div class="sett-section-body">
@@ -2127,7 +2112,7 @@
                     </div>
                 </div>
 
-                <!-- BACKUP & RESTORE section -->
+                <!-- PATCH B: BACKUP & RESTORE section -->
                 <div class="sett-section">
                     <div class="sett-section-hdr">💾 Backup &amp; Restore</div>
                     <div class="sett-section-body">
