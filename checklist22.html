@@ -832,7 +832,7 @@
         <!-- Flight Selector – emojis removed for more space -->
         <div class="flight-selector">
             <label>Flight</label>
-            <input type="text" id="flightInput" placeholder="e.g. MH081 or 081" />
+            <input type="text" id="flightInput" placeholder="e.g. MH123 or 123" />
             <label>Aircraft</label>
             <select id="aircraftSelect">
                 <option value="b737">B737-800</option>
@@ -1633,8 +1633,8 @@
                 }
             });
 
-            // Pre‑fill with MH081 as demo
-            flightInput.value = 'MH081';
+            // Pre‑fill with MH0000 as demo
+            flightInput.value = 'MH';
             aircraftSelect.value = 'b737';
             updateFlightData();
 
