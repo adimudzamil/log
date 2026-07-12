@@ -418,8 +418,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
         .log-title {
@@ -430,7 +428,6 @@
         .export-buttons {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
 
         .export-btn {
@@ -448,18 +445,6 @@
 
         .export-btn:hover {
             background-color: #e8eaed;
-        }
-
-        .log-sort-row {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .log-sort-row .seg-ctrl {
-            width: auto;
         }
 
         .log-list {
@@ -518,7 +503,6 @@
             font-size: 0.8rem;
             cursor: pointer;
             white-space: nowrap;
-            transition: background-color 0.2s;
         }
 
         .delete-event-btn:hover {
@@ -1809,14 +1793,6 @@
                     </button>
                 </div>
             </div>
-            <!-- PATCH A: sort toggle row inserted here -->
-            <div class="log-sort-row" id="logSortRow">
-                <span style="font-size:0.78rem;color:var(--text2);font-weight:600;">Sort:</span>
-                <div class="seg-ctrl" style="width:auto;">
-                    <button class="seg-btn" id="sortDescBtn" title="Newest First" onclick="setLogSortOrder('desc')">Newest</button>
-                    <button class="seg-btn" id="sortAscBtn" title="Oldest First" onclick="setLogSortOrder('asc')">Oldest</button>
-                </div>
-            </div>
             <div class="log-list" id="logList">
                 <div class="empty-log">No events recorded yet</div>
             </div>
@@ -2192,9 +2168,6 @@
 
         // PATCH 6: new state variable for edit modal
         let pendingEditEventId = null;
-
-        // PATCH B: log sort order state
-        let logSortOrder = localStorage.getItem('icc_log_sort_order') || 'desc';
 
         // ── helpers ──────────────────────────────────────────
         function genId() {
@@ -2619,13 +2592,9 @@
             return new Date(utcMs);
         }
 
-        // PATCH C: time-based latest event lookup
         function getLatestEventForLabel(label) {
-            // find the matching event with the most recent timestamp,
-            // since edited timestamps may no longer follow insertion order
-            const matches = events.filter(e => e.eventLabel === label);
-            if (matches.length === 0) return null;
-            return matches.reduce((latest, e) => new Date(e.timestamp) > new Date(latest.timestamp) ? e : latest);
+            // events is stored newest-first (unshift), so first match = latest
+            return events.find(e => e.eventLabel === label) || null;
         }
 
         // ─── contrast-aware colour helpers ───
@@ -2973,7 +2942,7 @@
         }
 
         // ═══════════════════════════════════════════════════
-        // RENDER EVENT LOG  (PATCH D: sorted + Copy button)
+        // RENDER EVENT LOG
         // ═══════════════════════════════════════════════════
         function renderEvents() {
             if (events.length === 0) {
@@ -2981,11 +2950,7 @@
                 return;
             }
             logList.innerHTML = '';
-            // sort a copy of events by actual timestamp instead of relying on insertion order
-            const sortedEvents = [...events].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            if (logSortOrder === 'desc') sortedEvents.reverse();
-
-            sortedEvents.forEach((event, index) => {
+            events.forEach((event, index) => {
                 try {
                     const eventTime = new Date(event.timestamp);
                     if (!event.timezone) event.timezone = getCurrentTimezone();
@@ -3011,21 +2976,13 @@
                     logTzDiv.textContent = formatTimezone(event.timezone);
                     logContentDiv.appendChild(logTzDiv);
 
-                    // 📋 Copy button — copies time/GMT/event/remarks together
-                    const copyBtn = document.createElement('button');
-                    copyBtn.className = 'delete-event-btn';
-                    copyBtn.style.backgroundColor = 'var(--accent3)';
-                    copyBtn.textContent = '📋';
-                    copyBtn.addEventListener('click', () => copyEventToClipboard(event.id, copyBtn));
-
-                    // ✏️ Edit button
+                    // PATCH 8: add ✏️ Edit button next to 🗑️ Delete
                     const editBtn = document.createElement('button');
                     editBtn.className = 'delete-event-btn';
                     editBtn.style.backgroundColor = 'var(--accent)';
                     editBtn.textContent = '✏️';
                     editBtn.addEventListener('click', () => openEditEventModal(event.id));
 
-                    // 🗑️ Delete button
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-event-btn';
                     deleteBtn.textContent = '🗑️';
@@ -3035,7 +2992,6 @@
                     actionsWrap.style.display = 'flex';
                     actionsWrap.style.flexDirection = 'column';
                     actionsWrap.style.gap = '6px';
-                    actionsWrap.appendChild(copyBtn);
                     actionsWrap.appendChild(editBtn);
                     actionsWrap.appendChild(deleteBtn);
 
@@ -3173,55 +3129,6 @@
             }
         }
 
-        // ── PATCH E: per-event Copy + sort helpers ─────────────
-        function formatEventForCopy(ev) {
-            const t = new Date(ev.timestamp);
-            const timeStr = formatTime(t, ev.timezone);
-            const tzStr = formatTimezone(ev.timezone);
-            return `Time: ${timeStr}\nGMT: ${tzStr}\nEvent: ${ev.eventLabel}\nRemarks: ${ev.memo || ''}`;
-        }
-
-        function copyEventToClipboard(eventId, btnEl) {
-            const ev = events.find(e => e.id === eventId);
-            if (!ev) return;
-            const text = formatEventForCopy(ev);
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    flashCopyButton(btnEl);
-                }).catch(() => showVoyageDataModal(text));
-            } else {
-                showVoyageDataModal(text);
-            }
-        }
-
-        function flashCopyButton(btnEl) {
-            if (!btnEl) return;
-            const original = btnEl.textContent;
-            btnEl.textContent = '✅';
-            setTimeout(() => {
-                btnEl.textContent = original;
-            }, 1200);
-        }
-
-        // ── log sort toggle ────────────────────────────────────
-        function setLogSortOrder(order) {
-            logSortOrder = order;
-            localStorage.setItem('icc_log_sort_order', order);
-            const descBtn = document.getElementById('sortDescBtn');
-            const ascBtn = document.getElementById('sortAscBtn');
-            if (descBtn) descBtn.classList.toggle('active', order === 'desc');
-            if (ascBtn) ascBtn.classList.toggle('active', order === 'asc');
-            renderEvents();
-        }
-
-        function initLogSortToggle() {
-            const descBtn = document.getElementById('sortDescBtn');
-            const ascBtn = document.getElementById('sortAscBtn');
-            if (descBtn) descBtn.classList.toggle('active', logSortOrder === 'desc');
-            if (ascBtn) ascBtn.classList.toggle('active', logSortOrder === 'asc');
-        }
-
-        // ── showVoyageDataModal (unchanged, reused as fallback) ──
         function showVoyageDataModal(data) {
             const modal = document.createElement('div');
             modal.style.cssText =
@@ -3570,11 +3477,9 @@
         loadTimeBadgeSize();
 
         // ═══════════════════════════════════════════════════
-        // BOOT  (PATCH F: init sort toggle)
+        // BOOT
         // ═══════════════════════════════════════════════════
         initApp();
-        initLogSortToggle();
-
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('service-worker.js')
