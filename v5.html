@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Flight Timing Details — Tap Capture</title>
+    <style>
+        :root {
+            --bg: #0c1016;
+            --panel: #131a24;
+            --panel2: #1a2330;
+            --line: #26313f;
+            --accent: #ff8a1e;
+            --accent-dim: #8a4f18;
+            --text: #e7edf5;
+            --text-dim: #8b98a8;
+            --good: #3ddc84;
+            --mono: 'Courier New', monospace;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 14px;
+            padding-bottom: 60px;
+        }
+        h1 {
+            font-size: 15px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin: 0 0 4px;
+            font-weight: 600;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .offset-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+        }
+        .offset-bar label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        select#offsetSelect {
+            flex: 1;
+            background: var(--panel2);
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-family: var(--mono);
+        }
+        .live-clock {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .card h4 {
+            margin: 0 0 10px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .field-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .field.full {
+            grid-column: 1 / -1;
+        }
+        .field label {
+            font-size: 11px;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+        }
+        .field label .req {
+            color: #ff5f5f;
+        }
+        .tap-input {
+            width: 100%;
+            font-family: var(--mono);
+            font-size: 20px;
+            letter-spacing: 0.08em;
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 9px;
+            border: 1.5px solid var(--line);
+            background: var(--panel2);
+            color: var(--text);
+            -webkit-user-select: none;
+            user-select: none;
+            caret-color: transparent;
+            transition: background .12s, border-color .12s, transform .08s;
+        }
+        .tap-input::placeholder {
+            color: #3a4655;
+            letter-spacing: 0.08em;
+        }
+        .tap-input.captured {
+            border-color: var(--good);
+            color: var(--good);
+            background: #10201a;
+        }
+        .tap-input:active {
+            transform: scale(0.97);
+            background: var(--accent-dim);
+        }
+        .tap-input.cleared {
+            border-color: var(--line);
+            color: var(--text-dim);
+            background: var(--panel2);
+        }
+        .field .meta {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-align: center;
+            min-height: 12px;
+            font-family: var(--mono);
+        }
+        .hint-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 2px;
+            font-size: 10px;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+        .hint-row span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            display: inline-block;
+        }
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--good);
+            color: #06210f;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 9px 18px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity .18s, transform .18s;
+            pointer-events: none;
+            font-family: var(--mono);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .footer-note {
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-top: 6px;
+        }
+        .field .zone-badge {
+            display: inline-block;
+            font-size: 9px;
+            background: var(--panel2);
+            padding: 0 6px;
+            border-radius: 4px;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            letter-spacing: 0.04em;
+        }
+        @media (max-width: 480px) {
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+            .hint-row {
+                font-size: 9px;
+                gap: 8px;
+            }
+            .offset-bar {
+                flex-wrap: wrap;
+            }
+            .offset-bar select {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Flight Timing Details</h1>
+    <div class="subtitle">
+        Tap an empty field to stamp the current time. Tap a filled field to clear it.
+        Long-press any field to pick a timezone for that time — it also becomes the new default.
+    </div>
+
+    <!-- OFFSET BAR -->
+    <div class="offset-bar">
+        <label for="offsetSelect">Capture as</label>
+        <select id="offsetSelect">
+            <option value="local">Local (device)</option>
+            <option value="0">UTC / GMT</option>
+            <option value="480" selected>MYT (GMT+8)</option>
+        </select>
+        <div class="live-clock" id="liveClock">--:--</div>
+    </div>
+
+    <!-- FLIGHT NO / SECTOR -->
+    <div class="card">
+        <h4>Flight No / Sector</h4>
+        <div class="field-grid">
+            <div class="field">
+                <label>Flight No</label>
+                <input class="tap-input" type="text" value="MH002" disabled style="color:var(--text-dim);font-size:16px;" />
+            </div>
+            <div class="field">
+                <label>Sector</label>
+                <input class="tap-input" type="text" value="KUL-LHR" disabled style="color:var(--text-dim);font-size:16px;" />
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMING DETAILS -->
+    <div class="card">
+        <h4>Timing Details</h4>
+        <div class="field-grid">
+            <div class="field">
+                <label>Last Pax Cleared <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="lastPaxCleared" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Catering Completed <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="cateringCompleted" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>AIC Completed <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="aicCompleted" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Boarding Clearance <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="boardingClearance" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Boarding Commence <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="boardingCommence" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Boarding Completed <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="boardingCompleted" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Door Closed <span class="req">*</span></label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="doorClosed" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+            <div class="field">
+                <label>Aircraft Off Chocks</label>
+                <input class="tap-input" type="text" placeholder="0000" data-field id="offChocks" readonly inputmode="none" />
+                <div class="meta" data-meta></div>
+            </div>
+        </div>
+        <div class="hint-row">
+            <span><span class="dot"></span>tap empty = capture</span>
+            <span><span class="dot"></span>tap filled = clear</span>
+            <span><span class="dot"></span>long-press = pick zone + set default</span>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Default timezone is <strong>MYT (GMT+8)</strong>. Long-press any timing field to change its zone and update the default for the next capture.
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const offsetSelect = document.getElementById('offsetSelect');
+            const liveClock = document.getElementById('liveClock');
+            const toast = document.getElementById('toast');
+
+            // ----- helpers -------------------------------------------------
+            function pad(n) {
+                return n.toString().padStart(2, '0');
+            }
+
+            // Get offset value (in minutes) from a choice string
+            function getOffsetMinutes(choice) {
+                if (choice === 'local') {
+                    return -new Date().getTimezoneOffset(); // device offset in minutes
+                }
+                return parseInt(choice, 10);
+            }
+
+            // Get current time as {text, zoneLabel} for a given offset choice
+            function getTime(choice) {
+                const now = new Date();
+                if (choice === 'local') {
+                    return {
+                        text: pad(now.getHours()) + pad(now.getMinutes()),
+                        zone: 'LOCAL'
+                    };
+                }
+                const offsetMin = parseInt(choice, 10);
+                const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const target = new Date(utcMs + offsetMin * 60000);
+                let zoneLabel = '';
+                if (offsetMin === 0) zoneLabel = 'UTC';
+                else if (offsetMin === 480) zoneLabel = 'MYT';
+                else zoneLabel = 'UTC' + (offsetMin >= 0 ? '+' : '') + (offsetMin / 60);
+                return {
+                    text: pad(target.getHours()) + pad(target.getMinutes()),
+                    zone: zoneLabel
+                };
+            }
+
+            // Convert a time (HHMM) from one offset to another
+            function convertTime(timeHHMM, fromOffset, toOffset) {
+                if (!/^\d{4}$/.test(timeHHMM)) return timeHHMM;
+                const hours = parseInt(timeHHMM.slice(0, 2), 10);
+                const mins = parseInt(timeHHMM.slice(2), 10);
+                const totalMins = hours * 60 + mins;
+                // Convert from source offset to UTC minutes (0-1439)
+                let utcMins = totalMins - fromOffset;
+                // Wrap to 0-1439
+                utcMins = ((utcMins % 1440) + 1440) % 1440;
+                // Convert to target offset
+                let targetMins = utcMins + toOffset;
+                targetMins = ((targetMins % 1440) + 1440) % 1440;
+                const h = Math.floor(targetMins / 60);
+                const m = Math.round(targetMins % 60);
+                return pad(h) + pad(m);
+            }
+
+            // Get zone label for display
+            function zoneLabelFromChoice(choice) {
+                if (choice === 'local') return 'LOCAL';
+                const offset = parseInt(choice, 10);
+                if (offset === 0) return 'UTC';
+                if (offset === 480) return 'MYT';
+                return 'UTC' + (offset >= 0 ? '+' : '') + (offset / 60);
+            }
+
+            // ----- toast ---------------------------------------------------
+            let toastTimer = null;
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 1300);
+            }
+
+            // ----- live clock ----------------------------------------------
+            function tickClock() {
+                const { text, zone } = getTime(offsetSelect.value);
+                liveClock.textContent = text.slice(0, 2) + ':' + text.slice(2) + ' ' + zone;
+            }
+            tickClock();
+            setInterval(tickClock, 1000);
+
+            // ----- zone picker (simple prompt) -----------------------------
+            const ZONES = [
+                { label: 'Local (device)', value: 'local' },
+                { label: 'UTC / GMT', value: '0' },
+                { label: 'MYT (GMT+8)', value: '480' }
+            ];
+
+            function promptZone() {
+                const msg = 'Pick timezone:\n' +
+                    ZONES.map((z, i) => (i + 1) + ') ' + z.label).join('\n') +
+                    '\n\nEnter 1, 2, or 3:';
+                const raw = prompt(msg);
+                if (raw === null) return null;
+                const idx = parseInt(raw, 10) - 1;
+                if (idx >= 0 && idx < ZONES.length) {
+                    return ZONES[idx].value;
+                }
+                return null;
+            }
+
+            // ----- apply capture to a field --------------------------------
+            function applyCapture(input, meta, offsetChoice) {
+                const { text, zone } = getTime(offsetChoice);
+                input.value = text;
+                input.dataset.zone = offsetChoice;
+                input.classList.remove('cleared');
+                input.classList.add('captured');
+                input.readOnly = true;
+                const display = text.slice(0, 2) + ':' + text.slice(2);
+                meta.textContent = zone + ' · ' + display;
+                showToast('📸 ' + display + ' ' + zone);
+                if (navigator.vibrate) navigator.vibrate(12);
+            }
+
+            // ----- clear a field -------------------------------------------
+            function clearField(input, meta) {
+                input.value = '';
+                delete input.dataset.zone;
+                input.classList.remove('captured', 'cleared');
+                input.readOnly = true;
+                meta.textContent = '';
+                // add a small cleared class for visual feedback
+                input.classList.add('cleared');
+                setTimeout(() => input.classList.remove('cleared'), 150);
+                showToast('✕ cleared');
+                if (navigator.vibrate) navigator.vibrate(8);
+            }
+
+            // ----- long-press: change zone of field + set default ----------
+            function handleLongPress(input, meta) {
+                const chosen = promptZone();
+                if (chosen === null) return;
+
+                const currentZone = input.dataset.zone || offsetSelect.value;
+                const currentTime = input.value;
+
+                // If field is empty, just capture in chosen zone
+                if (!currentTime || !/^\d{4}$/.test(currentTime)) {
+                    // capture fresh in chosen zone
+                    applyCapture(input, meta, chosen);
+                    // also set global default
+                    offsetSelect.value = chosen;
+                    tickClock();
+                    showToast('🌍 default set to ' + zoneLabelFromChoice(chosen));
+                    return;
+                }
+
+                // Field has a valid time — convert it
+                const fromOffset = getOffsetMinutes(currentZone);
+                const toOffset = getOffsetMinutes(chosen);
+                const newTime = convertTime(currentTime, fromOffset, toOffset);
+
+                input.value = newTime;
+                input.dataset.zone = chosen;
+                input.classList.add('captured');
+                input.classList.remove('cleared');
+                input.readOnly = true;
+
+                const display = newTime.slice(0, 2) + ':' + newTime.slice(2);
+                const zoneLabel = zoneLabelFromChoice(chosen);
+                meta.textContent = zoneLabel + ' · ' + display;
+
+                // Set global default
+                offsetSelect.value = chosen;
+                tickClock();
+
+                showToast('🕒 ' + display + ' ' + zoneLabel + '  •  default updated');
+                if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+            }
+
+            // ----- setup each field ----------------------------------------
+            document.querySelectorAll('[data-field]').forEach(input => {
+                const meta = input.parentElement.querySelector('[data-meta]');
+                let pressTimer = null;
+                let longPressed = false;
+
+                // Touch events
+                input.addEventListener('touchstart', function(e) {
+                    longPressed = false;
+                    pressTimer = setTimeout(() => {
+                        longPressed = true;
+                        // long press: zone picker
+                        handleLongPress(input, meta);
+                    }, 550);
+                }, { passive: true });
+
+                input.addEventListener('touchend', function(e) {
+                    clearTimeout(pressTimer);
+                    if (longPressed) return;
+                    e.preventDefault(); // avoid click duplicate on some browsers
+                    // Tap: if empty → capture; if filled → clear
+                    if (!input.value || input.value === '') {
+                        // empty → capture with current default
+                        applyCapture(input, meta, offsetSelect.value);
+                    } else {
+                        // filled → clear
+                        clearField(input, meta);
+                    }
+                }, { passive: false });
+
+                // Mouse fallback for desktop testing
+                input.addEventListener('click', function(e) {
+                    if ('ontouchstart' in window) return; // handled by touch
+                    if (input.disabled) return;
+                    // On desktop we don't have long-press, so we use right-click or ctrl+click for zone change
+                    // But we'll keep it simple: click toggles capture/clear, and we add a separate contextmenu
+                    if (!input.value || input.value === '') {
+                        applyCapture(input, meta, offsetSelect.value);
+                    } else {
+                        clearField(input, meta);
+                    }
+                });
+
+                // Right-click / context menu for zone change (desktop)
+                input.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    handleLongPress(input, meta);
+                });
+
+                // Keyboard: allow manual entry if the user really wants it (but we don't advertise it)
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        input.blur();
+                        return;
+                    }
+                    // Allow digits and backspace
+                    if (!/^[0-9]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' &&
+                        e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Tab') {
+                        e.preventDefault();
+                    }
+                });
+
+                input.addEventListener('blur', function() {
+                    // If user manually typed something, validate
+                    if (input.readOnly) return;
+                    if (/^\d{4}$/.test(input.value)) {
+                        input.classList.add('captured');
+                        input.classList.remove('cleared');
+                        input.dataset.zone = offsetSelect.value;
+                        const display = input.value.slice(0, 2) + ':' + input.value.slice(2);
+                        const zoneLabel = zoneLabelFromChoice(offsetSelect.value);
+                        meta.textContent = zoneLabel + ' · ' + display + ' (manual)';
+                        input.readOnly = true;
+                        showToast('✏️ ' + display + ' ' + zoneLabel);
+                    } else if (input.value) {
+                        meta.textContent = '⚠️ use HHMM';
+                    }
+                });
+
+                // Allow double-click to edit on desktop (hidden feature)
+                input.addEventListener('dblclick', function(e) {
+                    if (!input.value) return;
+                    input.readOnly = false;
+                    input.classList.remove('captured');
+                    input.focus();
+                    meta.textContent = 'editing …';
+                });
+            });
+
+            // When the global offset changes, update the live clock only.
+            // We do NOT auto-update existing fields — that's by design.
+            offsetSelect.addEventListener('change', function() {
+                tickClock();
+                const label = zoneLabelFromChoice(this.value);
+                showToast('🌍 default: ' + label);
+            });
+
+            // Pre-populate the first field with a sample? No, leave empty.
+            // But we set the default offset to MYT (480) via HTML selected attribute.
+
+            console.log('✅ Flight Timing Log ready — default MYT (GMT+8)');
+            console.log('   Tap empty → capture, Tap filled → clear, Long-press → change zone + set default');
+
+        })();
+    </script>
+
+</body>
+</html>
