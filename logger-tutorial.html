@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICC Logger – User Guide</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #1e293b;
+      line-height: 1.7;
+      padding: 20px 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+    }
+    h1 {
+      font-size: 2.2rem;
+      border-bottom: 3px solid #1a73e8;
+      padding-bottom: 0.2em;
+      color: #0d47a1;
+    }
+    h2 {
+      font-size: 1.6rem;
+      color: #1a73e8;
+      border-left: 4px solid #1a73e8;
+      padding-left: 10px;
+    }
+    h3 {
+      font-size: 1.2rem;
+      color: #2e7d32;
+    }
+    p {
+      margin: 0.8rem 0;
+    }
+    ul, ol {
+      margin: 0.6rem 0 1rem 1.8rem;
+    }
+    li {
+      margin-bottom: 0.4rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #1a73e8;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      margin-right: 4px;
+    }
+    .note {
+      background: #e8f0fe;
+      border-left: 4px solid #1a73e8;
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    .tip {
+      background: #e8f5e9;
+      border-left: 4px solid #2e7d32;
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    .code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: #f0f0f0;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f1f3f4;
+    }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back to Logger</a>
+
+<h1>📋 ICC Timestamp Logger – User Guide</h1>
+<p><strong>Version 2</strong> · Fully offline · No data leaves your device</p>
+
+<p>This guide walks you through every feature of the ICC Timestamp Logger. Whether you’re a first‑time user or want to explore advanced options, you’ll find everything here.</p>
+
+<hr>
+
+<h2>1. Overview</h2>
+<p>The ICC Timestamp Logger is designed for supervisory cabin crew to record flight‑related events with precise timestamps, per‑event timezone correction, and multi‑sector support. It works entirely offline and stores all data in your browser’s local storage.</p>
+
+<div class="note">
+  <strong>📌 Key concept:</strong> Each <strong>session</strong> represents a flight sector. You can have multiple sessions (tabs) active simultaneously.
+</div>
+
+<hr>
+
+<h2>2. Starting a Session</h2>
+
+<h3>Flight Number &amp; Date</h3>
+<ul>
+  <li><strong>Flight Number</strong> – enter your flight code (e.g., <code>MH123/123/0123</code>). This labels the session and appears on the tab.</li>
+  <li><strong>Date</strong> – select the flight date. Pre‑filled with today’s date.</li>
+</ul>
+
+<h3>GMT Offset</h3>
+<ul>
+  <li>Set the local time offset relative to GMT. This determines the displayed time for all events you log in this session.</li>
+  <li>You can change this later per‑event using the <strong>GMT Quick‑Fix</strong> (see section 6).</li>
+</ul>
+
+<h3>Start New Session</h3>
+<ul>
+  <li>Click the <strong>“Start New Session”</strong> button. If there are existing events in the current tab, you’ll be prompted to export them first (to avoid data loss).</li>
+  <li>Once started, the session becomes <strong>active</strong> – you’ll see a green pulsing indicator and the flight number displayed.</li>
+</ul>
+
+<h3>Tabs (Sectors)</h3>
+<ul>
+  <li>Each session appears as a tab at the top. Tabs show the flight number, date, and a badge with the event count.</li>
+  <li>Click any tab to switch between sessions.</li>
+  <li>Click the <strong>＋</strong> button to create a new blank tab (without starting a session).</li>
+  <li>Click the <strong>✕</strong> on a tab to delete that session and all its events (you’ll be asked to confirm).</li>
+</ul>
+
+<div class="tip">
+  💡 <strong>Tip:</strong> You can edit the flight number directly in the input field – the tab label updates automatically.
+</div>
+
+<hr>
+
+<h2>3. Logging Events</h2>
+
+<h3>Event Buttons</h3>
+<p>The main grid contains buttons for common events (e.g., <em>Last Pax</em>, <em>Boarding Commence</em>, <em>Door Close</em>).</p>
+<ul>
+  <li><strong>Short‑press</strong> a button to log that event with the current time and GMT offset.</li>
+  <li>If that event has already been logged, a modal will appear asking if you want to <strong>add another</strong> entry or <strong>delete the latest</strong> one.</li>
+  <li><strong>Long‑press</strong> (hold for ~0.5 s) a button to open the <strong>GMT Quick‑Fix</strong> keypad – see section 6.</li>
+</ul>
+
+<h3>The Record Button</h3>
+<ul>
+  <li>The big <strong>⏱️ RECORD</strong> button logs a <strong>Custom Event</strong> – you can add a memo (see below).</li>
+  <li><strong>Long‑press</strong> the Record button to fix the GMT of the <em>most recent</em> custom event.</li>
+</ul>
+
+<h3>Memo &amp; Voice Recognition</h3>
+<ul>
+  <li>Type a note in the <strong>memo input</strong> field before pressing <strong>“Add Custom Event”</strong> or the Record button – the note will be attached to that event.</li>
+  <li>Press the <strong>🎤</strong> button to use <strong>speech‑to‑text</strong> (available on modern browsers). Your spoken words will fill the memo field.</li>
+</ul>
+
+<hr>
+
+<h2>4. Managing Buttons</h2>
+
+<h3>Edit Layout</h3>
+<ul>
+  <li>Click <strong>“⚙️ Edit Layout”</strong> to enter swap mode. Buttons get a dashed border.</li>
+  <li>Tap any two buttons to <strong>swap</strong> their positions.</li>
+  <li>Click <strong>“✅ Done Editing”</strong> to save the new order.</li>
+</ul>
+
+<h3>Manage Buttons</h3>
+<ul>
+  <li>Click <strong>“➕ Manage Buttons”</strong> to open the button manager.</li>
+  <li>Here you can:
+    <ul>
+      <li><strong>Toggle visibility</strong> – show/hide buttons.</li>
+      <li><strong>Delete custom</strong> buttons (you cannot delete default ones).</li>
+      <li><strong>Add custom</strong> buttons – choose an icon (emoji) and a label.</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="tip">
+  💡 Custom buttons behave exactly like default ones – they appear in the grid and can be logged, swapped, and long‑pressed.
+</div>
+
+<hr>
+
+<h2>5. The Event Log</h2>
+
+<p>All logged events appear in the <strong>Event Log</strong> below the buttons.</p>
+
+<h3>Sorting</h3>
+<ul>
+  <li>Use the <strong>“Newest” / “Oldest”</strong> toggle to sort events by timestamp.</li>
+</ul>
+
+<h3>Export</h3>
+<ul>
+  <li><strong>CSV</strong> – export as a comma‑separated file for spreadsheets.</li>
+  <li><strong>TXT</strong> – plain text log.</li>
+  <li><strong>PDF</strong> – open a printable version (browser print dialog).</li>
+  <li><strong>Voyage</strong> – copies a pipe‑separated string of the 8 key timestamps (Crew Boarding, Last Pax, Catering, AIC, Boarding Clearance, Boarding Commence, Boarding Completed, Door Close) to your clipboard, ready for the Voyage Report form.</li>
+</ul>
+
+<h3>Per‑Event Actions</h3>
+<p>Each log entry has three buttons:</p>
+<ul>
+  <li><strong>📋 Copy</strong> – copies the event’s time, GMT, label, and remarks to the clipboard.</li>
+  <li><strong>✏️ Edit</strong> – opens the Edit Event modal (see below).</li>
+  <li><strong>🗑️ Delete</strong> – removes that event.</li>
+</ul>
+
+<h3>Edit Event Modal</h3>
+<p>When you tap <strong>✏️</strong>, you can:</p>
+<ul>
+  <li><strong>Rename</strong> the event label – affects <em>only this logged instance</em>, not the button.</li>
+  <li><strong>Change the time</strong> – enter a new local time (HH:MM or HH:MM:SS) in the event’s current GMT offset.</li>
+  <li><strong>Edit the remarks</strong> – update the memo.</li>
+</ul>
+
+<div class="note">
+  ⏱️ The underlying UTC timestamp is preserved; only the displayed offset changes when you edit the time.
+</div>
+
+<hr>
+
+<h2>6. GMT Quick‑Fix</h2>
+
+<p>This is one of the most powerful features. It lets you adjust the <strong>displayed time</strong> of a <em>single</em> logged event without affecting others.</p>
+
+<h3>How to use</h3>
+<ul>
+  <li><strong>Long‑press</strong> any event button (or the Record button) to open the keypad.</li>
+  <li>The keypad shows the event’s current GMT offset.</li>
+  <li>Use the digits <strong>0‑9</strong> to enter the hour (0–14).</li>
+  <li>Tap <strong>+ / −</strong> to toggle the sign.</li>
+  <li>Choose the minutes from <strong>:00, :15, :30, :45</strong>.</li>
+  <li>Tap <strong>Apply</strong> – that event’s offset is updated, and the top GMT dropdown <em>and the session default</em> are also changed to this new offset for all future events.</li>
+  <li>The small <strong>GMT indicator</strong> (below the Clear Session button) flashes and updates to show the new logging offset.</li>
+</ul>
+
+<div class="tip">
+  💡 This is perfect for when you forget to adjust the GMT before logging, or when crossing time zones mid‑flight.
+</div>
+
+<hr>
+
+<h2>7. Settings</h2>
+
+<p>Tap the <strong>⚙️</strong> gear icon in the header to open the Settings bottom sheet.</p>
+
+<h3>📖 How to use this</h3>
+<p>This is the link you just clicked – it opens this tutorial.</p>
+
+<h3>🎨 Theme</h3>
+<p>Choose from 9 visual themes: <strong>Operations, Cockpit, Modern, Dark, Midnight, Cyber, Neon, Earthy, Forest</strong>. The theme changes the entire colour scheme of the app.</p>
+
+<h3>🔲 Layout</h3>
+<p>Switch between <strong>2‑column</strong> and <strong>4‑column</strong> button grids. 2 columns are easier for one‑handed use on phones.</p>
+
+<h3>🔤 Time Badge Size</h3>
+<p>Adjust the font size of the HHMM text that appears on pressed buttons. Choose <strong>Small, Medium, or Large</strong>.</p>
+
+<h3>🕐 Default Timezone</h3>
+<p>Set your home GMT offset. This will be automatically filled when you start a new session.</p>
+
+<h3>🔖 Voyage Report Bookmarklet Setup</h3>
+<p>This section provides a <strong>bookmarklet</strong> script. Copy it and create a bookmark in your browser with that script as the URL. Then, when you’re on the Voyage Report form, tap the bookmark after clicking the “Voyage” export button – it will fill the form fields automatically.</p>
+
+<h3>💾 Backup &amp; Restore</h3>
+<ul>
+  <li><strong>Backup All Data</strong> – downloads a JSON file containing all sessions, events, button layout, and settings. Store this somewhere safe (e.g., Google Drive).</li>
+  <li><strong>Restore from Backup</strong> – upload a previously saved backup file. It will add new sessions and merge events into existing ones (duplicates are skipped).</li>
+</ul>
+
+<div class="note">
+  ⚠️ Your data lives only in your browser’s local storage. Clearing your browser cache/cookies will erase everything unless you <strong>back up</strong> first.
+</div>
+
+<h3>🗄️ Storage</h3>
+<p>Shows the number of sessions, total events, and approximate local storage usage.</p>
+
+<h3>🗑️ Clear All Data &amp; Sessions</h3>
+<p>Deletes <em>everything</em> – all sessions, events, and settings. This is irreversible, so use with caution (and export first!).</p>
+
+<h3>ℹ️ About</h3>
+<p>Displays app version and credits.</p>
+
+<hr>
+
+<h2>8. Backup Reminder Banner</h2>
+<p>If you haven’t backed up in the last 24 hours and you have at least one event, a yellow banner will appear at the top of the app. You can <strong>Backup Now</strong> or <strong>Later</strong> (snooze for 6 hours).</p>
+
+<hr>
+
+<h2>9. Offline &amp; Privacy</h2>
+<ul>
+  <li>The app works entirely offline – no internet connection is required.</li>
+  <li><strong>No data</strong> is ever sent to any server. Everything stays on your device.</li>
+  <li>Your events are stored in <code>localStorage</code> and are only accessible by this app in your browser.</li>
+</ul>
+
+<hr>
+
+<h2>10. Quick Reference – Buttons Summary</h2>
+
+<table>
+  <thead>
+    <tr><th>Action</th><th>Short‑press</th><th>Long‑press</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Event Button</td><td>Log event / add another</td><td>GMT Quick‑Fix</td></tr>
+    <tr><td>Record Button</td><td>Log custom event</td><td>GMT Quick‑Fix (latest custom event)</td></tr>
+    <tr><td>Edit Layout</td><td>Toggle edit mode</td><td>–</td></tr>
+    <tr><td>Manage Buttons</td><td>Open manager</td><td>–</td></tr>
+    <tr><td>Clear Session</td><td>Delete current session</td><td>–</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>11. Tips for Efficient Use</h2>
+<ul>
+  <li><strong>Use the GMT Quick‑Fix</strong> early if you realise you’re on the wrong offset – it updates the session default too.</li>
+  <li><strong>Customise your buttons</strong> to match your airline’s standard events.</li>
+  <li><strong>Export frequently</strong> – especially after each sector – to keep a permanent record.</li>
+  <li><strong>Back up before updating</strong> the app or clearing your browser data.</li>
+  <li>The <strong>Voyage export</strong> saves you from typing times into the official form.</li>
+</ul>
+
+<hr>
+
+<footer>
+  <p>ICC Timestamp Logger v2 · Built for cabin crew · ✦ by *2100551*</p>
+  <p><a href="index.html">← Back to Logger</a></p>
+</footer>
+
+</body>
+</html>
