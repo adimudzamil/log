@@ -263,7 +263,9 @@
 
         /* ── GMT INDICATOR PILL ── */
         .gmt-indicator {
-            display: inline-block;
+            display: block;
+            width: 100%;
+            text-align: center;
             background-color: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 20px;
@@ -271,7 +273,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             color: var(--accent);
-            margin-top: 6px;
+            margin: 10px 0;
             transition: box-shadow 0.3s, transform 0.3s;
             animation: gmtGlow 2.5s ease-in-out infinite;
         }
@@ -1888,14 +1890,14 @@
                 <span style="font-size: 0.9rem;">Click "Start New Session" above</span>
             </div>
             <div class="session-stats" id="sessionStats">No events recorded</div>
-            <!-- GMT indicator moved from here -->
+            <!-- GMT indicator removed from here -->
         </div>
 
         <button class="edit-layout-btn" id="editLayoutBtn">⚙️ Edit Layout</button>
         <button class="manage-buttons-btn" id="manageButtonsBtn">➕ Manage Buttons</button>
         <button class="clear-session-btn" id="clearSessionBtn">🗑️ Clear Session</button>
 
-        <!-- GMT indicator placed here, below Clear Session button -->
+        <!-- GMT indicator placed here, below Clear Session button, full-width -->
         <div class="gmt-indicator" id="gmtIndicator">Logging in GMT+8:00</div>
 
         <div class="buttons-grid" id="buttonsGrid"></div>
