@@ -185,9 +185,6 @@
             align-items: center;
             justify-content: center;
             min-height: 70px;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         .event-btn:hover {
@@ -238,59 +235,6 @@
             margin-bottom: 5px;
         }
 
-        /* ── GMT QUICK-FIX KEYPAD ── */
-        .gmt-keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .gmt-key {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px 0;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text);
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .gmt-key:active {
-            background: var(--btn-active);
-        }
-
-        /* ── GMT INDICATOR PILL ── */
-        .gmt-indicator {
-            display: block;
-            width: 100%;
-            text-align: center;
-            background-color: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin: 10px 0;
-            transition: box-shadow 0.3s, transform 0.3s;
-            animation: gmtGlow 2.5s ease-in-out infinite;
-        }
-
-        @keyframes gmtGlow {
-            0%   { box-shadow: 0 0 4px var(--accent); border-color: var(--accent); }
-            50%  { box-shadow: 0 0 14px var(--accent); border-color: var(--accent); }
-            100% { box-shadow: 0 0 4px var(--accent); border-color: var(--accent); }
-        }
-
-        .gmt-indicator.gmt-indicator-flash {
-            animation: none;
-            box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.4);
-            transform: scale(1.05);
-            color: var(--accent3);
-        }
-
         .record-section {
             background-color: white;
             padding: 20px;
@@ -317,9 +261,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         .large-record-btn:hover {
@@ -1890,15 +1831,11 @@
                 <span style="font-size: 0.9rem;">Click "Start New Session" above</span>
             </div>
             <div class="session-stats" id="sessionStats">No events recorded</div>
-            <!-- GMT indicator removed from here -->
         </div>
 
         <button class="edit-layout-btn" id="editLayoutBtn">⚙️ Edit Layout</button>
         <button class="manage-buttons-btn" id="manageButtonsBtn">➕ Manage Buttons</button>
         <button class="clear-session-btn" id="clearSessionBtn">🗑️ Clear Session</button>
-
-        <!-- GMT indicator placed here, below Clear Session button, full-width -->
-        <div class="gmt-indicator" id="gmtIndicator">Logging in GMT+8:00</div>
 
         <div class="buttons-grid" id="buttonsGrid"></div>
 
@@ -2007,10 +1944,6 @@
                 <div class="modal-title" id="editEventTitle">Edit Event</div>
             </div>
             <div class="modal-message" style="margin-bottom: 10px;">
-                <label for="editEventLabelInput" style="display:block; font-weight:600; margin-bottom:6px;">Event Name</label>
-                <input type="text" id="editEventLabelInput" placeholder="Event name" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:inherit; font-size:1rem;">
-            </div>
-            <div class="modal-message" style="margin-bottom: 10px;">
                 <label for="editEventTimeInput" style="display:block; font-weight:600; margin-bottom:6px;">Time (HH:MM:SS)</label>
                 <input type="text" id="editEventTimeInput" placeholder="23:46:23" maxlength="8" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; background-color:var(--surface2); color:var(--text); font-family:'Consolas','Courier New',monospace; font-size:1rem;">
             </div>
@@ -2021,43 +1954,6 @@
             <div class="modal-buttons">
                 <button class="modal-btn primary" id="saveEditEventBtn">Save</button>
                 <button class="modal-btn secondary" id="cancelEditEventBtn">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- GMT Quick-Fix Modal -->
-    <div class="modal" id="gmtQuickFixModal">
-        <div class="modal-content" style="max-width: 340px;">
-            <div class="modal-header">
-                <div class="modal-icon">🕐</div>
-                <div class="modal-title" id="gmtQuickFixTitle">Fix GMT</div>
-            </div>
-            <div class="modal-message" style="text-align:center;">
-                <div id="gmtQuickFixDisplay" style="font-family:'Consolas','Courier New',monospace; font-size:1.6rem; font-weight:800; color:var(--accent); margin-bottom:14px;">GMT+8:00</div>
-                <div class="gmt-keypad" id="gmtQuickFixKeypad">
-                    <button class="gmt-key" onclick="gmtFixDigit('1')">1</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('2')">2</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('3')">3</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('4')">4</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('5')">5</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('6')">6</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('7')">7</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('8')">8</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('9')">9</button>
-                    <button class="gmt-key" id="gmtQuickFixSignBtn" onclick="gmtFixToggleSign()">+</button>
-                    <button class="gmt-key" onclick="gmtFixDigit('0')">0</button>
-                    <button class="gmt-key" onclick="gmtFixBackspace()">⌫</button>
-                </div>
-                <div class="seg-ctrl" id="gmtQuickFixMinuteRow" style="margin-top:12px;">
-                    <button class="seg-btn" onclick="gmtFixSetMinute(0)">:00</button>
-                    <button class="seg-btn" onclick="gmtFixSetMinute(15)">:15</button>
-                    <button class="seg-btn" onclick="gmtFixSetMinute(30)">:30</button>
-                    <button class="seg-btn" onclick="gmtFixSetMinute(45)">:45</button>
-                </div>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary" onclick="applyGmtQuickFix()">Apply</button>
-                <button class="modal-btn secondary" onclick="closeGmtQuickFix()">Cancel</button>
             </div>
         </div>
     </div>
@@ -2096,14 +1992,6 @@
                 <button class="sett-close-btn" id="settCloseBtn">✕</button>
             </div>
             <div class="sett-body">
-                <!-- HOW TO USE -->
-<div class="sett-section">
-    <div class="sett-section-hdr">📖 How to use this</div>
-    <div class="sett-section-body">
-        <button class="manage-buttons-btn" onclick="window.open('logger-tutorial.html', '_blank')" style="margin-bottom:0;">Open Tutorial</button>
-        <div class="about-block" style="margin-top:8px;font-size:0.78rem;">Learn how to use every feature of the ICC Timestamp Logger.</div>
-    </div>
-</div>
                 <!-- THEME -->
                 <div class="sett-section">
                     <div class="sett-section-hdr">🎨 Theme</div>
@@ -2269,7 +2157,7 @@
                             <strong>ICC Timestamp Logger v2</strong><br />
                             Real‑time event timestamping tool for supervisory cabin crew.<br />
                             Records boarding milestones, crew events, and ground ops with per‑event timezone capture across multiple flight sectors.<br /><br />
-                            Built for ICC operations. 07/11/25. Save the trees.<br />
+                            Built for ICC operations. Save the trees. 07/11/25<br />
                             Works fully offline · No data leaves your device.<br />
                             Export to CSV · TXT · PDF · Voyage Report format.<br /><br />
                             <span class="byline">✦ by *2100551*</span>
@@ -2355,17 +2243,10 @@
         // PATCH 5: DOM refs for edit-event modal
         const editEventModal = document.getElementById('editEventModal');
         const editEventTitle = document.getElementById('editEventTitle');
-        const editEventLabelInput = document.getElementById('editEventLabelInput');
         const editEventTimeInput = document.getElementById('editEventTimeInput');
         const editEventMemoInput = document.getElementById('editEventMemoInput');
         const saveEditEventBtn = document.getElementById('saveEditEventBtn');
         const cancelEditEventBtn = document.getElementById('cancelEditEventBtn');
-
-        // GMT Quick-Fix DOM refs
-        const gmtQuickFixModal = document.getElementById('gmtQuickFixModal');
-        const gmtQuickFixTitle = document.getElementById('gmtQuickFixTitle');
-        const gmtQuickFixDisplay = document.getElementById('gmtQuickFixDisplay');
-        const gmtQuickFixSignBtn = document.getElementById('gmtQuickFixSignBtn');
 
         // ═══════════════════════════════════════════════════
         // APP STATE — multi-session
@@ -2382,12 +2263,6 @@
 
         // PATCH 6: new state variable for edit modal
         let pendingEditEventId = null;
-
-        // GMT Quick-Fix state
-        let pendingGmtFixEventId = null;
-        let gmtFixHourBuffer = '8';
-        let gmtFixSign = '+';
-        let gmtFixMinutes = 0;
 
         // PATCH B: log sort order state
         let logSortOrder = localStorage.getItem('icc_log_sort_order') || 'desc';
@@ -2738,166 +2613,6 @@
         }
 
         // ═══════════════════════════════════════════════════
-        // LONG-PRESS GMT QUICK-FIX
-        // ═══════════════════════════════════════════════════
-        function attachLongPress(el, onLongPress) {
-            let timer = null;
-            let firedLongPress = false;
-            let startX = 0, startY = 0;
-            const HOLD_MS = 550;
-            const MOVE_TOLERANCE = 12;
-
-            function clearTimer() {
-                if (timer) { clearTimeout(timer); timer = null; }
-            }
-            function start(e) {
-                firedLongPress = false;
-                const pt = e.touches ? e.touches[0] : e;
-                startX = pt.clientX;
-                startY = pt.clientY;
-                clearTimer();
-                timer = setTimeout(() => {
-                    firedLongPress = true;
-                    if (navigator.vibrate) navigator.vibrate(25);
-                    onLongPress(e);
-                }, HOLD_MS);
-            }
-            function move(e) {
-                const pt = e.touches ? e.touches[0] : e;
-                if (Math.abs(pt.clientX - startX) > MOVE_TOLERANCE || Math.abs(pt.clientY - startY) > MOVE_TOLERANCE) {
-                    clearTimer();
-                }
-            }
-            el.addEventListener('touchstart', start, { passive: true });
-            el.addEventListener('touchmove', move, { passive: true });
-            el.addEventListener('touchend', clearTimer);
-            el.addEventListener('touchcancel', clearTimer);
-            el.addEventListener('mousedown', start);
-            el.addEventListener('mousemove', move);
-            el.addEventListener('mouseup', clearTimer);
-            el.addEventListener('mouseleave', clearTimer);
-            el.addEventListener('contextmenu', (e) => e.preventDefault());
-            el.addEventListener('click', (e) => {
-                if (firedLongPress) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    firedLongPress = false;
-                }
-            });
-        }
-
-        function updateGmtIndicator() {
-            const el = document.getElementById('gmtIndicator');
-            if (!el) return;
-            const tz = getCurrentTimezone();
-            el.textContent = `Logging in ${formatTimezone(tz)}`;
-        }
-
-        function flashGmtIndicator() {
-            const el = document.getElementById('gmtIndicator');
-            if (!el) return;
-            el.classList.add('gmt-indicator-flash');
-            setTimeout(() => el.classList.remove('gmt-indicator-flash'), 1800);
-        }
-
-        function openGmtQuickFix(eventId) {
-            const ev = events.find(e => e.id === eventId);
-            if (!ev) return;
-            pendingGmtFixEventId = eventId;
-            gmtFixHourBuffer = String(ev.timezone.hours);
-            gmtFixSign = ev.timezone.sign;
-            gmtFixMinutes = ev.timezone.minutes;
-            gmtQuickFixTitle.textContent = `Fix GMT — ${ev.eventLabel}`;
-            updateGmtFixDisplay();
-            gmtQuickFixModal.style.display = 'flex';
-        }
-
-        function openGmtQuickFixForLabel(label) {
-            const ev = getLatestEventForLabel(label);
-            if (!ev) return; // nothing recorded for this button yet
-            openGmtQuickFix(ev.id);
-        }
-
-        function openGmtQuickFixForRecordBtn() {
-            const ev = getLatestCustomEvent();
-            if (!ev) {
-                alert('No custom event logged yet to fix.');
-                return;
-            }
-            openGmtQuickFix(ev.id);
-        }
-
-        function gmtFixDigit(d) {
-            if (gmtFixHourBuffer === '0') {
-                gmtFixHourBuffer = d;
-            } else {
-                const attempt = gmtFixHourBuffer + d;
-                gmtFixHourBuffer = (parseInt(attempt, 10) > 14 || attempt.length > 2) ? d : attempt;
-            }
-            updateGmtFixDisplay();
-        }
-
-        function gmtFixBackspace() {
-            gmtFixHourBuffer = gmtFixHourBuffer.length > 1 ? gmtFixHourBuffer.slice(0, -1) : '0';
-            updateGmtFixDisplay();
-        }
-
-        function gmtFixToggleSign() {
-            gmtFixSign = gmtFixSign === '+' ? '-' : '+';
-            updateGmtFixDisplay();
-        }
-
-        function gmtFixSetMinute(m) {
-            gmtFixMinutes = m;
-            updateGmtFixDisplay();
-        }
-
-        function updateGmtFixDisplay() {
-            const hours = parseInt(gmtFixHourBuffer || '0', 10);
-            gmtQuickFixDisplay.textContent = `GMT${gmtFixSign}${hours}:${String(gmtFixMinutes).padStart(2, '0')}`;
-            gmtQuickFixSignBtn.textContent = gmtFixSign === '+' ? '+' : '−';
-            document.querySelectorAll('#gmtQuickFixMinuteRow .seg-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === `:${String(gmtFixMinutes).padStart(2, '0')}`);
-            });
-        }
-
-        function applyGmtQuickFix() {
-            const ev = events.find(e => e.id === pendingGmtFixEventId);
-            if (!ev) {
-                closeGmtQuickFix();
-                return;
-            }
-            const hours = parseInt(gmtFixHourBuffer || '0', 10);
-            const minutes = gmtFixMinutes;
-            const sign = gmtFixSign;
-            const totalOffsetMinutes = (sign === '+' ? 1 : -1) * (hours * 60 + minutes);
-            const newTz = { sign, hours, minutes, totalOffsetMinutes };
-
-            // fix only this one event
-            ev.timezone = newTz;
-            saveEvents();
-
-            // also update the top GMT dropdown + session default for future recordings
-            gmtSignSelect.value = sign;
-            gmtHoursSelect.value = hours;
-            gmtMinutesSelect.value = String(minutes).padStart(2, '0');
-            const sess = activeSession();
-            if (sess) {
-                sess.timezone = newTz;
-                saveSessions();
-            }
-
-            closeGmtQuickFix();
-            updateUI();
-            flashGmtIndicator();
-        }
-
-        function closeGmtQuickFix() {
-            gmtQuickFixModal.style.display = 'none';
-            pendingGmtFixEventId = null;
-        }
-
-        // ═══════════════════════════════════════════════════
         // DATE / TIME HELPERS
         // ═══════════════════════════════════════════════════
         function populateGmtHours() {
@@ -2984,12 +2699,6 @@
             return matches.reduce((latest, e) => new Date(e.timestamp) > new Date(latest.timestamp) ? e : latest);
         }
 
-        function getLatestCustomEvent() {
-            const matches = events.filter(e => e.eventType === 'custom');
-            if (matches.length === 0) return null;
-            return matches.reduce((latest, e) => new Date(e.timestamp) > new Date(latest.timestamp) ? e : latest);
-        }
-
         // ─── contrast-aware colour helpers ───
         function hexToRgbObj(hex) {
             hex = (hex || '#ffffff').trim().replace('#', '');
@@ -3068,7 +2777,6 @@
                 sessionStatsDiv.textContent = 'No events recorded';
                 startSessionBtn.classList.add('start-session-highlight');
             }
-            updateGmtIndicator();
             renderButtons();
             renderEvents();
         }
@@ -3106,7 +2814,6 @@
                     button.classList.add('edit-mode');
                     button.addEventListener('click', () => handleButtonSwap(index));
                 } else {
-                    attachLongPress(button, () => openGmtQuickFixForLabel(btn.label));
                     button.addEventListener('click', () => handleEventButtonClick(btn.label));
                 }
                 buttonsGrid.appendChild(button);
@@ -3301,8 +3008,7 @@
             const hh = String(parts.hour).padStart(2, '0');
             const mm = String(parts.minute).padStart(2, '0');
             const ss = String(parts.second).padStart(2, '0');
-            editEventTitle.textContent = 'Edit Event';
-            editEventLabelInput.value = ev.eventLabel;
+            editEventTitle.textContent = ev.eventLabel;
             editEventTimeInput.value = `${hh}:${mm}:${ss}`;
             editEventMemoInput.value = ev.memo || '';
             editEventModal.style.display = 'flex';
@@ -3329,8 +3035,6 @@
             parts.minute = m;
             parts.second = s;
             ev.timestamp = buildUTCFromLocalParts(parts, ev.timezone).toISOString();
-            const newLabel = editEventLabelInput.value.trim();
-            if (newLabel) ev.eventLabel = newLabel;
             ev.memo = editEventMemoInput.value.trim();
             saveEvents();
             editEventModal.style.display = 'none';
@@ -3638,7 +3342,6 @@
             gmtHoursSelect.addEventListener('change', updateUI);
             gmtMinutesSelect.addEventListener('change', updateUI);
 
-            attachLongPress(recordBtn, () => openGmtQuickFixForRecordBtn());
             recordBtn.addEventListener('click', () => recordEvent('Custom Event', true));
             addMemoBtn.addEventListener('click', () => recordEvent('Custom Event', true));
             voiceBtn.addEventListener('click', startVoiceRecognition);
@@ -3732,12 +3435,6 @@
                 if (e.target === editEventModal) {
                     editEventModal.style.display = 'none';
                     pendingEditEventId = null;
-                }
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === gmtQuickFixModal) {
-                    closeGmtQuickFix();
                 }
             });
 
