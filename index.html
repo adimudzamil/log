@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ICC Timestamp Logger</title>
     <meta name="theme-color" content="#1a73e8" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="icc-manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ICC Logger" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>" />
+    <link rel="apple-touch-icon" href="icc-icon-180.png" />
     <style>
         * {
             box-sizing: border-box;
@@ -2247,7 +2247,10 @@
                             Your sessions, events, and settings live only on this device. Clearing cache/cookies (e.g. when testing a new update) will erase them unless you back up first.
                         </div>
                         <div id="lastBackupInfo" style="font-size:0.78rem;color:var(--text2);">Last backup: never</div>
+                        <div class="storage-chip" id="persistInfo">Checking…</div>
+                        <button class="manage-buttons-btn" style="margin-bottom:0;" onclick="shareBackup()">📤 Share / Save Backup (Drive, Files…)</button>
                         <button class="manage-buttons-btn" style="margin-bottom:0;" onclick="backupAllData()">⬇️ Backup All Data</button>
+                        <button class="edit-layout-btn" style="margin-bottom:0;" onclick="restoreLatestSnapshot()">🛟 Restore Safety Snapshot</button>
                         <input type="file" id="restoreFileInput" accept="application/json" style="display:none;">
                         <button class="edit-layout-btn" style="margin-bottom:0;" onclick="document.getElementById('restoreFileInput').click()">⬆️ Restore from Backup</button>
                     </div>
@@ -2403,26 +2406,28 @@
 
         // ── storage ──────────────────────────────────────────
         function saveSessions() {
-            localStorage.setItem('icc_sessions', JSON.stringify(sessions));
-            localStorage.setItem('icc_active_id', activeId || '');
+            safeSet('icc_sessions', JSON.stringify(sessions));
+            safeSet('icc_active_id', activeId || '');
         }
 
         function saveEvents() {
             if (!activeId) return;
-            localStorage.setItem('icc_events_' + activeId, JSON.stringify(events));
+            safeSet('icc_events_' + activeId, JSON.stringify(events));
         }
 
         function loadEventsFor(id) {
             const raw = localStorage.getItem('icc_events_' + id);
-            return raw ? JSON.parse(raw) : [];
+            if (!raw) return [];
+            try { return JSON.parse(raw) || []; } catch (e) { return []; }
         }
 
         function deleteEventsFor(id) {
             localStorage.removeItem('icc_events_' + id);
+            if (typeof idbDelete === 'function') idbDelete('live:icc_events_' + id);
         }
 
         function saveButtonLayout() {
-            localStorage.setItem('aviationButtonLayout', JSON.stringify(buttonLayout));
+            safeSet('aviationButtonLayout', JSON.stringify(buttonLayout));
         }
 
         // ── init ─────────────────────────────────────────────
@@ -2439,8 +2444,10 @@
         function loadAll() {
             // load sessions
             const rawSessions = localStorage.getItem('icc_sessions');
-            if (rawSessions) {
-                sessions = JSON.parse(rawSessions);
+            let parsedSessions = null;
+            try { parsedSessions = rawSessions ? JSON.parse(rawSessions) : null; } catch (e) { parsedSessions = null; }
+            if (Array.isArray(parsedSessions)) {
+                sessions = parsedSessions;
             } else {
                 // migrate old single-session data if it exists
                 const oldSession = localStorage.getItem('aviationSession');
@@ -2493,11 +2500,13 @@
             // button layout
             const rawLayout = localStorage.getItem('aviationButtonLayout');
             if (rawLayout) {
-                buttonLayout = JSON.parse(rawLayout).map(btn => ({
-                    ...btn,
-                    visible: btn.visible !== undefined ? btn.visible : true,
-                    isDefault: btn.isDefault !== undefined ? btn.isDefault : false
-                }));
+                try {
+                    buttonLayout = JSON.parse(rawLayout).map(btn => ({
+                        ...btn,
+                        visible: btn.visible !== undefined ? btn.visible : true,
+                        isDefault: btn.isDefault !== undefined ? btn.isDefault : false
+                    }));
+                } catch (e) { buttonLayout = [...defaultButtons]; }
             } else {
                 buttonLayout = [...defaultButtons];
             }
@@ -3904,6 +3913,217 @@
         }
 
         // ═══════════════════════════════════════════════════
+        // DURABLE STORAGE: localStorage (fast, sync) mirrored to IndexedDB
+        // + rolling snapshots + persistent-storage request + flush on exit
+        // ═══════════════════════════════════════════════════
+        const IDB_NAME = 'icc-logger-durable', IDB_STORE = 'kv', SNAP_KEEP = 20, SNAP_EVERY_MS = 10 * 60 * 1000;
+        let idbPromise = null, mirrorTimer = null, lastSnapAt = 0, saveFailed = false;
+
+        function idb() {
+            if (idbPromise) return idbPromise;
+            idbPromise = new Promise((resolve) => {
+                try {
+                    const req = indexedDB.open(IDB_NAME, 1);
+                    req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => resolve(null);
+                    req.onblocked = () => resolve(null);
+                } catch (e) { resolve(null); }
+            });
+            return idbPromise;
+        }
+        async function idbPut(key, value) {
+            const db = await idb(); if (!db) return false;
+            return new Promise(res => {
+                try {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(value, key);
+                    tx.oncomplete = () => res(true); tx.onerror = tx.onabort = () => res(false);
+                } catch (e) { res(false); }
+            });
+        }
+        async function idbGet(key) {
+            const db = await idb(); if (!db) return null;
+            return new Promise(res => {
+                try {
+                    const r = db.transaction(IDB_STORE).objectStore(IDB_STORE).get(key);
+                    r.onsuccess = () => res(r.result === undefined ? null : r.result); r.onerror = () => res(null);
+                } catch (e) { res(null); }
+            });
+        }
+        async function idbKeys() {
+            const db = await idb(); if (!db) return [];
+            return new Promise(res => {
+                try {
+                    const r = db.transaction(IDB_STORE).objectStore(IDB_STORE).getAllKeys();
+                    r.onsuccess = () => res(r.result || []); r.onerror = () => res([]);
+                } catch (e) { res([]); }
+            });
+        }
+        async function idbDelete(key) {
+            const db = await idb(); if (!db) return;
+            try { db.transaction(IDB_STORE, 'readwrite').objectStore(IDB_STORE).delete(key); } catch (e) {}
+        }
+
+        // every key the app owns
+        function ownedKeys() {
+            const out = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && (k.startsWith('icc_') || k.startsWith('aviation')) && k !== 'icc_backup_snooze_until') out.push(k);
+            }
+            return out;
+        }
+        function collectAll() {
+            const data = {};
+            ownedKeys().forEach(k => { data[k] = localStorage.getItem(k); });
+            return data;
+        }
+        function countEventsIn(data) {
+            let n = 0;
+            Object.keys(data || {}).forEach(k => {
+                if (k.startsWith('icc_events_')) { try { n += JSON.parse(data[k]).length; } catch (e) {} }
+            });
+            return n;
+        }
+
+        // write-through wrapper used by all save functions
+        function safeSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                if (saveFailed) { saveFailed = false; showSaveWarning(false); }
+            } catch (e) {
+                saveFailed = true; showSaveWarning(true);
+            }
+            idbPut('live:' + key, value);   // immediate per-key mirror (async, fire-and-forget)
+            scheduleSnapshot();
+        }
+        function scheduleSnapshot() {
+            if (mirrorTimer) return;
+            mirrorTimer = setTimeout(() => { mirrorTimer = null; writeSnapshot(false); }, 1500);
+        }
+        async function writeSnapshot(force) {
+            const now = Date.now();
+            const data = collectAll();
+            await idbPut('latest', { at: new Date().toISOString(), data });
+            if (force || now - lastSnapAt > SNAP_EVERY_MS) {
+                lastSnapAt = now;
+                await idbPut('snap:' + new Date(now).toISOString(), { at: new Date(now).toISOString(), events: countEventsIn(data), data });
+                const snaps = (await idbKeys()).filter(k => String(k).startsWith('snap:')).sort();
+                for (const k of snaps.slice(0, Math.max(0, snaps.length - SNAP_KEEP))) await idbDelete(k);
+            }
+        }
+        function flushNow() {
+            if (mirrorTimer) { clearTimeout(mirrorTimer); mirrorTimer = null; }
+            try { saveEvents(); } catch (e) {}
+            writeSnapshot(false);
+        }
+        function showSaveWarning(on) {
+            let el = document.getElementById('saveWarnBar');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'saveWarnBar';
+                el.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99999;background:#c62828;color:#fff;padding:10px 14px;font:600 0.85rem system-ui;text-align:center;display:none;';
+                el.textContent = '⚠️ Storage is full or blocked — recent entries may NOT be saved. Tap Settings → Backup now.';
+                document.body.appendChild(el);
+            }
+            el.style.display = on ? 'block' : 'none';
+        }
+
+        // on boot: if localStorage lost data (cache clear / eviction), rebuild it from IndexedDB
+        async function recoverIfNeeded() {
+            let recovered = 0;
+            try {
+                const hasSessions = !!localStorage.getItem('icc_sessions');
+                const latest = await idbGet('latest');
+                if (!hasSessions && latest && latest.data && latest.data.icc_sessions) {
+                    Object.keys(latest.data).forEach(k => { try { localStorage.setItem(k, latest.data[k]); } catch (e) {} });
+                    recovered = countEventsIn(latest.data);
+                } else if (!hasSessions) {
+                    // no 'latest' either: try per-key live mirror, then newest snapshot
+                    const live = await idbGet('live:icc_sessions');
+                    if (live) {
+                        for (const k of (await idbKeys()).filter(k => String(k).startsWith('live:'))) {
+                            const v = await idbGet(k); if (v !== null) { try { localStorage.setItem(String(k).slice(5), v); } catch (e) {} }
+                        }
+                        recovered = 1;
+                    } else {
+                        const snaps = (await idbKeys()).filter(k => String(k).startsWith('snap:')).sort();
+                        const last = snaps.length ? await idbGet(snaps[snaps.length - 1]) : null;
+                        if (last && last.data && last.data.icc_sessions) {
+                            Object.keys(last.data).forEach(k => { try { localStorage.setItem(k, last.data[k]); } catch (e) {} });
+                            recovered = last.events || 1;
+                        }
+                    }
+                } else {
+                    // sessions list present: make sure no event store was lost individually
+                    const sessList = JSON.parse(localStorage.getItem('icc_sessions') || '[]');
+                    for (const sess of sessList) {
+                        const key = 'icc_events_' + sess.id;
+                        if (!localStorage.getItem(key)) {
+                            const v = await idbGet('live:' + key);
+                            if (v) { try { localStorage.setItem(key, v); recovered++; } catch (e) {} }
+                        }
+                    }
+                }
+            } catch (e) { console.log('recover failed', e); }
+            return recovered;
+        }
+
+        async function requestPersistence() {
+            try {
+                if (navigator.storage && navigator.storage.persist) {
+                    const already = await navigator.storage.persisted();
+                    if (!already) await navigator.storage.persist();
+                }
+            } catch (e) {}
+            updatePersistInfo();
+        }
+        async function updatePersistInfo() {
+            const el = document.getElementById('persistInfo'); if (!el) return;
+            let persisted = 'unknown', quota = '';
+            try {
+                if (navigator.storage && navigator.storage.persisted) persisted = (await navigator.storage.persisted()) ? 'granted ✅' : 'not granted (install to Home Screen)';
+                if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); quota = ` · ${(e.usage / 1048576).toFixed(1)} MB of ${(e.quota / 1048576).toFixed(0)} MB`; }
+            } catch (e) {}
+            const snaps = (await idbKeys()).filter(k => String(k).startsWith('snap:')).length;
+            const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone;
+            el.innerHTML = `Protected storage: <strong>${persisted}</strong>${quota}<br>Installed app mode: <strong>${standalone ? 'yes' : 'no'}</strong> · Safety snapshots: <strong>${snaps}</strong>`;
+        }
+
+        // restore the newest safety snapshot on demand (from Settings)
+        async function restoreLatestSnapshot() {
+            const snaps = (await idbKeys()).filter(k => String(k).startsWith('snap:')).sort();
+            if (!snaps.length) { alert('No safety snapshots found yet.'); return; }
+            const last = await idbGet(snaps[snaps.length - 1]);
+            if (!last || !last.data) { alert('Snapshot unreadable.'); return; }
+            if (!confirm(`Restore snapshot from ${last.at}?\n${last.events || 0} events. Current data will be replaced.`)) return;
+            await writeSnapshot(true); // keep what we have first
+            Object.keys(last.data).forEach(k => { try { localStorage.setItem(k, last.data[k]); } catch (e) {} });
+            location.reload();
+        }
+
+        // share/save backup file off-device (Drive, Files, WhatsApp, email…)
+        async function shareBackup() {
+            const backupSessions = sessions.map(sess => ({ ...sess, events: loadEventsFor(sess.id) }));
+            const json = JSON.stringify({ type: 'icc-logger-backup', version: 1, exportedAt: new Date().toISOString(), sessions: backupSessions, buttonLayout, settings: { theme: localStorage.getItem('icc_theme'), gridCols: localStorage.getItem('icc_grid_cols'), timeBadgeSize: localStorage.getItem('icc_time_badge_size'), defaultTimezone: localStorage.getItem('icc_default_tz'), logSortOrder: localStorage.getItem('icc_log_sort_order') } }, null, 2);
+            const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+            const file = new File([json], `ICC_Backup_${stamp}.json`, { type: 'application/json' });
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'ICC Logger backup' });
+                    localStorage.setItem('icc_last_backup_time', new Date().toISOString());
+                    hideBackupReminder(); updateLastBackupInfo(); return;
+                }
+            } catch (e) { if (e && e.name === 'AbortError') return; }
+            backupAllData();
+        }
+
+        document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushNow(); });
+        window.addEventListener('pagehide', flushNow);
+        document.addEventListener('freeze', flushNow);
+
+        // ═══════════════════════════════════════════════════
         // BACKUP & RESTORE (PATCH F)
         // ═══════════════════════════════════════════════════
         const BACKUP_REMINDER_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -3976,7 +4196,7 @@
                         const toAdd = backupEvents.filter(e => !existingIds.has(e.id));
                         if (toAdd.length > 0) {
                             const merged = existingEvents.concat(toAdd);
-                            localStorage.setItem('icc_events_' + target.id, JSON.stringify(merged));
+                            safeSet('icc_events_' + target.id, JSON.stringify(merged));
                             addedEvents += toAdd.length;
                         }
                         mergedSessions++;
@@ -3984,7 +4204,7 @@
                         // brand new session — add as-is, keep its original id
                         const { events: sessEvents, ...sessMeta } = backupSess;
                         sessions.push(sessMeta);
-                        localStorage.setItem('icc_events_' + sessMeta.id, JSON.stringify(sessEvents));
+                        safeSet('icc_events_' + sessMeta.id, JSON.stringify(sessEvents));
                         addedSessions++;
                         addedEvents += sessEvents.length;
                     }
@@ -4057,6 +4277,7 @@
 
         // ── Storage info ─────────────────────────────────────
         function updateStorageInfo() {
+            updatePersistInfo();
             const el = document.getElementById('storageInfo');
             if (!el) return;
             const totalSessions = sessions.length;
@@ -4086,7 +4307,7 @@
             const totalEvents = sessions.reduce((acc, s) => acc + loadEventsFor(s.id).length, 0);
             const msg = `DELETE EVERYTHING?\n\n` +
                 `${sessions.length} session(s) · ${totalEvents} events\n\n` +
-                `This cannot be undone. Export your data first if needed.`;
+                `A safety snapshot is kept on this device (Settings → Restore safety snapshot) but export first if you need to be sure.`;
             if (!confirm(msg)) return;
             // clear all icc_ keys
             const keysToRemove = [];
@@ -4095,7 +4316,9 @@
                     keysToRemove.push(key);
                 }
             }
+            writeSnapshot(true);  // last-resort safety snapshot before wiping (kept in IndexedDB)
             keysToRemove.forEach(k => localStorage.removeItem(k));
+            idbKeys().then(ks => ks.filter(k => String(k).startsWith('live:') || k === 'latest').forEach(idbDelete));
             sessions = [];
             activeId = null;
             events = [];
@@ -4122,13 +4345,21 @@
         // ═══════════════════════════════════════════════════
         // BOOT  (PATCH I: check backup reminder)
         // ═══════════════════════════════════════════════════
-        initApp();
-        initLogSortToggle();
-        checkBackupReminder();
+        (async function bootstrap() {
+            const recovered = await recoverIfNeeded();
+            loadTheme(); loadGridColsSetting(); loadTimeBadgeSize();
+            logSortOrder = localStorage.getItem('icc_log_sort_order') || 'desc';
+            initApp();
+            initLogSortToggle();
+            checkBackupReminder();
+            requestPersistence();
+            writeSnapshot(false);
+            if (recovered) setTimeout(() => alert('♻️ Your data was recovered automatically from protected storage.'), 400);
+        })();
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
+                navigator.serviceWorker.register('icc-sw.js')
                     .then(r => console.log('SW registered:', r.scope))
                     .catch(e => console.log('SW failed:', e));
             });
