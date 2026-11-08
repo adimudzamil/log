@@ -1,5 +1,5 @@
 // ICC Logger service worker. Only touches its own files so other tools on the same origin are unaffected.
-const CACHE = 'icc-logger-v1';
+const CACHE = 'icc-logger-v4';
 const FILES = ['./', './index.html', './icc-manifest.json', './icc-icon-180.png', './icc-icon-192.png', './icc-icon-512.png', './icc-icon-maskable-512.png'];
 const MINE = new Set(FILES.map(f => new URL(f, self.location).pathname));
 
